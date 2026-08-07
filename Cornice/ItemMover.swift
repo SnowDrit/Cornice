@@ -25,6 +25,30 @@ protocol ItemMover {
     func move(_ item: MenuBarItem, toX destinationX: CGFloat) async throws
 }
 
+extension ItemMover {
+    /// Moves `item` and reports where it actually ended up.
+    ///
+    /// A drag can be posted successfully and still not move anything — the gesture may
+    /// be swallowed, or the drop may land back where it started. Callers that care
+    /// whether the arrangement changed must not infer it from the absence of a thrown
+    /// error; twice during development a check reported success for a move that never
+    /// happened. This does the re-read for them.
+    @discardableResult
+    func moveAndVerify(
+        _ item: MenuBarItem,
+        toX destinationX: CGFloat,
+        using enumerator: ItemEnumerator
+    ) async throws -> MenuBarItem? {
+        try await move(item, toX: destinationX)
+        let landed = enumerator.enumerateItems().first { $0.id == item.id }
+        log.info("""
+            \(item.id, privacy: .public) requested x=\(Int(destinationX), privacy: .public), \
+            landed at \(landed?.frame.map { String(Int($0.minX)) } ?? "off-screen", privacy: .public)
+            """)
+        return landed
+    }
+}
+
 enum MoveError: Error, CustomStringConvertible {
     case notTrusted
     case itemOffScreen
@@ -52,6 +76,18 @@ struct CommandDragItemMover: ItemMover {
     private let dragSteps = 14
     private let stepDelay = Duration.milliseconds(8)
 
+    /// Vertical centre of the menu bar, in the top-left origin space `CGEvent` uses.
+    ///
+    /// `NSScreen` measures from the bottom, so the menu bar's height is what is left
+    /// over above `visibleFrame`. Falls back to a plausible value rather than refusing
+    /// to work if there is somehow no main screen.
+    @MainActor
+    private static var menuBarCentreY: CGFloat {
+        guard let screen = NSScreen.main else { return 12 }
+        let height = screen.frame.maxY - screen.visibleFrame.maxY
+        return height > 0 ? height / 2 : 12
+    }
+
     func move(_ item: MenuBarItem, toX destinationX: CGFloat) async throws {
         guard AccessibilityPermission.isGranted else { throw MoveError.notTrusted }
         guard let frame = item.frame, frame.width > 0 else { throw MoveError.itemOffScreen }
@@ -59,9 +95,25 @@ struct CommandDragItemMover: ItemMover {
             throw MoveError.noEventSource
         }
 
+        // Both coordinates come from the accessibility frame, including the vertical one
+        // — even though it looks wrong.
+        //
+        // Menu bar extras report a centre line around y = -47 on a display that AppKit
+        // describes as (0, 0, 1440, 900), so the obvious correction is to substitute the
+        // menu bar's own geometry, y = 15. That was tried, and it does not work: the
+        // drag is ignored. The accessibility value does work. `CGEvent` evidently reads
+        // the same space the accessibility API reports in, and it is not AppKit's.
+        //
+        // Whatever the offset is, it is consistent, and both sides of this transaction
+        // agree with each other. Do not "fix" this without a failing case to point at.
         let start = CGPoint(x: frame.midX, y: frame.midY)
         let end = CGPoint(x: destinationX, y: frame.midY)
         let cursorBefore = CGEvent(source: nil)?.location
+
+        log.info("""
+            CG display bounds \(String(describing: CGDisplayBounds(CGMainDisplayID())), privacy: .public), \
+            dragging at y=\(Int(frame.midY), privacy: .public)
+            """)
 
         log.info("""
             moving \(item.id, privacy: .public) \

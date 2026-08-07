@@ -6,6 +6,7 @@
 import AppKit
 import OSLog
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Held for the lifetime of the app. Releasing this removes the status item
@@ -15,18 +16,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let enumerator: ItemEnumerator = AXItemEnumerator()
     private let mover: ItemMover = CommandDragItemMover()
 
-    /// Bundle id the stage 3 spike tries to move. Any third-party item will do; this one
-    /// is simply always present on the machine being developed against.
-    private static let spikeTargetBundleID = "ru.keepcoder.Telegram"
+    /// Items the stage 4 check arranges behind the separator. Any third-party items will
+    /// do; these are simply the ones always present on the machine being developed
+    /// against. Stage 5 replaces this with real configuration.
+    private static let testSubjects = [
+        "ru.keepcoder.Telegram",
+        "com.anthropic.claudefordesktop",
+    ]
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         log.info("Cornice launched, build \(Bundle.main.shortVersion, privacy: .public)")
 
-        separator = SeparatorController(onClick: { [weak self] in
-            Task { await self?.runMoveSpike() }
-        })
+        separator = SeparatorController()
 
-        Task { await requestAccessibilityIfNeeded() }
+        Task { await start() }
     }
 
     /// Cornice has no windows to reopen, so clicking the app in Finder while it is
@@ -38,136 +41,207 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         false
     }
 
-    // MARK: - Stage 2
+    private func start() async {
+        guard AccessibilityPermission.isGranted else {
+            log.info("Accessibility missing, prompting")
+            AccessibilityPermission.request()
+            AccessibilityPermission.openSettings()
+            if await AccessibilityPermission.waitUntilGranted() {
+                log.info("Accessibility granted")
+                dumpMenuBar(reason: "granted")
+            } else {
+                log.error("Accessibility not granted within timeout")
+            }
+            return
+        }
 
-    private func requestAccessibilityIfNeeded() async {
-        // Written unconditionally, so that "no report" always means "the app did not
-        // start", never "the app started but took a branch I did not expect".
         dumpMenuBar(reason: "launch")
 
-        if AccessibilityPermission.isGranted {
-            log.info("Accessibility already granted")
-            // Stage 3 only: run the spike unattended so its verdict does not depend on
-            // someone clicking at the right moment. Removed once the answer is recorded.
-            if ProcessInfo.processInfo.environment["CORNICE_RUN_SPIKE"] != nil {
-                try? await Task.sleep(for: .seconds(2))
-                await runMoveSpike()
-            }
-            return
+        // Development only: run the stage check unattended so its result does not depend
+        // on someone clicking at the right moment. Goes away with the settings UI.
+        if ProcessInfo.processInfo.environment["CORNICE_RUN_TEST"] != nil {
+            try? await Task.sleep(for: .seconds(2))
+            await runHideCheck()
         }
-
-        log.info("Accessibility missing, prompting")
-        AccessibilityPermission.request()
-        AccessibilityPermission.openSettings()
-
-        if await AccessibilityPermission.waitUntilGranted() {
-            log.info("Accessibility granted")
-            dumpMenuBar(reason: "granted")
-        } else {
-            log.error("Accessibility not granted within timeout")
+        if ProcessInfo.processInfo.environment["CORNICE_RUN_DRAGTEST"] != nil {
+            try? await Task.sleep(for: .seconds(2))
+            await runIsolatedDragCheck()
         }
     }
 
-    // MARK: - Stage 3 spike
-
-    /// Answers the only question stage 3 exists to answer: can Cornice move somebody
-    /// else's status item on this version of macOS?
+    /// The smallest possible question: does a drag still move anything at all?
     ///
-    /// Measures the target's position, drags it to the far side of Cornice's own
-    /// separator, measures again, and records the verdict. A move that does not change
-    /// the ordering means the named-item design is not viable and the fallback is
-    /// positional hiding.
-    private func runMoveSpike() async {
+    /// Stage 3 proved it did. Stage 4 changed several things at once — the separator
+    /// gained an explicit width and alignment, the enumerator started discarding
+    /// zero-sized frames, and this class became `@MainActor` — and moves stopped
+    /// landing. This bisects all of that away: no separator, no destination arithmetic,
+    /// just an item and 100 points to the left.
+    private func runIsolatedDragCheck() async {
+        var report = "isolated drag check\n\n"
         let before = enumerator.enumerateItems()
 
-        guard let separatorItem = before.first(where: {
-            $0.ownerBundleID == Bundle.main.bundleIdentifier
-        }), let separatorFrame = separatorItem.frame else {
-            writeSpikeReport("FAILED: Cornice's own item is not on screen")
+        guard let target = before.first(where: {
+            $0.ownerBundleID == Self.testSubjects[0] && $0.frame != nil
+        }) ?? before.first(where: {
+            $0.frame != nil
+                && !$0.ownerBundleID.hasPrefix("com.apple")
+                && $0.ownerBundleID != Bundle.main.bundleIdentifier
+        }), let frame = target.frame else {
+            writeCheckReport(report + "no movable item on screen\n")
             return
         }
 
-        let target = before.first { $0.ownerBundleID == Self.spikeTargetBundleID }
-            ?? before.first {
-                $0.frame != nil
-                    && !$0.ownerBundleID.hasPrefix("com.apple")
-                    && $0.ownerBundleID != Bundle.main.bundleIdentifier
-            }
+        report += "target: \(target.id) at x=\(Int(frame.minX)) y=\(Int(frame.midY))\n"
+        report += "dragging 100pt left, to x=\(Int(frame.midX - 100))\n\n"
 
-        guard let target, let targetFrame = target.frame else {
-            writeSpikeReport("SKIPPED: no third-party item on screen to move")
-            return
-        }
-
-        // Always drag to the *opposite* side of the separator from wherever the item
-        // currently sits. Dragging towards a position it already occupies proves
-        // nothing, and an earlier version of this spike did exactly that and still
-        // reported success.
-        let startsLeftOfSeparator = targetFrame.minX < separatorFrame.minX
-        let destinationX = startsLeftOfSeparator
-            ? separatorFrame.maxX + 40
-            : separatorFrame.minX - 20
-
-        var report = """
-            stage 3 spike — synthetic command-drag
-            target:    \(target.id) [\(target.ownerName)]
-            before:    target x=\(Int(targetFrame.minX)), separator x=\(Int(separatorFrame.minX))
-            drag to:   x=\(Int(destinationX))
-
-            """
+        // Before anything else: does warping the pointer actually work? Every synthetic
+        // gesture is built on it, so if this is a no-op nothing above it can succeed.
+        let cursorStart = CGEvent(source: nil)?.location
+        CGWarpMouseCursorPosition(CGPoint(x: frame.midX, y: frame.midY))
+        try? await Task.sleep(for: .milliseconds(120))
+        let cursorWarped = CGEvent(source: nil)?.location
+        report += "cursor before warp: \(cursorStart.map { "(\(Int($0.x)), \(Int($0.y)))" } ?? "?")\n"
+        report += "cursor after warp:  \(cursorWarped.map { "(\(Int($0.x)), \(Int($0.y)))" } ?? "?")\n"
+        report += "warp target:        (\(Int(frame.midX)), \(Int(frame.midY)))\n\n"
 
         do {
-            try await mover.move(target, toX: destinationX)
+            try await mover.move(target, toX: frame.midX - 100)
         } catch {
-            writeSpikeReport(report + "\nFAILED: \(error)\n")
+            writeCheckReport(report + "threw: \(error)\n")
             return
         }
 
-        let after = enumerator.enumerateItems()
-        let movedTarget = after.first { $0.id == target.id }
-        let movedSeparator = after.first { $0.id == separatorItem.id }
-
-        let targetX = movedTarget?.frame?.minX
-        let separatorX = movedSeparator?.frame?.minX
-
-        report += """
-            after:     target x=\(targetX.map { String(Int($0)) } ?? "off-screen"), \
-            separator x=\(separatorX.map { String(Int($0)) } ?? "off-screen")
-
-            """
-
-        // The only question that matters: did *this* drag change the ordering relative
-        // to the separator? Absolute positions shift for unrelated reasons, so compare
-        // which side of the separator the item sits on, before against after.
-        let sideBefore = startsLeftOfSeparator
-        let sideAfter = targetX.map { x in (separatorX ?? separatorFrame.minX) > x }
-
-        switch sideAfter {
-        case .some(let after) where after != sideBefore:
-            report += "VERDICT: MOVED — crossed the separator "
-            report += "(\(sideBefore ? "left→right" : "right→left")). Named hiding is viable.\n"
-        case .some:
-            let drift = (targetX ?? targetFrame.minX) - targetFrame.minX
-            report += "VERDICT: NOT MOVED — same side of the separator, "
-            report += "drift \(Int(drift))px.\n"
-        case .none:
-            report += "VERDICT: UNKNOWN — target is no longer on screen.\n"
-        }
-
-        report += "\n--- menu bar after ---\n"
-        for item in after {
-            let position = item.frame.map { "x=\(Int($0.minX))" } ?? "off-screen"
-            report += "\(item.id)  [\(item.ownerName)]  \(position)\n"
-        }
-        writeSpikeReport(report)
+        let after = enumerator.enumerateItems().first { $0.id == target.id }
+        let newX = after?.frame?.minX
+        report += "after: x=\(newX.map { String(Int($0)) } ?? "off-screen")\n"
+        report += (newX != frame.minX)
+            ? "\nDRAG WORKS — position changed.\n"
+            : "\nDRAG DEAD — position unchanged.\n"
+        writeCheckReport(report)
     }
 
-    private func writeSpikeReport(_ text: String) {
+    // MARK: - Stage 4 check
+
+    /// Arranges a couple of items behind the separator, then hides and reveals them,
+    /// checking at each step that they actually left and returned.
+    ///
+    /// This is the first check that exercises what Cornice is for, and it deliberately
+    /// combines the two mechanisms: `ItemMover` puts items in place (needs Accessibility,
+    /// expected to break on macOS 27) and `SeparatorController` hides them (needs
+    /// nothing, expected to keep working). The second half passing while the first fails
+    /// is exactly the degradation ARCHITECTURE.md predicts.
+    private func runHideCheck() async {
+        var report = "stage 4 check — hide by widening the separator\n\n"
+
+        guard let separator else {
+            writeCheckReport(report + "FAILED: no separator\n")
+            return
+        }
+
+        // Start from a known state: everything visible.
+        separator.setHiding(false)
+        try? await Task.sleep(for: .milliseconds(400))
+
+        // 1. Move the subjects to the left of the separator, which is where "hidden"
+        //    physically means something.
+        for bundleID in Self.testSubjects {
+            let items = enumerator.enumerateItems()
+            guard let separatorFrame = separator.screenFrame else {
+                report += "separator has no window frame yet\n"
+                continue
+            }
+            guard let target = items.first(where: { $0.ownerBundleID == bundleID }),
+                  let targetFrame = target.frame else {
+                report += "skipped \(bundleID): not on screen\n"
+                continue
+            }
+            if targetFrame.minX < separatorFrame.minX {
+                report += "already behind: \(target.id) at x=\(Int(targetFrame.minX))\n"
+                continue
+            }
+            do {
+                let destination = separatorFrame.minX - 20
+                report += "  drag \(target.id): "
+                report += "from x=\(Int(targetFrame.minX)) (mid \(Int(targetFrame.midX)), "
+                report += "y \(Int(targetFrame.midY))) to x=\(Int(destination))\n"
+                let landed = try await mover.moveAndVerify(
+                    target, toX: destination, using: enumerator)
+                let landedX = landed?.frame?.minX
+                let ok = (landedX ?? .infinity) < separatorFrame.minX
+                report += ok ? "moved behind: " : "MOVE DID NOT LAND: "
+                report += "\(target.id) x=\(Int(targetFrame.minX)) → "
+                report += "\(landedX.map { String(Int($0)) } ?? "off-screen") "
+                report += "(separator was at \(Int(separatorFrame.minX)))\n"
+            } catch {
+                report += "move failed for \(target.id): \(error)\n"
+            }
+        }
+
+        let arranged = enumerator.enumerateItems()
+        let separatorX = separator.screenFrame?.minX ?? 0
+        let behind = arranged.filter {
+            guard let frame = $0.frame else { return false }
+            return $0.ownerBundleID != Bundle.main.bundleIdentifier && frame.minX < separatorX
+        }
+        report += "\nbehind the separator: \(behind.map(\.id).joined(separator: ", "))\n"
+
+        guard !behind.isEmpty else {
+            writeCheckReport(report + "\nINCONCLUSIVE: nothing ended up behind it\n")
+            return
+        }
+
+        // 2. Hide, and confirm they left the screen.
+        separator.setHiding(true)
+        try? await Task.sleep(for: .milliseconds(600))
+        let hidden = enumerator.enumerateItems()
+        let stillVisible = behind.filter { subject in
+            (hidden.first { $0.id == subject.id }?.frame?.minX ?? -.infinity) > 0
+        }
+        report += "\nafter hiding — still on screen: "
+        report += stillVisible.isEmpty ? "none\n" : "\(stillVisible.map(\.id))\n"
+
+        // 3. Reveal, and confirm they came back.
+        separator.setHiding(false)
+        try? await Task.sleep(for: .milliseconds(600))
+        let revealed = enumerator.enumerateItems()
+        let missing = behind.filter { subject in
+            (revealed.first { $0.id == subject.id }?.frame?.minX ?? -1) <= 0
+        }
+        report += "after revealing — still off screen: "
+        report += missing.isEmpty ? "none\n" : "\(missing.map(\.id))\n"
+
+        report += "\n"
+        if stillVisible.isEmpty && missing.isEmpty {
+            report += "VERDICT: WORKS — items left on hide and returned on reveal.\n"
+        } else if stillVisible.isEmpty {
+            report += "VERDICT: PARTIAL — hiding works, revealing does not.\n"
+        } else {
+            report += "VERDICT: BROKEN — widening the separator did not push items off.\n"
+        }
+
+        report += "\n--- menu bar, revealed (raw AX frames) ---\n"
+        for item in revealed {
+            report += "\(item.id)  [\(item.ownerName)]  "
+            report += item.frame.map {
+                "x=\(Int($0.minX)) y=\(Int($0.minY)) w=\(Int($0.width)) h=\(Int($0.height))"
+            } ?? "off-screen"
+            report += "\n"
+        }
+        if let screen = NSScreen.main {
+            report += "\nNSScreen.main.frame: \(screen.frame)\n"
+            report += "visibleFrame: \(screen.visibleFrame)\n"
+        }
+        writeCheckReport(report)
+    }
+
+    private func writeCheckReport(_ text: String) {
         log.info("\(text, privacy: .public)")
-        Self.writeReport(text, named: "spike.txt")
+        Self.writeReport(text, named: "check.txt")
     }
 
-    /// Stage 2 has no settings window yet, so the enumerated menu bar is written both to
+    // MARK: - Diagnostics
+
+    /// Stage 4 has no settings window yet, so the enumerated menu bar is written both to
     /// the unified log and to a plain text file.
     ///
     /// The file is redundant on a normal machine, but `log show` is not always reachable
@@ -182,9 +256,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "accessibility: \(AccessibilityPermission.isGranted)\n"
         report += "items: \(items.count)\n\n"
 
+        if let screen = NSScreen.main {
+            report += "screen: \(screen.frame)  visible: \(screen.visibleFrame)\n"
+        }
+        report += "separator (own window frame): "
+        report += separator?.screenFrame.map { "\($0)" } ?? "none"
+        report += "\n\n"
+
         for item in items {
-            let position = item.frame.map { String(format: "x=%.0f w=%.0f", $0.minX, $0.width) }
-                ?? "off-screen"
+            let position = item.frame.map {
+                String(format: "x=%.0f y=%.0f w=%.0f h=%.0f",
+                       $0.minX, $0.minY, $0.width, $0.height)
+            } ?? "off-screen"
             let line = "\(item.id)  [\(item.ownerName)]  \(item.title ?? "-")  \(position)"
             log.info("\(line, privacy: .public)")
             report += line + "\n"
@@ -203,7 +286,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             try text.write(to: directory.appendingPathComponent(filename),
                            atomically: true, encoding: .utf8)
         } catch {
-            log.error("could not write scan report: \(error.localizedDescription, privacy: .public)")
+            log.error("could not write report: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

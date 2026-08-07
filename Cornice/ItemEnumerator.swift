@@ -62,12 +62,20 @@ struct AXItemEnumerator: ItemEnumerator {
             }
 
             for (index, child) in children.enumerated() {
+                // An item macOS itself has hidden — Control Center's own toggles, say —
+                // still answers the accessibility query, but reports a zero-sized frame
+                // at the origin. It is not laid out anywhere, so treating that as a
+                // position invites nonsense: every such item compares as being further
+                // left than everything else. `nil` says what is actually true.
+                var frame = copyFrame(child)
+                if let box = frame, box.width <= 0 || box.height <= 0 { frame = nil }
+
                 items.append(MenuBarItem(
                     ownerBundleID: bundleID,
                     ownerName: app.localizedName ?? bundleID,
                     index: index,
                     title: copyString(child, attribute: kAXTitleAttribute),
-                    frame: copyFrame(child)))
+                    frame: frame))
             }
         }
 
