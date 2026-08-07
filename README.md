@@ -65,15 +65,23 @@ The affected code is isolated behind a single interface — see [ARCHITECTURE.md
 | Stage | Goal | Status |
 |-------|------|--------|
 | 0 | Toolchain, signing, stable code signature | ✅ done |
-| 1 | Empty signed app, one status item | in progress |
-| 2 | Accessibility, enumerate items by name | |
-| 3 | **Spike:** reposition an item | |
-| 4 | Separator, collapse and reveal | |
+| 1 | Empty signed app, one status item | ✅ done |
+| 2 | Accessibility, enumerate items by name | ✅ done |
+| 3 | **Spike:** reposition an item | ✅ **passed** |
+| 4 | Separator, collapse and reveal | next |
 | 5 | Three zones, hide-by-default, import from Bartender | |
 | 6 | Auto-collapse, launch at login | |
 
-Stage 3 is a go/no-go: if synthesising a ⌘-drag does not work, the named-item approach
-is not viable and the design falls back to positional hiding.
+Stage 3 was the go/no-go: if synthesising a ⌘-drag did not work, the named-item approach
+would not be viable and the design would fall back to positional hiding.
+
+**It works on macOS 26.5.** Three consecutive runs moved another application's status
+item across Cornice's separator and back, verified by comparing which side of the
+separator the item sat on before and after each drag. No Screen Recording needed — the
+events are addressed by screen position rather than by window id.
+
+This says nothing about macOS 27, where the gesture is expected to be claimed by
+Mission Control.
 
 ## Building
 

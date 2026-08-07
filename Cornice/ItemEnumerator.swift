@@ -29,12 +29,22 @@ enum EnumerationError: Error {
 /// this works as a source of truth even after Cornice has hidden things.
 struct AXItemEnumerator: ItemEnumerator {
 
+    /// Per-application budget for accessibility calls.
+    ///
+    /// The default is around six seconds, applied *per unanswered request*. An
+    /// application that is busy, paused in a debugger, or simply slow to service its
+    /// accessibility connection will therefore stall the whole scan, and a machine with
+    /// a few of those turns a scan into tens of seconds. Nothing here is worth waiting
+    /// for: an application that cannot answer promptly is treated as having no items.
+    private static let messagingTimeout: Float = 0.25
+
     func enumerateItems() -> [MenuBarItem] {
         guard AccessibilityPermission.isGranted else {
             log.error("enumerate called without Accessibility; returning empty")
             return []
         }
 
+        let started = ContinuousClock.now
         var items: [MenuBarItem] = []
 
         for app in NSWorkspace.shared.runningApplications {
@@ -43,6 +53,7 @@ struct AXItemEnumerator: ItemEnumerator {
             guard let bundleID = app.bundleIdentifier else { continue }
 
             let element = AXUIElementCreateApplication(app.processIdentifier)
+            AXUIElementSetMessagingTimeout(element, Self.messagingTimeout)
             guard let extras = copyElement(element, attribute: "AXExtrasMenuBar") else {
                 continue
             }
@@ -70,7 +81,11 @@ struct AXItemEnumerator: ItemEnumerator {
             }
         }
 
-        log.info("enumerated \(items.count, privacy: .public) menu bar items")
+        let elapsed = ContinuousClock.now - started
+        log.info("""
+            enumerated \(items.count, privacy: .public) menu bar items \
+            in \(elapsed.description, privacy: .public)
+            """)
         return items
     }
 
