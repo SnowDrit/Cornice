@@ -1,0 +1,94 @@
+# Cornice
+
+A free, open-source menu bar manager for macOS.
+
+A *cornice* is the horizontal moulding that runs along the top edge of a building.
+The menu bar is the cornice of your screen.
+
+> **Status: early development.** Nothing works yet. See [Roadmap](#roadmap).
+
+## Why
+
+Menu bar managers on macOS are in a bad way:
+
+- **Ice** (29k stars) — last stable release October 2024, repository untouched since
+  September 2025, 400+ open issues. Does not support macOS 26.
+- **SaneBar** — [sunset by its author on 1 July 2026](https://github.com/sane-apps/SaneBar/releases/tag/sunset)
+  and relicensed to MIT, because macOS 27 breaks it.
+- **Bartender** — commercial, and its macOS 27 build is an early technical preview
+  with most features not yet restored.
+
+Apple provides **no public API** for managing other applications' menu bar items.
+Every tool in this category is built on accessibility APIs and undocumented behaviour,
+and every macOS release moves the ground.
+
+Cornice does not try to be another full clone. It implements one thing well, and it is
+deliberately built so that the fragile part is small and replaceable.
+
+## What it does
+
+- Hide menu bar items you don't need right now; click to reveal them
+- Three zones — **Visible**, **Hidden**, **Always Hidden**
+- **Hide by default**: newly installed apps are hidden automatically, so the menu bar
+  does not creep back over time
+- Auto-collapse after the pointer leaves
+- Launch at login
+
+## What it deliberately does not do
+
+No second menu bar, no screen capture, no widgets, no triggers, no profiles, no menu bar
+styling, no per-icon hotkeys. Those features are what make the other tools large, and
+they are the first things to break.
+
+## Requirements
+
+- macOS 26 (Tahoe) or later, Apple Silicon
+- Accessibility permission (required to enumerate and reposition items)
+- **No** Screen Recording permission — item icons come from the owning application,
+  not from screenshots
+
+## Known limitation: macOS 27
+
+Repositioning another application's menu bar item is done by synthesising a ⌘-drag.
+On macOS 27 "Golden Gate" that gesture is intercepted by Mission Control, and Apple has
+published no replacement API
+([developer forums](https://developer.apple.com/forums/thread/832823)).
+
+When that lands, **changing** your configuration will stop working. Items already
+arranged will keep hiding and revealing normally, because that path uses only Cornice's
+own status items and requires no permissions at all.
+
+The affected code is isolated behind a single interface — see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Roadmap
+
+| Stage | Goal | Status |
+|-------|------|--------|
+| 0 | Toolchain, signing, stable code signature | ✅ done |
+| 1 | Empty signed app, one status item | in progress |
+| 2 | Accessibility, enumerate items by name | |
+| 3 | **Spike:** reposition an item | |
+| 4 | Separator, collapse and reveal | |
+| 5 | Three zones, hide-by-default, import from Bartender | |
+| 6 | Auto-collapse, launch at login | |
+
+Stage 3 is a go/no-go: if synthesising a ⌘-drag does not work, the named-item approach
+is not viable and the design falls back to positional hiding.
+
+## Building
+
+```bash
+git clone https://github.com/SnowDrit/Cornice.git
+cd Cornice
+open Cornice.xcodeproj
+```
+
+Set your own signing team in the target settings. A real signing certificate (not
+ad-hoc) is needed, otherwise macOS revokes the Accessibility permission on every rebuild.
+
+## License
+
+GPL-3.0. See [LICENSE](LICENSE).
+
+Cornice studies [Ice](https://github.com/jordanbaird/Ice) (GPL-3.0) as a reference for
+menu bar item manipulation. GPL-3.0 keeps that relationship unambiguous.
