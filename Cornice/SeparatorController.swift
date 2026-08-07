@@ -24,7 +24,12 @@ final class SeparatorController: NSObject {
     /// visibly doing something.
     private var isCollapsed = false
 
-    override init() {
+    /// Called after each click. Stage 2 uses it to re-read the menu bar; stage 4 will
+    /// replace it with the actual collapse.
+    private let onClick: () -> Void
+
+    init(onClick: @escaping () -> Void = {}) {
+        self.onClick = onClick
         item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         super.init()
 
@@ -49,6 +54,7 @@ final class SeparatorController: NSObject {
         isCollapsed.toggle()
         updateIcon()
         log.info("separator clicked, collapsed=\(self.isCollapsed, privacy: .public)")
+        onClick()
     }
 
     private func updateIcon() {

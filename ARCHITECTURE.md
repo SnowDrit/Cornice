@@ -109,3 +109,11 @@ removed several of them. Fewer mechanisms means fewer ways to die.
 - A rebuild that changes the code signature causes macOS to revoke Accessibility. A real
   signing certificate keeps the designated requirement stable across rebuilds; ad-hoc
   signing does not.
+- **The target must not be sandboxed.** Xcode's macOS app template sets
+  `ENABLE_APP_SANDBOX = YES`, and it is easy to miss: there is no `.entitlements` file in
+  the source tree and no literal "Sandbox" string in the project to grep for. A sandboxed
+  build still reports `AXIsProcessTrusted() == true` once the user grants the permission,
+  and still enumerates — but sees only its own status item, which reads exactly like a
+  bug in the enumeration code. Check the shipped signature, not the project:
+
+      codesign -d --entitlements - /path/to/Cornice.app
