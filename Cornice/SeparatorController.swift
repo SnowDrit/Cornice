@@ -125,6 +125,14 @@ final class SeparatorController: NSObject {
         // obeys `alignment`, so a trailing-aligned title stays at the item's right edge
         // whatever its width. It is also how Bartender's own separators are built: they
         // enumerate with titles like "❮", never images.
+        // Alignment for an attributed string comes from its paragraph style, not from
+        // the button's `alignment`. Setting only the latter leaves the glyph centred
+        // across the item's whole width — which, expanded, puts it around x=577, in the
+        // middle of the application menus, where it is invisible against them. That is
+        // why the chevron kept "disappearing" while its item was demonstrably laid out.
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .right
+
         let glyph = isHiding ? "❮" : "❯"
         item.button?.image = nil
         item.button?.attributedTitle = NSAttributedString(
@@ -132,6 +140,7 @@ final class SeparatorController: NSObject {
             attributes: [
                 .font: NSFont.systemFont(ofSize: 13, weight: .medium),
                 .foregroundColor: NSColor.labelColor,
+                .paragraphStyle: paragraph,
             ])
     }
 

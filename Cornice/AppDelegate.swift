@@ -171,7 +171,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         separator.setHiding(false)
         try? await Task.sleep(for: .milliseconds(500))
         let boundary = separator.boundaryFrame
-        let visible = enumerator.enumerateItems().filter { $0.frame != nil }
+        let visible = enumerator.enumerateItems().filter { ($0.frame?.minX ?? -1) >= 0 }
         report += "boundary while revealed: \(boundary.map { "\($0)" } ?? "not laid out")\n"
         report += "on screen before: \(visible.count)\n"
         for item in visible {
@@ -183,20 +183,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "\nboundary while hiding: "
         report += separator.boundaryFrame.map { "\($0)" } ?? "NO WINDOW — item dropped"
         report += "\n"
-        let afterHide = enumerator.enumerateItems().filter { $0.frame != nil }
+        // "Gone" means pushed past the left edge, not absent. A hidden item keeps
+        // answering the accessibility query and keeps a frame — with a large negative x,
+        // exactly as Bartender's hidden items do. Checking only for presence therefore
+        // reports nothing hidden while the screen plainly shows otherwise, which is what
+        // it did.
+        let afterHide = enumerator.enumerateItems()
         let vanished = visible.filter { subject in
-            !afterHide.contains { $0.id == subject.id }
+            let x = afterHide.first { $0.id == subject.id }?.frame?.minX
+            return x == nil || x! < 0
         }
-        report += "\non screen after hiding: \(afterHide.count)\n"
+        report += "\non screen after hiding: \(afterHide.filter { ($0.frame?.minX ?? -1) >= 0 }.count)\n"
         report += "vanished: \(vanished.isEmpty ? "nothing" : vanished.map(\.id).joined(separator: ", "))\n"
 
         separator.setHiding(false)
         try? await Task.sleep(for: .milliseconds(800))
-        let afterReveal = enumerator.enumerateItems().filter { $0.frame != nil }
+        let afterReveal = enumerator.enumerateItems()
         let returned = vanished.filter { subject in
-            afterReveal.contains { $0.id == subject.id }
+            (afterReveal.first { $0.id == subject.id }?.frame?.minX ?? -1) >= 0
         }
-        report += "on screen after revealing: \(afterReveal.count)\n"
+        report += "on screen after revealing: \(afterReveal.filter { ($0.frame?.minX ?? -1) >= 0 }.count)\n"
         report += "came back: \(returned.count) of \(vanished.count)\n\n"
 
         if vanished.isEmpty {

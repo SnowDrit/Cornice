@@ -68,8 +68,8 @@ The affected code is isolated behind a single interface — see [ARCHITECTURE.md
 | 1 | Empty signed app, one status item | ✅ done |
 | 2 | Accessibility, enumerate items by name | ✅ done |
 | 3 | **Spike:** reposition an item | ✅ **passed** |
-| 4 | Separator, collapse and reveal | next |
-| 5 | Three zones, hide-by-default, import from Bartender | |
+| 4 | Separator, collapse and reveal | ✅ **done** |
+| 5 | Three zones, hide-by-default, import from Bartender | next |
 | 6 | Auto-collapse, launch at login | |
 
 Stage 3 was the go/no-go: if synthesising a ⌘-drag did not work, the named-item approach
