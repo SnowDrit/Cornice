@@ -106,9 +106,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         separator?.contextMenu = menu
     }
 
+    private let settingsWindow = SettingsWindowController()
+
     @objc private func openSettings() {
-        NSApp.activate(ignoringOtherApps: true)
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        settingsWindow.show(SettingsView(arrangement: currentArrangement))
     }
 
     @objc private func quit() {

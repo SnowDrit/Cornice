@@ -30,6 +30,9 @@ final class Preferences {
             Key.autoCollapse: false,
             Key.autoCollapseDelay: 0.4,
             Key.startHidden: true,
+            Key.dividerThickness: 1.5,
+            Key.dividerHeight: 14.0,
+            Key.toggleSymbol: ToggleSymbol.chevron.rawValue,
         ])
     }
 
@@ -38,6 +41,58 @@ final class Preferences {
         static let autoCollapseDelay = "autoCollapseDelay"
         static let startHidden = "startHidden"
         static let wasHiding = "wasHiding"
+        static let dividerThickness = "dividerThickness"
+        static let dividerHeight = "dividerHeight"
+        static let toggleSymbol = "toggleSymbol"
+    }
+
+    /// Which pair of glyphs the toggle uses. The pair matters, not the single icon: it
+    /// has to point one way while hiding and the other while revealing.
+    enum ToggleSymbol: String, CaseIterable, Identifiable {
+        case chevron, chevronCompact, arrow, triangle, sidebar
+
+        var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .chevron:        "Chevron"
+            case .chevronCompact: "Chevron, compact"
+            case .arrow:          "Arrow"
+            case .triangle:       "Triangle"
+            case .sidebar:        "Sidebar"
+            }
+        }
+
+        func symbolName(hiding: Bool) -> String {
+            switch self {
+            case .chevron:        hiding ? "chevron.left" : "chevron.right"
+            case .chevronCompact: hiding ? "chevron.compact.left" : "chevron.compact.right"
+            case .arrow:          hiding ? "arrow.left" : "arrow.right"
+            case .triangle:       hiding ? "arrowtriangle.left.fill" : "arrowtriangle.right.fill"
+            case .sidebar:        hiding ? "sidebar.left" : "sidebar.right"
+            }
+        }
+    }
+
+    /// Width of the bar drawn for the divider, in points.
+    var dividerThickness: Double {
+        get { access(keyPath: \.dividerThickness); return defaults.double(forKey: Key.dividerThickness) }
+        set { withMutation(keyPath: \.dividerThickness) { defaults.set(newValue, forKey: Key.dividerThickness) } }
+    }
+
+    /// How tall the divider is. Shorter reads as a hairline, taller as a wall.
+    var dividerHeight: Double {
+        get { access(keyPath: \.dividerHeight); return defaults.double(forKey: Key.dividerHeight) }
+        set { withMutation(keyPath: \.dividerHeight) { defaults.set(newValue, forKey: Key.dividerHeight) } }
+    }
+
+    var toggleSymbol: ToggleSymbol {
+        get {
+            access(keyPath: \.toggleSymbol)
+            let raw = defaults.string(forKey: Key.toggleSymbol) ?? ""
+            return ToggleSymbol(rawValue: raw) ?? .chevron
+        }
+        set { withMutation(keyPath: \.toggleSymbol) { defaults.set(newValue.rawValue, forKey: Key.toggleSymbol) } }
     }
 
     /// Put the icons away again once the pointer leaves the menu bar.

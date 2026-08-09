@@ -49,9 +49,12 @@ final class SeparatorController: NSObject {
     private let boundary: NSStatusItem
 
     /// The chevron. Never resized, so it draws like any other status icon.
-    private let toggle: NSStatusItem
+    private var toggle: NSStatusItem
 
     private let onToggle: (Bool) -> Void
+    private var pinTimer: Timer?
+    private var lastPinnedAt = Date.distantPast
+    private var expectedToggleX: CGFloat?
 
     /// Where the toggle starts out on a first run, measured from the right-hand end of
     /// the bar. Zero asks for the rightmost slot macOS will give a third-party item.
@@ -101,7 +104,69 @@ final class SeparatorController: NSObject {
 
         updateIcon()
 
+        // Watch for the toggle being dragged, and put it back.
+        //
+        // Detection compares the item's *observed* position against where it was last
+        // seen sitting correctly — not the value in defaults. macOS writes an item's
+        // real position back to that key as it lays out, so comparing against the key
+        // sees a difference immediately after writing one, rebuilds, and never stops.
+        // That loop is how the chevron disappeared entirely, twice.
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(2))
+            expectedToggleX = controlFrame?.minX
+            pinTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+                Task { @MainActor in self?.pinToggle() }
+            }
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                Task { @MainActor in self?.refreshAppearance() }
+            }
+
         log.info("separator installed")
+    }
+
+    deinit {
+        pinTimer?.invalidate()
+    }
+
+    private func pinToggle() {
+        guard !isHiding,
+              let expected = expectedToggleX,
+              let current = controlFrame?.minX
+        else { return }
+
+        guard abs(current - expected) > 10 else { return }
+        guard Date().timeIntervalSince(lastPinnedAt) > 3 else { return }
+        lastPinnedAt = Date()
+
+        log.info("""
+            toggle moved from \(Int(expected), privacy: .public) \
+            to \(Int(current), privacy: .public); putting it back
+            """)
+
+        // Remove before creating: two items sharing an autosave name fight over one
+        // stored position and the newcomer can end up with none at all.
+        NSStatusBar.system.removeStatusItem(toggle)
+        UserDefaults.standard.set(Self.togglePosition, forKey: Self.togglePositionKey)
+
+        let replacement = NSStatusBar.system.statusItem(withLength: Self.toggleWidth)
+        replacement.autosaveName = "CorniceToggle"
+        replacement.button?.target = self
+        replacement.button?.action = #selector(buttonClicked)
+        replacement.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        toggle = replacement
+        updateIcon()
+
+        // Learn where it actually landed, so the next comparison is against reality
+        // rather than against the number that was asked for.
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(400))
+            expectedToggleX = controlFrame?.minX
+        }
     }
 
     /// Where the boundary sits, in screen coordinates, or `nil` before layout.
@@ -158,22 +223,35 @@ final class SeparatorController: NSObject {
         // Points towards where the hidden items are: left when they are off-screen and a
         // click would bring them back, right when they are visible and a click puts them
         // away again.
-        let symbol = isHiding ? "chevron.left" : "chevron.right"
+        let symbol = Preferences.shared.toggleSymbol.symbolName(hiding: isHiding)
         let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Cornice")
         image?.isTemplate = true   // adopts the menu bar's light/dark appearance
         toggle.button?.image = image
     }
 
+    /// Redraws both glyphs from the current preferences.
+    ///
+    /// Driven by `UserDefaults.didChangeNotification` rather than by the settings window
+    /// calling back, so appearance follows the stored value however it was changed —
+    /// including from the command line, which is how it gets tested.
+    func refreshAppearance() {
+        boundary.button?.image = Self.boundaryImage()
+        updateIcon()
+    }
+
     /// A thin vertical bar, drawn rather than taken from SF Symbols so its weight does
     /// not change with the system's symbol styling.
     private static func boundaryImage() -> NSImage {
-        let size = NSSize(width: boundaryWidth, height: 14)
+        let thickness = CGFloat(Preferences.shared.dividerThickness)
+        let height = CGFloat(Preferences.shared.dividerHeight)
+        let size = NSSize(width: boundaryWidth, height: height)
         let image = NSImage(size: size)
         image.lockFocus()
         NSColor.black.setFill()
         NSBezierPath(
-            roundedRect: NSRect(x: size.width / 2 - 0.75, y: 0, width: 1.5, height: size.height),
-            xRadius: 0.75, yRadius: 0.75).fill()
+            roundedRect: NSRect(
+                x: (size.width - thickness) / 2, y: 0, width: thickness, height: height),
+            xRadius: thickness / 2, yRadius: thickness / 2).fill()
         image.unlockFocus()
         image.isTemplate = true
         return image

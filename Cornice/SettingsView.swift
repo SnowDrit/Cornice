@@ -28,9 +28,10 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             behaviour.tabItem { Label("Behaviour", systemImage: "slider.horizontal.3") }
+            appearance.tabItem { Label("Appearance", systemImage: "paintbrush") }
             arrangementList.tabItem { Label("Menu Bar", systemImage: "menubar.rectangle") }
         }
-        .frame(width: 460, height: 380)
+        .frame(width: 470, height: 400)
         .task { snapshot = arrangement() }
     }
 
@@ -65,6 +66,51 @@ struct SettingsView: View {
                             launchAtLogin = LaunchAtLogin.isEnabled
                         }
                     }
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private var appearance: some View {
+        Form {
+            Section("Divider") {
+                LabeledContent("Thickness") {
+                    HStack {
+                        Slider(value: $preferences.dividerThickness, in: 0.5...5, step: 0.5)
+                        Text("\(preferences.dividerThickness, specifier: "%.1f")")
+                            .monospacedDigit()
+                            .frame(width: 32, alignment: .trailing)
+                    }
+                }
+                LabeledContent("Height") {
+                    HStack {
+                        Slider(value: $preferences.dividerHeight, in: 4...20, step: 1)
+                        Text("\(Int(preferences.dividerHeight))")
+                            .monospacedDigit()
+                            .frame(width: 32, alignment: .trailing)
+                    }
+                }
+                // Drawn at the real size so the sliders can be judged by eye rather than
+                // by number; the menu bar is small and 2 points is a visible difference.
+                LabeledContent("Preview") {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 4).fill(.quaternary)
+                        Capsule()
+                            .frame(
+                                width: preferences.dividerThickness,
+                                height: preferences.dividerHeight)
+                    }
+                    .frame(width: 60, height: 24)
+                }
+            }
+            Section("Toggle") {
+                Picker("Symbol", selection: $preferences.toggleSymbol) {
+                    ForEach(Preferences.ToggleSymbol.allCases) { symbol in
+                        Label(symbol.label, systemImage: symbol.symbolName(hiding: false))
+                            .tag(symbol)
+                    }
+                }
+                .pickerStyle(.inline)
             }
         }
         .formStyle(.grouped)
