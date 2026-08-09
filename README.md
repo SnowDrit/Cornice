@@ -28,11 +28,14 @@ deliberately built so that the fragile part is small and replaceable.
 ## What it does
 
 - Hide menu bar items you don't need right now; click to reveal them
-- Three zones — **Visible**, **Hidden**, **Always Hidden**
-- **Hide by default**: newly installed apps are hidden automatically, so the menu bar
-  does not creep back over time
-- Auto-collapse after the pointer leaves
+- You place the divider by ⌘-dragging it; everything to its left hides
+- Auto-collapse once the pointer leaves the menu bar
 - Launch at login
+- A settings window that lists what is currently hidden, by name
+
+Cornice does **not** move other applications' icons for you. It cannot: the only
+mechanism for that is a synthesised ⌘-drag, which is unreliable today and is being
+removed in macOS 27. Placing the divider is a one-off, and it is done by hand.
 
 ## What it deliberately does not do
 
@@ -69,8 +72,8 @@ The affected code is isolated behind a single interface — see [ARCHITECTURE.md
 | 2 | Accessibility, enumerate items by name | ✅ done |
 | 3 | **Spike:** reposition an item | ✅ **passed** |
 | 4 | Separator, collapse and reveal | ✅ **done** |
-| 5 | Three zones, hide-by-default, import from Bartender | next |
-| 6 | Auto-collapse, launch at login | |
+| 5 | Settings, auto-collapse, launch at login | ✅ done |
+| 6 | Second divider for Always Hidden | later |
 
 Stage 3 was the go/no-go: if synthesising a ⌘-drag did not work, the named-item approach
 would not be viable and the design would fall back to positional hiding.

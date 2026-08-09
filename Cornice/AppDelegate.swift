@@ -24,12 +24,107 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         "com.anthropic.claudefordesktop",
     ]
 
+    private var pointerWatcher: Timer?
+    private var leftMenuBarAt: Date?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         log.info("Cornice launched, build \(Bundle.main.shortVersion, privacy: .public)")
 
-        separator = SeparatorController()
+        let separator = SeparatorController { hiding in
+            Preferences.shared.wasHiding = hiding
+        }
+        self.separator = separator
+
+        installMenu()
+
+        // Restore what the user left, unless they asked for a fixed starting state.
+        let preferences = Preferences.shared
+        let shouldHide = preferences.startHidden || preferences.wasHiding
+        if shouldHide {
+            // Only after the bar has settled: the separator needs a position before it
+            // can work out how wide to become.
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(600))
+                separator.setHiding(true)
+            }
+        }
+
+        startWatchingPointer()
 
         Task { await start() }
+    }
+
+    /// Puts the icons away again once the pointer has left the menu bar.
+    ///
+    /// Polled rather than observed. A global event monitor would do it, but that is
+    /// precisely the mechanism Apple has told developers not to rely on for status items
+    /// — and this is the daily path, the half of Cornice that is meant to keep working.
+    /// Five samples a second costs nothing and depends on nothing.
+    private func startWatchingPointer() {
+        pointerWatcher = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.checkPointer() }
+        }
+    }
+
+    private func checkPointer() {
+        let preferences = Preferences.shared
+        guard preferences.autoCollapse,
+              let separator, !separator.isHiding,
+              let screen = NSScreen.main
+        else {
+            leftMenuBarAt = nil
+            return
+        }
+
+        let pointer = NSEvent.mouseLocation
+        let menuBarBottom = screen.frame.maxY - (screen.frame.maxY - screen.visibleFrame.maxY)
+        let inMenuBar = pointer.y >= menuBarBottom
+
+        if inMenuBar {
+            leftMenuBarAt = nil
+            return
+        }
+        guard let since = leftMenuBarAt else {
+            leftMenuBarAt = Date()
+            return
+        }
+        if Date().timeIntervalSince(since) >= preferences.autoCollapseDelay {
+            leftMenuBarAt = nil
+            separator.setHiding(true)
+        }
+    }
+
+    /// Right-click opens this; left-click toggles. Kept to two items because an agent
+    /// with no Dock icon still needs a way to reach its settings and to quit.
+    private func installMenu() {
+        let menu = NSMenu()
+        menu.addItem(withTitle: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+            .target = self
+        menu.addItem(.separator())
+        menu.addItem(withTitle: "Quit Cornice", action: #selector(quit), keyEquivalent: "q")
+            .target = self
+        separator?.contextMenu = menu
+    }
+
+    @objc private func openSettings() {
+        NSApp.activate(ignoringOtherApps: true)
+        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+    }
+
+    @objc private func quit() {
+        NSApp.terminate(nil)
+    }
+
+    /// What the settings window lists. Split at the boundary rather than by any stored
+    /// configuration, because the arrangement *is* the configuration.
+    func currentArrangement() -> SettingsView.Arrangement {
+        let boundary = separator?.controlFrame?.minX ?? 0
+        let items = enumerator.enumerateItems().filter {
+            $0.ownerBundleID != Bundle.main.bundleIdentifier
+        }
+        return SettingsView.Arrangement(
+            visible: items.filter { ($0.frame?.minX ?? -1) >= boundary },
+            hidden: items.filter { ($0.frame?.minX ?? -1) < boundary })
     }
 
     /// Cornice has no windows to reopen, so clicking the app in Finder while it is

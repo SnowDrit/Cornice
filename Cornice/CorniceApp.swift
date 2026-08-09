@@ -11,12 +11,10 @@ struct CorniceApp: App {
 
     var body: some Scene {
         // Cornice is a menu bar agent: it has no main window and no Dock icon
-        // (see INFOPLIST_KEY_LSUIElement in the build settings).
-        //
-        // SwiftUI still requires at least one scene, so this is an empty
-        // Settings scene for now. The real settings UI arrives in stage 5.
+        // (see INFOPLIST_KEY_LSUIElement in the build settings). The settings window is
+        // the only window it ever shows, and only when asked.
         Settings {
-            EmptyView()
+            SettingsView(arrangement: appDelegate.currentArrangement)
         }
     }
 }

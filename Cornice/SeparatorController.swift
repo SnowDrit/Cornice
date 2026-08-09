@@ -79,6 +79,7 @@ final class SeparatorController: NSObject {
         }
         button.target = self
         button.action = #selector(buttonClicked)
+        button.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
         updateIcon()
         log.info("separator installed")
@@ -215,7 +216,19 @@ final class SeparatorController: NSObject {
         }
     }
 
+    /// Shown on right-click. An agent with no Dock icon has no other way to reach its
+    /// settings or to quit.
+    var contextMenu: NSMenu?
+
     @objc private func buttonClicked() {
+        // Right-click opens the menu, left-click toggles. Attaching the menu to the item
+        // permanently would swallow the left click too, which is the one that matters.
+        if NSApp.currentEvent?.type == .rightMouseUp, let contextMenu {
+            control.menu = contextMenu
+            control.button?.performClick(nil)
+            control.menu = nil
+            return
+        }
         toggle()
     }
 }
