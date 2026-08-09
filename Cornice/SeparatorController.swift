@@ -49,9 +49,16 @@ final class SeparatorController: NSObject {
     private let boundary: NSStatusItem
 
     /// The chevron. Never resized, so it draws like any other status icon.
-    private let toggle: NSStatusItem
+    private var toggle: NSStatusItem
 
     private let onToggle: (Bool) -> Void
+    private var pinTimer: Timer?
+
+    /// Placement for the toggle, measured from the right-hand end of the bar. Zero asks
+    /// for the rightmost slot macOS will give a third-party item — the system's own,
+    /// like the clock and Control Center, always sit further right than that.
+    private static let togglePosition = 0.0
+    private static let togglePositionKey = "NSStatusItem Preferred Position CorniceToggle"
 
     private(set) var isHiding = false
 
@@ -62,6 +69,7 @@ final class SeparatorController: NSObject {
     init(onToggle: @escaping (Bool) -> Void = { _ in }) {
         self.onToggle = onToggle
 
+        UserDefaults.standard.set(Self.togglePosition, forKey: Self.togglePositionKey)
         toggle = NSStatusBar.system.statusItem(withLength: Self.toggleWidth)
         boundary = NSStatusBar.system.statusItem(withLength: Self.boundaryWidth)
         super.init()
@@ -82,7 +90,46 @@ final class SeparatorController: NSObject {
         button.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
         updateIcon()
+
+        // The toggle's position carries no meaning, so letting it be dragged only
+        // invites the question of what dragging it does. macOS offers no way to refuse
+        // the gesture; putting the item back is the closest thing, and it is safe here
+        // precisely because nothing depends on where this one sits. The boundary is the
+        // opposite case and is never touched.
+        pinTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.pinToggle() }
+        }
+
         log.info("separator installed")
+    }
+
+    deinit {
+        pinTimer?.invalidate()
+    }
+
+    /// Rebuilds the toggle if it has been dragged out of its slot.
+    ///
+    /// Rebuilding rather than nudging, because macOS reads the saved position when the
+    /// item is created and at no other time — changing its width does not make it look
+    /// again, which is how an earlier version left a dragged item exactly where it had
+    /// been dropped.
+    private func pinToggle() {
+        let stored = UserDefaults.standard.double(forKey: Self.togglePositionKey)
+        guard stored != Self.togglePosition else { return }
+
+        log.info("toggle was moved to \(stored, privacy: .public); putting it back")
+        UserDefaults.standard.set(Self.togglePosition, forKey: Self.togglePositionKey)
+
+        let old = toggle
+        toggle = NSStatusBar.system.statusItem(withLength: Self.toggleWidth)
+        toggle.autosaveName = "CorniceToggle"
+        if let button = toggle.button {
+            button.target = self
+            button.action = #selector(buttonClicked)
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        }
+        updateIcon()
+        NSStatusBar.system.removeStatusItem(old)
     }
 
     /// Where the boundary sits, in screen coordinates, or `nil` before layout.

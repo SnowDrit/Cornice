@@ -21,8 +21,13 @@ final class Preferences {
 
     private init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        // Auto-collapse is off until asked for. On by default it reads as a bug: the
+        // icons are revealed, the pointer moves away, and half a second later they are
+        // gone again — which looks exactly like the toggle working only every other
+        // press. Bartender's 0.4 seconds is kept as the default *delay*, but it belongs
+        // to a hover interaction, not to a click.
         defaults.register(defaults: [
-            Key.autoCollapse: true,
+            Key.autoCollapse: false,
             Key.autoCollapseDelay: 0.4,
             Key.startHidden: true,
         ])

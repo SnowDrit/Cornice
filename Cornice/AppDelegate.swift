@@ -264,6 +264,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let separator else { return }
         var report = "hide-only check\n\n"
 
+        // Auto-collapse would put the icons straight back while this is measuring, and
+        // the reveal would read as a failure. It did, for one round of debugging.
+        let wasAutoCollapsing = Preferences.shared.autoCollapse
+        Preferences.shared.autoCollapse = false
+        defer { Preferences.shared.autoCollapse = wasAutoCollapsing }
+
         separator.setHiding(false)
         try? await Task.sleep(for: .milliseconds(500))
         let boundary = separator.boundaryFrame
@@ -299,6 +305,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let returned = vanished.filter { subject in
             (afterReveal.first { $0.id == subject.id }?.frame?.minX ?? -1) >= 0
         }
+        report += "geometry revealed again: \(separator.geometry)\n"
         report += "on screen after revealing: \(afterReveal.filter { ($0.frame?.minX ?? -1) >= 0 }.count)\n"
         report += "came back: \(returned.count) of \(vanished.count)\n\n"
 
