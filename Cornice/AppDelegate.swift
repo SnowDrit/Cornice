@@ -146,7 +146,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         //    physically means something.
         for bundleID in Self.testSubjects {
             let items = enumerator.enumerateItems()
-            guard let separatorFrame = separator.screenFrame else {
+            guard let separatorFrame = separator.boundaryFrame else {
                 report += "separator has no window frame yet\n"
                 continue
             }
@@ -178,7 +178,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let arranged = enumerator.enumerateItems()
-        let separatorX = separator.screenFrame?.minX ?? 0
+        let separatorX = separator.boundaryFrame?.minX ?? 0
         let behind = arranged.filter {
             guard let frame = $0.frame else { return false }
             return $0.ownerBundleID != Bundle.main.bundleIdentifier && frame.minX < separatorX
@@ -260,7 +260,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             report += "screen: \(screen.frame)  visible: \(screen.visibleFrame)\n"
         }
         report += "separator (own window frame): "
-        report += separator?.screenFrame.map { "\($0)" } ?? "none"
+        report += separator?.boundaryFrame.map { "\($0)" } ?? "none"
         report += "\n\n"
 
         for item in items {
