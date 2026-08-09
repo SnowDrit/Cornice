@@ -102,7 +102,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let cursorWarped = CGEvent(source: nil)?.location
         report += "cursor before warp: \(cursorStart.map { "(\(Int($0.x)), \(Int($0.y)))" } ?? "?")\n"
         report += "cursor after warp:  \(cursorWarped.map { "(\(Int($0.x)), \(Int($0.y)))" } ?? "?")\n"
-        report += "warp target:        (\(Int(frame.midX)), \(Int(frame.midY)))\n\n"
+        report += "warp target:        (\(Int(frame.midX)), \(Int(frame.midY)))\n"
+        report += "left button held:   "
+        report += "\(CGEventSource.buttonState(.combinedSessionState, button: .left))\n\n"
 
         do {
             try await mover.move(target, toX: frame.midX - 100)

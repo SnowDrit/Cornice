@@ -120,9 +120,33 @@ struct CommandDragItemMover: ItemMover {
             from x=\(start.x, privacy: .public) to x=\(end.x, privacy: .public)
             """)
 
+        // Clear any button the system still believes is held.
+        //
+        // A drag that is interrupted between its press and its release — a hang, a
+        // crash, a cancelled task — leaves the session thinking the left button is
+        // down. Every subsequent synthetic drag is then ignored, silently and
+        // permanently, until something releases it. That is not a hypothetical: it is
+        // how this stopped working.
+        if CGEventSource.buttonState(.combinedSessionState, button: .left) {
+            log.error("left button was stuck down; releasing before dragging")
+            post(.leftMouseUp, at: CGEvent(source: nil)?.location ?? start, source: source)
+            try? await Task.sleep(for: .milliseconds(80))
+        }
+
         // The cursor has to be where the press happens; the menu bar tracks the pointer,
         // not just the event stream.
         CGWarpMouseCursorPosition(start)
+
+        // Actually hold ⌘, rather than only flagging the mouse events.
+        //
+        // Tagging each mouse event with `.maskCommand` describes the modifier without
+        // setting it: the session's global modifier state stays clear, so anything that
+        // consults it — as the menu bar's rearrange gesture appears to — sees no ⌘ at
+        // all. A real key event is the difference between the drag being honoured and
+        // being silently ignored, which is exactly how a working drag stopped working.
+        setCommandKey(down: true, source: source)
+        try? await Task.sleep(for: .milliseconds(40))
+        defer { setCommandKey(down: false, source: source) }
 
         post(.leftMouseDown, at: start, source: source)
         for step in 1...dragSteps {
@@ -141,6 +165,22 @@ struct CommandDragItemMover: ItemMover {
 
         // Let the menu bar settle before anyone re-reads positions.
         try? await Task.sleep(for: .milliseconds(250))
+    }
+
+    /// Virtual key code for the left Command key.
+    private static let commandKeyCode: CGKeyCode = 0x37
+
+    private func setCommandKey(down: Bool, source: CGEventSource) {
+        guard let event = CGEvent(
+            keyboardEventSource: source,
+            virtualKey: Self.commandKeyCode,
+            keyDown: down)
+        else {
+            log.error("could not create ⌘ key event")
+            return
+        }
+        event.flags = down ? .maskCommand : []
+        event.post(tap: .cghidEventTap)
     }
 
     private func post(_ type: CGEventType, at point: CGPoint, source: CGEventSource) {
