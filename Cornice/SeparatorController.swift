@@ -68,10 +68,18 @@ final class SeparatorController: NSObject {
     init(onToggle: @escaping (Bool) -> Void = { _ in }) {
         self.onToggle = onToggle
 
-        // Only as a starting point, and only if the user has never placed it.
-        if UserDefaults.standard.object(forKey: Self.togglePositionKey) == nil {
-            UserDefaults.standard.set(Self.togglePosition, forKey: Self.togglePositionKey)
-        }
+        // Put the toggle back at the right-hand end on every launch.
+        //
+        // Only here, and only before the item exists. Doing it while running means
+        // destroying and recreating a status item from a timer, against a position macOS
+        // is writing to at the same time — that was tried twice and lost the chevron
+        // outright both times. Written once at startup it is just the value the item is
+        // created with, which is the one moment the system reads it.
+        //
+        // So the toggle can be dragged anywhere during a session and comes back on the
+        // next launch. Its position carries no meaning either way: the boundary stands
+        // on its own, and where the switch sits changes nothing.
+        UserDefaults.standard.set(Self.togglePosition, forKey: Self.togglePositionKey)
         toggle = NSStatusBar.system.statusItem(withLength: Self.toggleWidth)
         boundary = NSStatusBar.system.statusItem(withLength: Self.boundaryWidth)
         super.init()
