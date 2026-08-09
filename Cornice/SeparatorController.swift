@@ -13,26 +13,30 @@ import OSLog
 /// somebody else's item; what there is, is an item wide enough to leave them nowhere
 /// to sit. Everything to its left goes past the edge of the screen.
 ///
-/// Two items, each with exactly one job:
+/// Two items, each with one job:
 ///
-///     [ hidden items ][ spacer — grows ][ ❯ control ][ visible items ]
+///     [ hidden items ][ | divider — grows ][ ❯ control ][ visible items ]
 ///
-/// The control is **never** resized. It stays 28 points wide, so its chevron draws like
-/// any other status icon, and it is the thing the user drags to choose where the
-/// boundary goes. The spacer does the widening and shows nothing, so having no visible
-/// content is not a defect.
+/// The control is never resized, so its chevron draws like any other status icon, and it
+/// is what the user drags to choose where the boundary goes. The divider does the
+/// widening. It is *visible* — a thin bar — because an invisible one is worse than a
+/// second visible one: it can still be found by feel and moved with a ⌘-drag, and once
+/// moved the chevron silently stops hiding anything.
 ///
-/// One item cannot do both. Six attempts were made to keep a chevron visible on an item
-/// that widens — centring the image, padding it to the item's width, disabling image
-/// scaling, a right-aligned title, a paragraph style, and finally a hand-positioned
-/// subview — and the last of these measured correct while still drawing nothing:
+/// The divider cannot be made undraggable; macOS offers no way to opt out of that
+/// gesture. It can be made not to *stay* moved, which comes to the same thing from the
+/// outside: its position is sampled and it is put back beside the control.
 ///
-///     length=1218  buttonBounds=1218  window=1234  chevronX=1190
+/// One item cannot do both jobs. Six attempts were made to keep a chevron visible on an
+/// item that widens, and the last measured correct while still drawing nothing —
+/// `length=1218 buttonBounds=1218 chevronX=1190`, a glyph well inside the screen. macOS
+/// appears not to render an item too wide for the bar at all: laid out for spacing,
+/// skipped for display.
 ///
-/// A glyph 28 points from the trailing edge of a 1218 point button lands on screen. It
-/// was not drawn, which points at macOS declining to render an item too wide for the
-/// bar at all: laid out for spacing, skipped for display. Nothing about the drawing code
-/// was going to change that.
+/// Creating the divider only while hiding was tried too, to keep the bar tidy, and it
+/// loses a race: the position written before creation is read at creation, and macOS may
+/// then reapply the previous session's saved position afterwards, which is what made
+/// icons vanish and come straight back.
 ///
 /// Because it depends on nothing undocumented, this is also the part expected to survive
 /// future macOS releases untouched. Keep it that way: no `CGEvent`, no `AXUIElement`,
@@ -41,37 +45,33 @@ import OSLog
 final class SeparatorController: NSObject {
 
     private static let controlWidth: CGFloat = 28
-
-    /// Not zero: an item with no width can be dropped from the layout altogether, and
-    /// then there is no boundary to hide things behind.
-    private static let spacerCollapsedWidth: CGFloat = 1
+    private static let dividerWidth: CGFloat = 10
 
     private let control: NSStatusItem
+    private var divider: NSStatusItem
     private let onToggle: (Bool) -> Void
+    private var keepAdjacent: Timer?
 
-    /// Exists only while hiding.
-    ///
-    /// Keeping it around permanently, even one point wide and disabled, put a second
-    /// draggable thing in the menu bar: findable by feel, movable with ⌘-drag, and once
-    /// moved away from the control the chevron stopped hiding anything. Two objects
-    /// where the user thinks there is one is a design fault, not a rough edge. Created
-    /// on hide and destroyed on reveal, there is nothing to find.
-    private var spacer: NSStatusItem?
-
-    /// `true` when items to the left of the spacer are pushed off-screen.
-    ///
-    /// Starts `false` deliberately. A fresh install has no configuration, and coming up
-    /// already hiding would make Cornice's first act be to remove menu bar items the
-    /// user never asked it to touch. Stage 5 restores the saved state instead.
+    /// `true` when items to the left of the divider are pushed off-screen.
     private(set) var isHiding = false
+
+    /// Shown on right-click. An agent with no Dock icon has no other way to reach its
+    /// settings or to quit.
+    var contextMenu: NSMenu?
 
     init(onToggle: @escaping (Bool) -> Void = { _ in }) {
         self.onToggle = onToggle
 
+        // Control first so the divider is inserted to its left, which is the side the
+        // hidden items live on.
         control = NSStatusBar.system.statusItem(withLength: Self.controlWidth)
+        divider = NSStatusBar.system.statusItem(withLength: Self.dividerWidth)
         super.init()
 
         control.autosaveName = "CorniceControl"
+        divider.autosaveName = "CorniceDivider"
+        divider.button?.isEnabled = false
+        divider.button?.image = Self.dividerImage()
 
         guard let button = control.button else {
             log.error("status item has no button; menu bar may be full")
@@ -82,23 +82,29 @@ final class SeparatorController: NSObject {
         button.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
         updateIcon()
+
+        // There is no notification for a status item being dragged, so the divider's
+        // position is sampled. Twice a second is well under the rate anyone drags
+        // something and costs nothing measurable.
+        keepAdjacent = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.restoreDividerPosition() }
+        }
+
         log.info("separator installed")
     }
 
-    /// Where the boundary between hidden and visible sits, in screen coordinates, or
-    /// `nil` before the items have been laid out.
+    deinit {
+        keepAdjacent?.invalidate()
+    }
+
+    /// Where the boundary sits, in screen coordinates, or `nil` before layout.
     ///
     /// Read from the item's own window rather than through the accessibility API. Asking
     /// AX about an element in one's *own* process returns coordinates in a different
     /// space from the ones it reports for other applications — this item described
-    /// itself as `x=7 y=888` while genuinely sitting near x=935. Cornice owns it; there
-    /// is no reason to ask anybody where it is.
+    /// itself as `x=7 y=888` while genuinely sitting near x=935.
     var boundaryFrame: CGRect? {
-        guard let frame = spacer?.button?.window?.frame, frame.width > 0 else {
-            // While revealed there is no spacer; the control's own left edge is where
-            // the boundary would be.
-            return controlFrame
-        }
+        guard let frame = divider.button?.window?.frame, frame.width > 0 else { return nil }
         return frame
     }
 
@@ -108,12 +114,9 @@ final class SeparatorController: NSObject {
 
     var geometry: String {
         let controlX: String = controlFrame.map { String(Int($0.minX)) } ?? "?"
-        var spacerSpan = "none"
-        if let frame = spacer?.button?.window?.frame {
-            spacerSpan = "\(Int(frame.minX))..\(Int(frame.maxX))"
-        }
-        let length: String = spacer.map { String(Int($0.length)) } ?? "-"
-        return "control=\(controlX) spacer=\(spacerSpan) spacerLength=\(length)"
+        var span = "?"
+        if let frame = boundaryFrame { span = "\(Int(frame.minX))..\(Int(frame.maxX))" }
+        return "control=\(controlX) divider=\(span) dividerLength=\(Int(divider.length))"
     }
 
     // MARK: - State
@@ -131,23 +134,14 @@ final class SeparatorController: NSObject {
     }
 
     private func apply() {
-        if isHiding {
-            installSpacer()
-        } else if let spacer {
-            // Narrow first, and only remove once the bar has settled.
-            //
-            // Narrowing is what actually brings the icons back: they slide into the
-            // space it gives up. Removing the item does not do that — it makes macOS
-            // rebuild the bar from scratch, and the icons that were pushed off simply
-            // stayed off. So the width change has to happen first and be given time to
-            // take effect; the removal afterwards is housekeeping nobody is waiting on,
-            // and it is what keeps a stray draggable object out of the menu bar.
-            spacer.length = Self.spacerCollapsedWidth
-            self.spacer = nil
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(1500))
-                NSStatusBar.system.removeStatusItem(spacer)
-            }
+        // Width is measured from the *control*, not from the divider. The divider does
+        // not always sit exactly beside it, and sized against its own edge one item is
+        // left stranded on the visible side — which reads as "the icon next to the arrow
+        // never hides".
+        if isHiding, let controlLeft = controlFrame?.minX, controlLeft > 0 {
+            divider.length = controlLeft + 40
+        } else {
+            divider.length = Self.dividerWidth
         }
         updateIcon()
     }
@@ -162,71 +156,79 @@ final class SeparatorController: NSObject {
         control.button?.image = image
     }
 
-    /// Creates the spacer immediately to the left of the control, and widens it.
+    /// Puts the divider back beside the control if it has been dragged away.
     ///
-    /// `NSStatusItem` offers no way to say "put this next to that", but macOS stores each
-    /// item's placement under `NSStatusItem Preferred Position <autosaveName>` in the
-    /// owning application's defaults, measured from the right-hand end of the bar.
-    /// Bartender's own saved values read that way: 213, 249, 5297, 10351, 15367, with the
-    /// gaps matching the widths of the 5002-point separators between them. The spacer's
-    /// place is therefore the control's, and writing it before the item exists is what
-    /// makes it land there — the value is read at creation.
-    private func installSpacer() {
-        guard let screen = NSScreen.main, let controlFrame else { return }
+    /// macOS stores each item's placement under `NSStatusItem Preferred Position
+    /// <autosaveName>` in the owning application's defaults, measured from the
+    /// right-hand end of the bar. Bartender's own saved values read that way — 213, 249,
+    /// 5297, 10351, 15367, the gaps matching its 5002-point separators.
+    private func restoreDividerPosition() {
+        guard !isHiding,
+              let screen = NSScreen.main,
+              let controlFrame,
+              let dividerFrame = boundaryFrame
+        else { return }
 
+        // Already adjacent, within rounding.
+        if abs(dividerFrame.maxX - controlFrame.minX) < 6 { return }
+
+        // Written from the control's position each time, not corrected iteratively.
+        // Feeding the observed error back was tried and diverged — the stored value and
+        // the resulting position are not the same scale — and the divider ended up at
+        // the far left of the bar. This lands it within a few tens of points, which is
+        // close enough for the width, computed from the control, to cover the gap.
         UserDefaults.standard.set(
             screen.frame.maxX - controlFrame.minX,
-            forKey: "NSStatusItem Preferred Position CorniceSpacer")
+            forKey: "NSStatusItem Preferred Position CorniceDivider")
+        log.info("""
+            divider drifted to \(Int(dividerFrame.minX), privacy: .public), \
+            control at \(Int(controlFrame.minX), privacy: .public); rebuilding it
+            """)
 
-        let item = NSStatusBar.system.statusItem(withLength: Self.spacerCollapsedWidth)
-        item.autosaveName = "CorniceSpacer"
-        item.button?.isEnabled = false
-        spacer = item
-
-        // Widen only once it has been placed. Its own left edge decides how much width
-        // is needed, and asking for more than the bar can hold makes macOS stop drawing
-        // the item entirely — so the position has to be real before it is used.
-        //
-        // A freshly created status item does not have a positioned window yet, and a
-        // single turn of the run loop is not always enough: the first attempt read a
-        // left edge of zero and skipped the widening, leaving a one point spacer that
-        // hid nothing. Poll briefly instead of assuming.
-        // Width is measured from the *control*, not from the spacer.
-        //
-        // The spacer does not always land immediately beside the control — macOS may
-        // place it a slot further left, leaving one item stranded between the two. Sized
-        // against the spacer's own edge, that item is to the right of the boundary and
-        // stays put, which reads as "the icon next to the arrow never hides". Sized
-        // against the control, everything to the control's left is pushed off however
-        // the spacer happened to be placed.
-        let target = controlFrame.minX + 40
-        Task { @MainActor in
-            for _ in 0..<20 {
-                if let left = item.button?.window?.frame.minX, left > 0 {
-                    item.length = target
-                    log.info("""
-                        spacer placed at \(Int(left), privacy: .public), \
-                        width \(Int(target), privacy: .public)
-                        """)
-                    return
-                }
-                try? await Task.sleep(for: .milliseconds(50))
-            }
-            log.error("spacer never got a position; nothing will hide")
-        }
+        // The position is read when the item is created, and only then. Changing its
+        // width does not make macOS look at the value again — that was tried, and the
+        // divider stayed where it had been dragged. So the item is replaced.
+        let old = divider
+        divider = makeDivider()
+        NSStatusBar.system.removeStatusItem(old)
     }
 
-    /// Shown on right-click. An agent with no Dock icon has no other way to reach its
-    /// settings or to quit.
-    var contextMenu: NSMenu?
+    private func makeDivider() -> NSStatusItem {
+        let item = NSStatusBar.system.statusItem(withLength: Self.dividerWidth)
+        item.autosaveName = "CorniceDivider"
+        // Not a button: clicks on the divider should do nothing at all, so there is only
+        // ever one thing to press.
+        item.button?.isEnabled = false
+        item.button?.image = Self.dividerImage()
+        return item
+    }
+
+    /// A thin vertical bar, drawn rather than taken from SF Symbols so its weight does
+    /// not change with the system's symbol styling.
+    private static func dividerImage() -> NSImage {
+        let size = NSSize(width: dividerWidth, height: 14)
+        let image = NSImage(size: size)
+        image.lockFocus()
+        NSColor.black.setFill()
+        NSBezierPath(
+            roundedRect: NSRect(x: size.width / 2 - 0.75, y: 0, width: 1.5, height: size.height),
+            xRadius: 0.75, yRadius: 0.75).fill()
+        image.unlockFocus()
+        image.isTemplate = true
+        return image
+    }
 
     @objc private func buttonClicked() {
         // Right-click opens the menu, left-click toggles. Attaching the menu to the item
         // permanently would swallow the left click too, which is the one that matters.
-        if NSApp.currentEvent?.type == .rightMouseUp, let contextMenu {
-            control.menu = contextMenu
-            control.button?.performClick(nil)
-            control.menu = nil
+        //
+        // Shown directly rather than by assigning `control.menu` and calling
+        // `performClick`: that re-enters this same handler, and the menu never appeared.
+        if NSApp.currentEvent?.type == .rightMouseUp, let contextMenu, let button = control.button {
+            contextMenu.popUp(
+                positioning: nil,
+                at: NSPoint(x: 0, y: button.bounds.minY - 4),
+                in: button)
             return
         }
         toggle()
