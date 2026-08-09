@@ -59,6 +59,13 @@ final class SeparatorController: NSObject {
         button.target = self
         button.action = #selector(buttonClicked)
 
+        // Without this the button scales the image to fit its content area. That is
+        // harmless at 28 points wide and fatal at 1600: the padded image is squeezed
+        // down until the chevron is a fraction of a point across — present, addressable,
+        // and invisible. The item's own frame proved it was laid out correctly the whole
+        // time; only the drawing was wrong.
+        button.imageScaling = .scaleNone
+
         apply()
         log.info("separator installed")
     }

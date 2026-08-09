@@ -180,6 +180,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         separator.setHiding(true)
         try? await Task.sleep(for: .milliseconds(800))
+        report += "\nboundary while hiding: "
+        report += separator.boundaryFrame.map { "\($0)" } ?? "NO WINDOW — item dropped"
+        report += "\n"
         let afterHide = enumerator.enumerateItems().filter { $0.frame != nil }
         let vanished = visible.filter { subject in
             !afterHide.contains { $0.id == subject.id }
