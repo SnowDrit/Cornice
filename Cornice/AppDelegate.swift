@@ -67,6 +67,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             try? await Task.sleep(for: .seconds(2))
             await runIsolatedDragCheck()
         }
+        if ProcessInfo.processInfo.environment["CORNICE_RUN_HIDEONLY"] != nil {
+            try? await Task.sleep(for: .seconds(2))
+            await runHideOnlyCheck()
+        }
     }
 
     /// The smallest possible question: does a drag still move anything at all?
@@ -152,6 +156,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         report += "\nDRAG DEAD in every configuration tried.\n"
+        writeCheckReport(report)
+    }
+
+    /// Does widening the separator hide anything?
+    ///
+    /// Takes the arrangement as it finds it — wherever the user has dragged the chevron
+    /// — and only toggles. No moves, so nothing here depends on the broken mechanism.
+    /// This is the whole of stage 4 as a question.
+    private func runHideOnlyCheck() async {
+        guard let separator else { return }
+        var report = "hide-only check\n\n"
+
+        separator.setHiding(false)
+        try? await Task.sleep(for: .milliseconds(500))
+        let boundary = separator.boundaryFrame
+        let visible = enumerator.enumerateItems().filter { $0.frame != nil }
+        report += "boundary: \(boundary.map { "x=\(Int($0.minX))" } ?? "not laid out")\n"
+        report += "on screen before: \(visible.count)\n"
+        for item in visible {
+            report += "  \(item.id) x=\(Int(item.frame!.minX))\n"
+        }
+
+        separator.setHiding(true)
+        try? await Task.sleep(for: .milliseconds(800))
+        let afterHide = enumerator.enumerateItems().filter { $0.frame != nil }
+        let vanished = visible.filter { subject in
+            !afterHide.contains { $0.id == subject.id }
+        }
+        report += "\non screen after hiding: \(afterHide.count)\n"
+        report += "vanished: \(vanished.isEmpty ? "nothing" : vanished.map(\.id).joined(separator: ", "))\n"
+
+        separator.setHiding(false)
+        try? await Task.sleep(for: .milliseconds(800))
+        let afterReveal = enumerator.enumerateItems().filter { $0.frame != nil }
+        let returned = vanished.filter { subject in
+            afterReveal.contains { $0.id == subject.id }
+        }
+        report += "on screen after revealing: \(afterReveal.count)\n"
+        report += "came back: \(returned.count) of \(vanished.count)\n\n"
+
+        if vanished.isEmpty {
+            report += "NOTHING HIDDEN — either the separator has nothing to its left, "
+            report += "or widening does not push items off.\n"
+        } else if returned.count == vanished.count {
+            report += "HIDING WORKS — \(vanished.count) items left and all came back.\n"
+        } else {
+            report += "PARTIAL — \(vanished.count) hidden, only \(returned.count) returned.\n"
+        }
         writeCheckReport(report)
     }
 
@@ -294,9 +346,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let screen = NSScreen.main {
             report += "screen: \(screen.frame)  visible: \(screen.visibleFrame)\n"
         }
-        report += "separator (own window frame): "
-        report += separator?.boundaryFrame.map { "\($0)" } ?? "none"
-        report += "\n\n"
+        report += "spacer  (boundary): \(separator?.boundaryFrame.map { "\($0)" } ?? "none")\n"
+        report += "control (chevron): \("(same item)")\n"
+        report += "hiding: \(separator?.isHiding.description ?? "?")\n\n"
 
         for item in items {
             let position = item.frame.map {
