@@ -53,6 +53,7 @@ final class SeparatorController: NSObject {
 
     private let onToggle: (Bool) -> Void
     private var pinTimer: Timer?
+    private var lastPinnedAt = Date.distantPast
 
     /// Placement for the toggle, measured from the right-hand end of the bar. Zero asks
     /// for the rightmost slot macOS will give a third-party item — the system's own,
@@ -114,13 +115,23 @@ final class SeparatorController: NSObject {
     /// again, which is how an earlier version left a dragged item exactly where it had
     /// been dropped.
     private func pinToggle() {
+        // A rebuild is not free and must not be able to run back-to-back. macOS writes
+        // the item's real position back to the same key as it lays out, so a naive
+        // comparison sees a difference again immediately and rebuilds forever — which is
+        // how the toggle managed to disappear altogether.
+        guard Date().timeIntervalSince(lastPinnedAt) > 3 else { return }
+
         let stored = UserDefaults.standard.double(forKey: Self.togglePositionKey)
-        guard stored != Self.togglePosition else { return }
+        guard abs(stored - Self.togglePosition) > 1 else { return }
+        lastPinnedAt = Date()
 
         log.info("toggle was moved to \(stored, privacy: .public); putting it back")
+
+        // Remove before creating. Two items sharing an autosave name fight over the same
+        // stored position, and the newcomer can end up with none at all.
+        NSStatusBar.system.removeStatusItem(toggle)
         UserDefaults.standard.set(Self.togglePosition, forKey: Self.togglePositionKey)
 
-        let old = toggle
         toggle = NSStatusBar.system.statusItem(withLength: Self.toggleWidth)
         toggle.autosaveName = "CorniceToggle"
         if let button = toggle.button {
@@ -129,7 +140,6 @@ final class SeparatorController: NSObject {
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
         }
         updateIcon()
-        NSStatusBar.system.removeStatusItem(old)
     }
 
     /// Where the boundary sits, in screen coordinates, or `nil` before layout.
