@@ -106,27 +106,52 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "left button held:   "
         report += "\(CGEventSource.buttonState(.combinedSessionState, button: .left))\n\n"
 
-        report += "main thread at call site: \(Thread.isMainThread)\n\n"
-
-        // Run the drag off the main thread. Stage 3 drove it from a background task and
-        // it worked; this class later became `@MainActor`, and the only other change to
-        // the mover was diagnostics. Detaching is the one difference left to test.
-        let mover = self.mover
-        do {
-            try await Task.detached(priority: .userInitiated) {
-                try await mover.move(target, toX: frame.midX - 100)
-            }.value
-        } catch {
-            writeCheckReport(report + "threw: \(error)\n")
-            return
+        // Sweep the menu bar vertically instead of testing one guess per rebuild.
+        //
+        // The accessibility frame puts the item's centre at a negative y, which the
+        // system clamps to 0 — the very top row of pixels. Whether that row is live is
+        // not something to reason about; four attempts across the bar's height answer it
+        // outright, and a working value identifies itself by the item moving.
+        var current = frame
+        let attempts: [(String, CGFloat, CGEventTapLocation)] = [
+            ("hid   y=ax", frame.midY, .cghidEventTap),
+            ("hid   y=15", 15, .cghidEventTap),
+            ("session y=ax", frame.midY, .cgSessionEventTap),
+            ("session y=15", 15, .cgSessionEventTap),
+        ]
+        for (label, candidateY, candidateTap) in attempts {
+            var attempt = CommandDragItemMover()
+            attempt.yOverride = candidateY
+            attempt.tap = candidateTap
+            let from = current.midX
+            let to = from - 60
+            do {
+                try await attempt.move(
+                    MenuBarItem(ownerBundleID: target.ownerBundleID,
+                                ownerName: target.ownerName,
+                                index: target.index,
+                                title: target.title,
+                                frame: current),
+                    toX: to)
+            } catch {
+                report += "\(label): threw \(error)\n"
+                continue
+            }
+            let after = enumerator.enumerateItems().first { $0.id == target.id }
+            let newX = after?.frame?.minX
+            let moved = newX != current.minX
+            report += "\(label): \(Int(from)) → \(Int(to)) "
+            report += "landed \(newX.map { String(Int($0)) } ?? "off-screen") "
+            report += moved ? "MOVED\n" : "no change\n"
+            if moved, let after, let newFrame = after.frame {
+                report += "\nDRAG WORKS — \(label)\n"
+                writeCheckReport(report)
+                return
+            }
+            if let after, let f = after.frame { current = f }
         }
 
-        let after = enumerator.enumerateItems().first { $0.id == target.id }
-        let newX = after?.frame?.minX
-        report += "after: x=\(newX.map { String(Int($0)) } ?? "off-screen")\n"
-        report += (newX != frame.minX)
-            ? "\nDRAG WORKS — position changed.\n"
-            : "\nDRAG DEAD — position unchanged.\n"
+        report += "\nDRAG DEAD in every configuration tried.\n"
         writeCheckReport(report)
     }
 

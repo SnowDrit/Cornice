@@ -73,8 +73,15 @@ struct CommandDragItemMover: ItemMover {
 
     /// A single jump from press to release is often not recognised as a drag; the
     /// intermediate points are what make the system treat it as one.
-    private let dragSteps = 14
-    private let stepDelay = Duration.milliseconds(8)
+    ///
+    /// The count has to follow the distance rather than being fixed. With a constant
+    /// number of steps a longer drag simply moves faster, and past some speed the menu
+    /// bar stops following it — a short swap between neighbours would succeed while a
+    /// drag across a few items did nothing at all, with no error either way. Roughly one
+    /// step every few points keeps the pointer speed constant however far it travels.
+    private let pointsPerStep: CGFloat = 4
+    private let minimumSteps = 12
+    private let stepDelay = Duration.milliseconds(10)
 
     /// Vertical centre of the menu bar, in the top-left origin space `CGEvent` uses.
     ///
@@ -87,6 +94,17 @@ struct CommandDragItemMover: ItemMover {
         let height = screen.frame.maxY - screen.visibleFrame.maxY
         return height > 0 ? height / 2 : 12
     }
+
+    /// Overrides the vertical position of the synthesised gesture. Diagnostics only.
+    var yOverride: CGFloat?
+
+    /// Where synthesised events are injected.
+    ///
+    /// `.cghidEventTap` enters the stream as though from the hardware, ahead of every
+    /// tap in the session; `.cgSessionEventTap` enters at the session level instead.
+    /// Consumers do not all read from the same point, so which one works is a question
+    /// about the consumer, not about the events.
+    var tap: CGEventTapLocation = .cghidEventTap
 
     func move(_ item: MenuBarItem, toX destinationX: CGFloat) async throws {
         guard AccessibilityPermission.isGranted else { throw MoveError.notTrusted }
@@ -106,8 +124,9 @@ struct CommandDragItemMover: ItemMover {
         //
         // Whatever the offset is, it is consistent, and both sides of this transaction
         // agree with each other. Do not "fix" this without a failing case to point at.
-        let start = CGPoint(x: frame.midX, y: frame.midY)
-        let end = CGPoint(x: destinationX, y: frame.midY)
+        let y = yOverride ?? frame.midY
+        let start = CGPoint(x: frame.midX, y: y)
+        let end = CGPoint(x: destinationX, y: y)
         let cursorBefore = CGEvent(source: nil)?.location
 
         log.info("""
@@ -148,9 +167,12 @@ struct CommandDragItemMover: ItemMover {
         try? await Task.sleep(for: .milliseconds(40))
         defer { setCommandKey(down: false, source: source) }
 
+        let steps = max(minimumSteps, Int(abs(end.x - start.x) / pointsPerStep))
+        log.info("dragging in \(steps, privacy: .public) steps")
+
         post(.leftMouseDown, at: start, source: source)
-        for step in 1...dragSteps {
-            let t = CGFloat(step) / CGFloat(dragSteps)
+        for step in 1...steps {
+            let t = CGFloat(step) / CGFloat(steps)
             let point = CGPoint(x: start.x + (end.x - start.x) * t, y: start.y)
             CGWarpMouseCursorPosition(point)
             post(.leftMouseDragged, at: point, source: source)
@@ -180,7 +202,7 @@ struct CommandDragItemMover: ItemMover {
             return
         }
         event.flags = down ? .maskCommand : []
-        event.post(tap: .cghidEventTap)
+        event.post(tap: tap)
     }
 
     private func post(_ type: CGEventType, at point: CGPoint, source: CGEventSource) {
@@ -195,6 +217,6 @@ struct CommandDragItemMover: ItemMover {
         }
         // ⌘ is what distinguishes "rearrange the menu bar" from "click this item".
         event.flags = .maskCommand
-        event.post(tap: .cghidEventTap)
+        event.post(tap: tap)
     }
 }
