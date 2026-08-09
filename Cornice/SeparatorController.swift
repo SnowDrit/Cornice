@@ -132,9 +132,21 @@ final class SeparatorController: NSObject {
     private func apply() {
         if isHiding {
             installSpacer()
-        } else {
-            if let spacer { NSStatusBar.system.removeStatusItem(spacer) }
-            spacer = nil
+        } else if let spacer {
+            // Narrow first, and only remove once the bar has settled.
+            //
+            // Narrowing is what actually brings the icons back: they slide into the
+            // space it gives up. Removing the item does not do that — it makes macOS
+            // rebuild the bar from scratch, and the icons that were pushed off simply
+            // stayed off. So the width change has to happen first and be given time to
+            // take effect; the removal afterwards is housekeeping nobody is waiting on,
+            // and it is what keeps a stray draggable object out of the menu bar.
+            spacer.length = Self.spacerCollapsedWidth
+            self.spacer = nil
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(1500))
+                NSStatusBar.system.removeStatusItem(spacer)
+            }
         }
         updateIcon()
     }
@@ -178,13 +190,22 @@ final class SeparatorController: NSObject {
         // single turn of the run loop is not always enough: the first attempt read a
         // left edge of zero and skipped the widening, leaving a one point spacer that
         // hid nothing. Poll briefly instead of assuming.
+        // Width is measured from the *control*, not from the spacer.
+        //
+        // The spacer does not always land immediately beside the control — macOS may
+        // place it a slot further left, leaving one item stranded between the two. Sized
+        // against the spacer's own edge, that item is to the right of the boundary and
+        // stays put, which reads as "the icon next to the arrow never hides". Sized
+        // against the control, everything to the control's left is pushed off however
+        // the spacer happened to be placed.
+        let target = controlFrame.minX + 40
         Task { @MainActor in
             for _ in 0..<20 {
                 if let left = item.button?.window?.frame.minX, left > 0 {
-                    item.length = left + 40
+                    item.length = target
                     log.info("""
                         spacer placed at \(Int(left), privacy: .public), \
-                        width \(Int(left + 40), privacy: .public)
+                        width \(Int(target), privacy: .public)
                         """)
                     return
                 }

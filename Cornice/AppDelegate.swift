@@ -199,7 +199,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "vanished: \(vanished.isEmpty ? "nothing" : vanished.map(\.id).joined(separator: ", "))\n"
 
         separator.setHiding(false)
-        try? await Task.sleep(for: .milliseconds(800))
+        try? await Task.sleep(for: .seconds(3))
         let afterReveal = enumerator.enumerateItems()
         let returned = vanished.filter { subject in
             (afterReveal.first { $0.id == subject.id }?.frame?.minX ?? -1) >= 0
