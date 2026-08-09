@@ -106,8 +106,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "left button held:   "
         report += "\(CGEventSource.buttonState(.combinedSessionState, button: .left))\n\n"
 
+        report += "main thread at call site: \(Thread.isMainThread)\n\n"
+
+        // Run the drag off the main thread. Stage 3 drove it from a background task and
+        // it worked; this class later became `@MainActor`, and the only other change to
+        // the mover was diagnostics. Detaching is the one difference left to test.
+        let mover = self.mover
         do {
-            try await mover.move(target, toX: frame.midX - 100)
+            try await Task.detached(priority: .userInitiated) {
+                try await mover.move(target, toX: frame.midX - 100)
+            }.value
         } catch {
             writeCheckReport(report + "threw: \(error)\n")
             return
