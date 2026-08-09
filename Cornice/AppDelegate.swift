@@ -172,7 +172,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         try? await Task.sleep(for: .milliseconds(500))
         let boundary = separator.boundaryFrame
         let visible = enumerator.enumerateItems().filter { $0.frame != nil }
-        report += "boundary: \(boundary.map { "x=\(Int($0.minX))" } ?? "not laid out")\n"
+        report += "boundary while revealed: \(boundary.map { "\($0)" } ?? "not laid out")\n"
         report += "on screen before: \(visible.count)\n"
         for item in visible {
             report += "  \(item.id) x=\(Int(item.frame!.minX))\n"
@@ -347,8 +347,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "items: \(items.count)\n\n"
 
         if let screen = NSScreen.main {
-            report += "screen: \(screen.frame)  visible: \(screen.visibleFrame)\n"
+            report += "NSScreen.frame:   \(screen.frame)\n"
+            report += "NSScreen.visible: \(screen.visibleFrame)\n"
+            report += "NSScreen.backingScaleFactor: \(screen.backingScaleFactor)\n"
         }
+        report += "CGDisplayBounds:  \(CGDisplayBounds(CGMainDisplayID()))\n"
+        report += "CGDisplay pixels: \(CGDisplayPixelsWide(CGMainDisplayID()))"
+        report += "x\(CGDisplayPixelsHigh(CGMainDisplayID()))\n"
+        report += "NSScreen count: \(NSScreen.screens.count)\n"
+        for (n, s) in NSScreen.screens.enumerated() {
+            report += "  screen \(n): \(s.frame)\n"
+        }
+        report += "NSStatusBar thickness: \(NSStatusBar.system.thickness)\n"
         report += "spacer  (boundary): \(separator?.boundaryFrame.map { "\($0)" } ?? "none")\n"
         report += "control (chevron): \("(same item)")\n"
         report += "hiding: \(separator?.isHiding.description ?? "?")\n\n"

@@ -59,12 +59,9 @@ final class SeparatorController: NSObject {
         button.target = self
         button.action = #selector(buttonClicked)
 
-        // Without this the button scales the image to fit its content area. That is
-        // harmless at 28 points wide and fatal at 1600: the padded image is squeezed
-        // down until the chevron is a fraction of a point across — present, addressable,
-        // and invisible. The item's own frame proved it was laid out correctly the whole
-        // time; only the drawing was wrong.
-        button.imageScaling = .scaleNone
+        // The title has to sit at the item's trailing edge; centred, it would be
+        // hundreds of points off the left of the screen once the item expands.
+        button.alignment = .right
 
         apply()
         log.info("separator installed")
@@ -97,48 +94,45 @@ final class SeparatorController: NSObject {
         onToggle(hiding)
     }
 
-    /// Wide enough to push a full menu bar off the widest attached display, and no wider.
+    /// Just wide enough to push everything left of the separator off the screen.
     ///
-    /// A round 10,000 was the first guess and it is needlessly large: the image has to
-    /// match this width, and a 10,000 point wide bitmap costs several megabytes to draw
-    /// for no benefit. Anything past the screen is already off it.
+    /// Asking for more than fits is not free. The menu bar's item area ends where the
+    /// application menus begin, and a status item too wide to be placed there is not
+    /// clipped — it is dropped, and macOS parks its window above the top of the screen.
+    /// That is what a 10,000 point item did, and then a screen-width one: the chevron
+    /// did not move off-screen, it stopped being laid out at all. Three attempts at
+    /// fixing the drawing were fixing the wrong thing.
+    ///
+    /// Everything to the left of the separator lies between the application menus and
+    /// the separator's own left edge, so that distance plus a margin is all the width
+    /// that is ever needed.
     private var expandedWidth: CGFloat {
-        let widest = NSScreen.screens.map(\.frame.width).max() ?? 2000
-        return widest + 200
+        guard let left = item.button?.window?.frame.minX, left > 0 else {
+            return Self.collapsedWidth
+        }
+        return left + Self.collapsedWidth + 40
     }
 
     private func apply() {
         let width = isHiding ? expandedWidth : Self.collapsedWidth
         item.length = width
 
-        // Points towards where the hidden items are: left when they are off-screen and a
-        // click would bring them back, right when they are visible and a click puts them
-        // away again.
-        let symbol = isHiding ? "chevron.left" : "chevron.right"
-        item.button?.image = Self.trailingAligned(symbol: symbol, width: width)
-    }
-
-    /// A template image `width` points wide with the symbol drawn at its trailing edge.
-    private static func trailingAligned(symbol: String, width: CGFloat) -> NSImage? {
-        guard let glyph = NSImage(
-            systemSymbolName: symbol, accessibilityDescription: "Cornice") else { return nil }
-
-        // No padding needed while collapsed; skip the drawing entirely.
-        guard width > glyph.size.width else {
-            glyph.isTemplate = true
-            return glyph
-        }
-
-        let canvas = NSImage(size: NSSize(width: width, height: glyph.size.height))
-        canvas.lockFocus()
-        glyph.draw(
-            at: NSPoint(x: width - glyph.size.width, y: 0),
-            from: .zero,
-            operation: .sourceOver,
-            fraction: 1)
-        canvas.unlockFocus()
-        canvas.isTemplate = true   // adopts the menu bar's light/dark appearance
-        return canvas
+        // Drawn as text, not as an image.
+        //
+        // An image is centred in the button, which at 1600 points wide puts it far off
+        // the left of the screen. Padding the image to the item's width did not help,
+        // nor did disabling image scaling — the glyph stayed invisible either way. Text
+        // obeys `alignment`, so a trailing-aligned title stays at the item's right edge
+        // whatever its width. It is also how Bartender's own separators are built: they
+        // enumerate with titles like "❮", never images.
+        let glyph = isHiding ? "❮" : "❯"
+        item.button?.image = nil
+        item.button?.attributedTitle = NSAttributedString(
+            string: glyph,
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 13, weight: .medium),
+                .foregroundColor: NSColor.labelColor,
+            ])
     }
 
     @objc private func buttonClicked() {
