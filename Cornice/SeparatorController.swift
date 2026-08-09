@@ -47,9 +47,16 @@ final class SeparatorController: NSObject {
     private static let spacerCollapsedWidth: CGFloat = 1
 
     private let control: NSStatusItem
-    private let spacer: NSStatusItem
     private let onToggle: (Bool) -> Void
-    private var followTimer: Timer?
+
+    /// Exists only while hiding.
+    ///
+    /// Keeping it around permanently, even one point wide and disabled, put a second
+    /// draggable thing in the menu bar: findable by feel, movable with ⌘-drag, and once
+    /// moved away from the control the chevron stopped hiding anything. Two objects
+    /// where the user thinks there is one is a design fault, not a rough edge. Created
+    /// on hide and destroyed on reveal, there is nothing to find.
+    private var spacer: NSStatusItem?
 
     /// `true` when items to the left of the spacer are pushed off-screen.
     ///
@@ -62,12 +69,9 @@ final class SeparatorController: NSObject {
         self.onToggle = onToggle
 
         control = NSStatusBar.system.statusItem(withLength: Self.controlWidth)
-        spacer = NSStatusBar.system.statusItem(withLength: Self.spacerCollapsedWidth)
         super.init()
 
         control.autosaveName = "CorniceControl"
-        spacer.autosaveName = "CorniceSpacer"
-        spacer.button?.isEnabled = false
 
         guard let button = control.button else {
             log.error("status item has no button; menu bar may be full")
@@ -76,22 +80,8 @@ final class SeparatorController: NSObject {
         button.target = self
         button.action = #selector(buttonClicked)
 
-        apply()
-        alignSpacerToControl()
-
-        // The user moves the control; the spacer has to come along, or the boundary ends
-        // up somewhere they did not put it. There is no notification for a status item
-        // being dragged, so its position is sampled instead. Once a second is far below
-        // the rate at which anyone drags something, and costs nothing measurable.
-        followTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.alignSpacerToControl() }
-        }
-
+        updateIcon()
         log.info("separator installed")
-    }
-
-    deinit {
-        followTimer?.invalidate()
     }
 
     /// Where the boundary between hidden and visible sits, in screen coordinates, or
@@ -103,7 +93,11 @@ final class SeparatorController: NSObject {
     /// itself as `x=7 y=888` while genuinely sitting near x=935. Cornice owns it; there
     /// is no reason to ask anybody where it is.
     var boundaryFrame: CGRect? {
-        guard let frame = spacer.button?.window?.frame, frame.width > 0 else { return nil }
+        guard let frame = spacer?.button?.window?.frame, frame.width > 0 else {
+            // While revealed there is no spacer; the control's own left edge is where
+            // the boundary would be.
+            return controlFrame
+        }
         return frame
     }
 
@@ -112,9 +106,13 @@ final class SeparatorController: NSObject {
     }
 
     var geometry: String {
-        "control=\(controlFrame.map { "\(Int($0.minX))" } ?? "?") "
-            + "spacer=\(boundaryFrame.map { "\(Int($0.minX))..\(Int($0.maxX))" } ?? "?") "
-            + "spacerLength=\(spacer.length)"
+        let controlX: String = controlFrame.map { String(Int($0.minX)) } ?? "?"
+        var spacerSpan = "none"
+        if let frame = spacer?.button?.window?.frame {
+            spacerSpan = "\(Int(frame.minX))..\(Int(frame.maxX))"
+        }
+        let length: String = spacer.map { String(Int($0.length)) } ?? "-"
+        return "control=\(controlX) spacer=\(spacerSpan) spacerLength=\(length)"
     }
 
     // MARK: - State
@@ -131,21 +129,17 @@ final class SeparatorController: NSObject {
         onToggle(hiding)
     }
 
-    /// Just wide enough to push everything left of the spacer off the screen.
-    ///
-    /// Asking for more than fits is not free: the menu bar's item area ends where the
-    /// application menus begin, and an item too wide to be placed there stops being
-    /// drawn. Everything to the left of the spacer lies between the application menus
-    /// and the spacer's own left edge, so that distance plus a margin is all that is
-    /// ever needed.
-    private var spacerExpandedWidth: CGFloat {
-        guard let left = boundaryFrame?.minX, left > 0 else { return Self.spacerCollapsedWidth }
-        return left + 40
+    private func apply() {
+        if isHiding {
+            installSpacer()
+        } else {
+            if let spacer { NSStatusBar.system.removeStatusItem(spacer) }
+            spacer = nil
+        }
+        updateIcon()
     }
 
-    private func apply() {
-        spacer.length = isHiding ? spacerExpandedWidth : Self.spacerCollapsedWidth
-
+    private func updateIcon() {
         // Points towards where the hidden items are: left when they are off-screen and a
         // click would bring them back, right when they are visible and a click puts them
         // away again. The control never changes width, so this draws like any icon.
@@ -155,41 +149,48 @@ final class SeparatorController: NSObject {
         control.button?.image = image
     }
 
-    /// Keeps the spacer immediately to the left of the control.
+    /// Creates the spacer immediately to the left of the control, and widens it.
     ///
     /// `NSStatusItem` offers no way to say "put this next to that", but macOS stores each
     /// item's placement under `NSStatusItem Preferred Position <autosaveName>` in the
     /// owning application's defaults, measured from the right-hand end of the bar.
-    /// Bartender's own saved values read that way: 213, 249, 5297, 10351, 15367, with
-    /// the gaps matching the widths of the 5002-point separators sitting between them.
-    ///
-    /// So the spacer's place is the control's place plus the control's width. Writing
-    /// that is only half the job — the value is read when the item is created — so the
-    /// spacer is rebuilt whenever it has drifted out of position.
-    private func alignSpacerToControl() {
-        guard !isHiding,
-              let screen = NSScreen.main,
-              let controlFrame,
-              let spacerFrame = spacer.button?.window?.frame
-        else { return }
+    /// Bartender's own saved values read that way: 213, 249, 5297, 10351, 15367, with the
+    /// gaps matching the widths of the 5002-point separators between them. The spacer's
+    /// place is therefore the control's, and writing it before the item exists is what
+    /// makes it land there — the value is read at creation.
+    private func installSpacer() {
+        guard let screen = NSScreen.main, let controlFrame else { return }
 
-        // Already adjacent, within a point or two of rounding.
-        if abs(spacerFrame.maxX - controlFrame.minX) < 4 { return }
+        UserDefaults.standard.set(
+            screen.frame.maxX - controlFrame.minX,
+            forKey: "NSStatusItem Preferred Position CorniceSpacer")
 
-        let desired = screen.frame.maxX - controlFrame.minX
-        let key = "NSStatusItem Preferred Position CorniceSpacer"
-        UserDefaults.standard.set(desired, forKey: key)
-        log.info("""
-            re-placing spacer: control at \(Int(controlFrame.minX), privacy: .public), \
-            spacer at \(Int(spacerFrame.minX), privacy: .public), \
-            writing position \(Int(desired), privacy: .public)
-            """)
+        let item = NSStatusBar.system.statusItem(withLength: Self.spacerCollapsedWidth)
+        item.autosaveName = "CorniceSpacer"
+        item.button?.isEnabled = false
+        spacer = item
 
-        // Re-reading the position needs a fresh item; nudging the length is enough to
-        // make macOS lay it out again against the value just written.
-        spacer.length = Self.spacerCollapsedWidth + 1
-        DispatchQueue.main.async { [spacer] in
-            spacer.length = Self.spacerCollapsedWidth
+        // Widen only once it has been placed. Its own left edge decides how much width
+        // is needed, and asking for more than the bar can hold makes macOS stop drawing
+        // the item entirely — so the position has to be real before it is used.
+        //
+        // A freshly created status item does not have a positioned window yet, and a
+        // single turn of the run loop is not always enough: the first attempt read a
+        // left edge of zero and skipped the widening, leaving a one point spacer that
+        // hid nothing. Poll briefly instead of assuming.
+        Task { @MainActor in
+            for _ in 0..<20 {
+                if let left = item.button?.window?.frame.minX, left > 0 {
+                    item.length = left + 40
+                    log.info("""
+                        spacer placed at \(Int(left), privacy: .public), \
+                        width \(Int(left + 40), privacy: .public)
+                        """)
+                    return
+                }
+                try? await Task.sleep(for: .milliseconds(50))
+            }
+            log.error("spacer never got a position; nothing will hide")
         }
     }
 
