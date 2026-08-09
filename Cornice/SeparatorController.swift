@@ -6,23 +6,33 @@
 import AppKit
 import OSLog
 
-/// Owns Cornice's status item and hides others by taking up their space.
+/// Owns Cornice's status items and hides others by taking up their space.
 ///
 /// This is the one part of Cornice that needs **no permissions at all**: an application
 /// may create and resize its own `NSStatusItem` freely. There is no call that hides
 /// somebody else's item; what there is, is an item wide enough to leave them nowhere
 /// to sit. Everything to its left goes past the edge of the screen.
 ///
-/// One item, not two. A spacer separate from the chevron seems tidier and is worse:
-/// the boundary is then invisible, so the person who has to decide where the boundary
-/// goes cannot see or drag it, and moving the chevron moves nothing that matters.
-/// Whatever the user drags must *be* the boundary.
+/// Two items, each with exactly one job:
 ///
-/// The reason to split it was that a very wide status item draws its image in the middle
-/// of that width, thousands of points off-screen, so clicking the chevron made the
-/// chevron vanish. That is solved here instead by padding the image: the picture is as
-/// wide as the item, with the glyph at its trailing edge, so centring it puts the glyph
-/// exactly where it belongs.
+///     [ hidden items ][ spacer — grows ][ ❯ control ][ visible items ]
+///
+/// The control is **never** resized. It stays 28 points wide, so its chevron draws like
+/// any other status icon, and it is the thing the user drags to choose where the
+/// boundary goes. The spacer does the widening and shows nothing, so having no visible
+/// content is not a defect.
+///
+/// One item cannot do both. Six attempts were made to keep a chevron visible on an item
+/// that widens — centring the image, padding it to the item's width, disabling image
+/// scaling, a right-aligned title, a paragraph style, and finally a hand-positioned
+/// subview — and the last of these measured correct while still drawing nothing:
+///
+///     length=1218  buttonBounds=1218  window=1234  chevronX=1190
+///
+/// A glyph 28 points from the trailing edge of a 1218 point button lands on screen. It
+/// was not drawn, which points at macOS declining to render an item too wide for the
+/// bar at all: laid out for spacing, skipped for display. Nothing about the drawing code
+/// was going to change that.
 ///
 /// Because it depends on nothing undocumented, this is also the part expected to survive
 /// future macOS releases untouched. Keep it that way: no `CGEvent`, no `AXUIElement`,
@@ -30,13 +40,18 @@ import OSLog
 @MainActor
 final class SeparatorController: NSObject {
 
-    /// Just the chevron.
-    private static let collapsedWidth: CGFloat = 28
+    private static let controlWidth: CGFloat = 28
 
-    private let item: NSStatusItem
+    /// Not zero: an item with no width can be dropped from the layout altogether, and
+    /// then there is no boundary to hide things behind.
+    private static let spacerCollapsedWidth: CGFloat = 1
+
+    private let control: NSStatusItem
+    private let spacer: NSStatusItem
     private let onToggle: (Bool) -> Void
+    private var followTimer: Timer?
 
-    /// `true` when items to the left of the separator are pushed off-screen.
+    /// `true` when items to the left of the spacer are pushed off-screen.
     ///
     /// Starts `false` deliberately. A fresh install has no configuration, and coming up
     /// already hiding would make Cornice's first act be to remove menu bar items the
@@ -45,30 +60,42 @@ final class SeparatorController: NSObject {
 
     init(onToggle: @escaping (Bool) -> Void = { _ in }) {
         self.onToggle = onToggle
-        item = NSStatusBar.system.statusItem(withLength: Self.collapsedWidth)
+
+        control = NSStatusBar.system.statusItem(withLength: Self.controlWidth)
+        spacer = NSStatusBar.system.statusItem(withLength: Self.spacerCollapsedWidth)
         super.init()
 
-        // macOS persists where the user ⌘-drags this item, under the key
-        // "NSStatusItem Preferred Position CorniceSeparator" in our own defaults.
-        item.autosaveName = "CorniceSeparator"
+        control.autosaveName = "CorniceControl"
+        spacer.autosaveName = "CorniceSpacer"
+        spacer.button?.isEnabled = false
 
-        guard let button = item.button else {
+        guard let button = control.button else {
             log.error("status item has no button; menu bar may be full")
             return
         }
         button.target = self
         button.action = #selector(buttonClicked)
 
-        // The title has to sit at the item's trailing edge; centred, it would be
-        // hundreds of points off the left of the screen once the item expands.
-        button.alignment = .right
-
         apply()
+        alignSpacerToControl()
+
+        // The user moves the control; the spacer has to come along, or the boundary ends
+        // up somewhere they did not put it. There is no notification for a status item
+        // being dragged, so its position is sampled instead. Once a second is far below
+        // the rate at which anyone drags something, and costs nothing measurable.
+        followTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.alignSpacerToControl() }
+        }
+
         log.info("separator installed")
     }
 
+    deinit {
+        followTimer?.invalidate()
+    }
+
     /// Where the boundary between hidden and visible sits, in screen coordinates, or
-    /// `nil` before the item has been laid out.
+    /// `nil` before the items have been laid out.
     ///
     /// Read from the item's own window rather than through the accessibility API. Asking
     /// AX about an element in one's *own* process returns coordinates in a different
@@ -76,8 +103,18 @@ final class SeparatorController: NSObject {
     /// itself as `x=7 y=888` while genuinely sitting near x=935. Cornice owns it; there
     /// is no reason to ask anybody where it is.
     var boundaryFrame: CGRect? {
-        guard let frame = item.button?.window?.frame, frame.width > 0 else { return nil }
+        guard let frame = spacer.button?.window?.frame, frame.width > 0 else { return nil }
         return frame
+    }
+
+    var controlFrame: CGRect? {
+        control.button?.window?.frame
+    }
+
+    var geometry: String {
+        "control=\(controlFrame.map { "\(Int($0.minX))" } ?? "?") "
+            + "spacer=\(boundaryFrame.map { "\(Int($0.minX))..\(Int($0.maxX))" } ?? "?") "
+            + "spacerLength=\(spacer.length)"
     }
 
     // MARK: - State
@@ -94,54 +131,66 @@ final class SeparatorController: NSObject {
         onToggle(hiding)
     }
 
-    /// Just wide enough to push everything left of the separator off the screen.
+    /// Just wide enough to push everything left of the spacer off the screen.
     ///
-    /// Asking for more than fits is not free. The menu bar's item area ends where the
-    /// application menus begin, and a status item too wide to be placed there is not
-    /// clipped — it is dropped, and macOS parks its window above the top of the screen.
-    /// That is what a 10,000 point item did, and then a screen-width one: the chevron
-    /// did not move off-screen, it stopped being laid out at all. Three attempts at
-    /// fixing the drawing were fixing the wrong thing.
-    ///
-    /// Everything to the left of the separator lies between the application menus and
-    /// the separator's own left edge, so that distance plus a margin is all the width
-    /// that is ever needed.
-    private var expandedWidth: CGFloat {
-        guard let left = item.button?.window?.frame.minX, left > 0 else {
-            return Self.collapsedWidth
-        }
-        return left + Self.collapsedWidth + 40
+    /// Asking for more than fits is not free: the menu bar's item area ends where the
+    /// application menus begin, and an item too wide to be placed there stops being
+    /// drawn. Everything to the left of the spacer lies between the application menus
+    /// and the spacer's own left edge, so that distance plus a margin is all that is
+    /// ever needed.
+    private var spacerExpandedWidth: CGFloat {
+        guard let left = boundaryFrame?.minX, left > 0 else { return Self.spacerCollapsedWidth }
+        return left + 40
     }
 
     private func apply() {
-        let width = isHiding ? expandedWidth : Self.collapsedWidth
-        item.length = width
+        spacer.length = isHiding ? spacerExpandedWidth : Self.spacerCollapsedWidth
 
-        // Drawn as text, not as an image.
-        //
-        // An image is centred in the button, which at 1600 points wide puts it far off
-        // the left of the screen. Padding the image to the item's width did not help,
-        // nor did disabling image scaling — the glyph stayed invisible either way. Text
-        // obeys `alignment`, so a trailing-aligned title stays at the item's right edge
-        // whatever its width. It is also how Bartender's own separators are built: they
-        // enumerate with titles like "❮", never images.
-        // Alignment for an attributed string comes from its paragraph style, not from
-        // the button's `alignment`. Setting only the latter leaves the glyph centred
-        // across the item's whole width — which, expanded, puts it around x=577, in the
-        // middle of the application menus, where it is invisible against them. That is
-        // why the chevron kept "disappearing" while its item was demonstrably laid out.
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .right
+        // Points towards where the hidden items are: left when they are off-screen and a
+        // click would bring them back, right when they are visible and a click puts them
+        // away again. The control never changes width, so this draws like any icon.
+        let symbol = isHiding ? "chevron.left" : "chevron.right"
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: "Cornice")
+        image?.isTemplate = true   // adopts the menu bar's light/dark appearance
+        control.button?.image = image
+    }
 
-        let glyph = isHiding ? "❮" : "❯"
-        item.button?.image = nil
-        item.button?.attributedTitle = NSAttributedString(
-            string: glyph,
-            attributes: [
-                .font: NSFont.systemFont(ofSize: 13, weight: .medium),
-                .foregroundColor: NSColor.labelColor,
-                .paragraphStyle: paragraph,
-            ])
+    /// Keeps the spacer immediately to the left of the control.
+    ///
+    /// `NSStatusItem` offers no way to say "put this next to that", but macOS stores each
+    /// item's placement under `NSStatusItem Preferred Position <autosaveName>` in the
+    /// owning application's defaults, measured from the right-hand end of the bar.
+    /// Bartender's own saved values read that way: 213, 249, 5297, 10351, 15367, with
+    /// the gaps matching the widths of the 5002-point separators sitting between them.
+    ///
+    /// So the spacer's place is the control's place plus the control's width. Writing
+    /// that is only half the job — the value is read when the item is created — so the
+    /// spacer is rebuilt whenever it has drifted out of position.
+    private func alignSpacerToControl() {
+        guard !isHiding,
+              let screen = NSScreen.main,
+              let controlFrame,
+              let spacerFrame = spacer.button?.window?.frame
+        else { return }
+
+        // Already adjacent, within a point or two of rounding.
+        if abs(spacerFrame.maxX - controlFrame.minX) < 4 { return }
+
+        let desired = screen.frame.maxX - controlFrame.minX
+        let key = "NSStatusItem Preferred Position CorniceSpacer"
+        UserDefaults.standard.set(desired, forKey: key)
+        log.info("""
+            re-placing spacer: control at \(Int(controlFrame.minX), privacy: .public), \
+            spacer at \(Int(spacerFrame.minX), privacy: .public), \
+            writing position \(Int(desired), privacy: .public)
+            """)
+
+        // Re-reading the position needs a fresh item; nudging the length is enough to
+        // make macOS lay it out again against the value just written.
+        spacer.length = Self.spacerCollapsedWidth + 1
+        DispatchQueue.main.async { [spacer] in
+            spacer.length = Self.spacerCollapsedWidth
+        }
     }
 
     @objc private func buttonClicked() {

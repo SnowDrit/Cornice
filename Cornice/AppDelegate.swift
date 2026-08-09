@@ -68,7 +68,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             await runIsolatedDragCheck()
         }
         if ProcessInfo.processInfo.environment["CORNICE_RUN_HIDEONLY"] != nil {
-            try? await Task.sleep(for: .seconds(2))
+            // Long enough for the spacer to have been pulled alongside the control.
+            try? await Task.sleep(for: .seconds(10))
             await runHideOnlyCheck()
         }
     }
@@ -173,6 +174,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let boundary = separator.boundaryFrame
         let visible = enumerator.enumerateItems().filter { ($0.frame?.minX ?? -1) >= 0 }
         report += "boundary while revealed: \(boundary.map { "\($0)" } ?? "not laid out")\n"
+        report += "geometry revealed: \(separator.geometry)\n"
         report += "on screen before: \(visible.count)\n"
         for item in visible {
             report += "  \(item.id) x=\(Int(item.frame!.minX))\n"
@@ -182,7 +184,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         try? await Task.sleep(for: .milliseconds(800))
         report += "\nboundary while hiding: "
         report += separator.boundaryFrame.map { "\($0)" } ?? "NO WINDOW — item dropped"
-        report += "\n"
+        report += "\ngeometry hiding: \(separator.geometry)\n"
         // "Gone" means pushed past the left edge, not absent. A hidden item keeps
         // answering the accessibility query and keeps a frame — with a large negative x,
         // exactly as Bartender's hidden items do. Checking only for presence therefore
