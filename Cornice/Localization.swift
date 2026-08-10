@@ -123,6 +123,13 @@ enum L {
             "Not set": "Не задано",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Нужно минимум два модификатора, один из них ⌘, ⌥ или ⌃.",
             "Something else already uses that.": "Это сочетание уже занято.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Свайпните ещё раз сразу следом, и это уточнит, а не начнёт заново",
+            "Narrower: a third, then two thirds": "Уже: треть, потом две трети",
+            "Top quarter of that side": "Верхняя четверть этой стороны",
+            "Bottom quarter of that side": "Нижняя четверть этой стороны",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Вправо работает так же. Выждите мгновение, и следующий свайп начнёт заново.",
         ],
         .uk: [
             "Behaviour": "Поведінка",
@@ -188,6 +195,13 @@ enum L {
             "Not set": "Не задано",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Потрібно щонайменше два модифікатори, один з них ⌘, ⌥ або ⌃.",
             "Something else already uses that.": "Це поєднання вже зайняте.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Проведіть ще раз одразу після, і це уточнить, а не почне заново",
+            "Narrower: a third, then two thirds": "Вужче: третина, потім дві третини",
+            "Top quarter of that side": "Верхня чверть цього боку",
+            "Bottom quarter of that side": "Нижня чверть цього боку",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Праворуч працює так само. Зачекайте мить, і наступний свайп почне заново.",
         ],
         .de: [
             "Behaviour": "Verhalten",
@@ -253,6 +267,13 @@ enum L {
             "Not set": "Nicht belegt",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Mindestens zwei Sondertasten, davon eine ⌘, ⌥ oder ⌃.",
             "Something else already uses that.": "Etwas anderes belegt das schon.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Gleich noch einmal wischen verfeinert es, statt neu anzufangen",
+            "Narrower: a third, then two thirds": "Schmaler: ein Drittel, dann zwei Drittel",
+            "Top quarter of that side": "Oberes Viertel dieser Seite",
+            "Bottom quarter of that side": "Unteres Viertel dieser Seite",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Nach rechts geht es genauso. Kurz warten, und der nächste Wisch fängt neu an.",
         ],
         .fr: [
             "Behaviour": "Comportement",
@@ -319,6 +340,13 @@ enum L {
             "Not set": "Non défini",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Au moins deux modificateurs, dont ⌘, ⌥ ou ⌃.",
             "Something else already uses that.": "Autre chose l'utilise déjà.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Balayez encore juste après, et cela affine au lieu de recommencer",
+            "Narrower: a third, then two thirds": "Plus étroit : un tiers, puis deux tiers",
+            "Top quarter of that side": "Quart supérieur de ce côté",
+            "Bottom quarter of that side": "Quart inférieur de ce côté",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "À droite, c'est pareil. Attendez un instant et le balayage suivant repart de zéro.",
         ],
         .es: [
             "Behaviour": "Comportamiento",
@@ -384,6 +412,13 @@ enum L {
             "Not set": "Sin asignar",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Al menos dos modificadores, uno de ellos ⌘, ⌥ o ⌃.",
             "Something else already uses that.": "Ya lo usa otra cosa.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Desliza otra vez justo después y afina en vez de empezar de nuevo",
+            "Narrower: a third, then two thirds": "Más estrecho: un tercio, luego dos tercios",
+            "Top quarter of that side": "Cuarto superior de ese lado",
+            "Bottom quarter of that side": "Cuarto inferior de ese lado",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "A la derecha funciona igual. Espera un momento y el siguiente deslizamiento empieza de cero.",
         ],
         .pt: [
             "Behaviour": "Comportamento",
@@ -449,6 +484,13 @@ enum L {
             "Not set": "Por definir",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Pelo menos dois modificadores, um deles ⌘, ⌥ ou ⌃.",
             "Something else already uses that.": "Outra coisa já usa isso.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Deslize outra vez logo a seguir e afina em vez de recomeçar",
+            "Narrower: a third, then two thirds": "Mais estreito: um terço, depois dois terços",
+            "Top quarter of that side": "Quarto superior desse lado",
+            "Bottom quarter of that side": "Quarto inferior desse lado",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Para a direita funciona igual. Espere um momento e o próximo deslize recomeça.",
         ],
         .it: [
             "Behaviour": "Comportamento",
@@ -515,6 +557,13 @@ enum L {
             "Not set": "Non assegnata",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Almeno due modificatori, uno dei quali ⌘, ⌥ o ⌃.",
             "Something else already uses that.": "Qualcos'altro la usa già.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Scorri di nuovo subito dopo e affina invece di ricominciare",
+            "Narrower: a third, then two thirds": "Più stretto: un terzo, poi due terzi",
+            "Top quarter of that side": "Quarto in alto di quel lato",
+            "Bottom quarter of that side": "Quarto in basso di quel lato",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "A destra funziona uguale. Aspetta un attimo e il prossimo gesto ricomincia.",
         ],
         .nl: [
             "Behaviour": "Gedrag",
@@ -581,6 +630,13 @@ enum L {
             "Not set": "Niet ingesteld",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Minstens twee modificatietoetsen, waarvan één ⌘, ⌥ of ⌃.",
             "Something else already uses that.": "Iets anders gebruikt dat al.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Veeg meteen daarna nog eens, dan verfijnt het in plaats van opnieuw te beginnen",
+            "Narrower: a third, then two thirds": "Smaller: een derde, dan twee derde",
+            "Top quarter of that side": "Bovenste kwart van die kant",
+            "Bottom quarter of that side": "Onderste kwart van die kant",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Naar rechts werkt hetzelfde. Wacht even en de volgende veeg begint opnieuw.",
         ],
         .pl: [
             "Behaviour": "Zachowanie",
@@ -646,6 +702,13 @@ enum L {
             "Not set": "Nieprzypisane",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Co najmniej dwa modyfikatory, jeden z nich ⌘, ⌥ lub ⌃.",
             "Something else already uses that.": "Coś innego już tego używa.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Przesuń jeszcze raz zaraz potem, a doprecyzuje zamiast zaczynać od nowa",
+            "Narrower: a third, then two thirds": "Węziej: jedna trzecia, potem dwie trzecie",
+            "Top quarter of that side": "Górna ćwiartka tej strony",
+            "Bottom quarter of that side": "Dolna ćwiartka tej strony",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "W prawo działa tak samo. Odczekaj chwilę, a następny gest zacznie od nowa.",
         ],
         .cs: [
             "Behaviour": "Chování",
@@ -711,6 +774,13 @@ enum L {
             "Not set": "Nepřiřazeno",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Nejméně dva modifikátory, jeden z nich ⌘, ⌥ nebo ⌃.",
             "Something else already uses that.": "Používá to už něco jiného.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Přejeďte hned znovu a upřesní to místo toho, aby začalo znovu",
+            "Narrower: a third, then two thirds": "Užší: třetina, potom dvě třetiny",
+            "Top quarter of that side": "Horní čtvrtina té strany",
+            "Bottom quarter of that side": "Dolní čtvrtina té strany",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Doprava to funguje stejně. Chvíli počkejte a další přejetí začne od začátku.",
         ],
         .sv: [
             "Behaviour": "Beteende",
@@ -776,6 +846,14 @@ enum L {
             "Not set": "Inte angivet",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Minst två modifierare, varav en ⌘, ⌥ eller ⌃.",
             "Something else already uses that.": "Något annat använder redan det.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Svep igen direkt efter, så förfinar det i stället för att börja om",
+            "Narrower: a third, then two thirds":
+                "Smalare: en tredjedel, sedan två tredjedelar",
+            "Top quarter of that side": "Övre fjärdedelen på den sidan",
+            "Bottom quarter of that side": "Nedre fjärdedelen på den sidan",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Åt höger fungerar likadant. Vänta ett ögonblick, så börjar nästa svep om.",
         ],
         .tr: [
             "Behaviour": "Davranış",
@@ -842,6 +920,13 @@ enum L {
             "Not set": "Atanmadı",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "En az iki değiştirici, biri ⌘, ⌥ veya ⌃ olmalı.",
             "Something else already uses that.": "Bunu başka bir şey kullanıyor.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "Hemen ardından yine kaydırın, baştan başlamak yerine daraltır",
+            "Narrower: a third, then two thirds": "Daha dar: üçte bir, sonra üçte iki",
+            "Top quarter of that side": "O tarafın üst çeyreği",
+            "Bottom quarter of that side": "O tarafın alt çeyreği",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "Sağa da aynı şekilde çalışır. Bir an bekleyin, sonraki kaydırma baştan başlar.",
         ],
         .ja: [
             "Behaviour": "動作",
@@ -905,6 +990,13 @@ enum L {
             "Not set": "未設定",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "修飾キーは2つ以上、うち1つは ⌘、⌥、⌃ のどれか。",
             "Something else already uses that.": "ほかのものがすでに使っています。",
+            "Swipe again straight after, and it refines instead of starting over":
+                "続けてもう一度スワイプすると、やり直しではなく細かく決まります",
+            "Narrower: a third, then two thirds": "狭く: 3分の1、次に3分の2",
+            "Top quarter of that side": "その側の上の4分の1",
+            "Bottom quarter of that side": "その側の下の4分の1",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "右も同じです。少し待つと、次のスワイプは最初からになります。",
         ],
         .ko: [
             "Behaviour": "동작",
@@ -968,6 +1060,13 @@ enum L {
             "Not set": "지정 안 됨",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "조합키는 두 개 이상, 그중 하나는 ⌘, ⌥ 또는 ⌃.",
             "Something else already uses that.": "다른 것이 이미 쓰고 있습니다.",
+            "Swipe again straight after, and it refines instead of starting over":
+                "바로 이어서 한 번 더 쓸면 처음부터가 아니라 더 세밀해집니다",
+            "Narrower: a third, then two thirds": "더 좁게: 3분의 1, 다음은 3분의 2",
+            "Top quarter of that side": "그쪽의 위 4분의 1",
+            "Bottom quarter of that side": "그쪽의 아래 4분의 1",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "오른쪽도 같습니다. 잠깐 쉬면 다음 쓸기는 처음부터 시작합니다.",
         ],
         .zh: [
             "Behaviour": "行为",
@@ -1031,6 +1130,13 @@ enum L {
             "Not set": "未指定",
             "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "至少两个修饰键，其中一个是 ⌘、⌥ 或 ⌃。",
             "Something else already uses that.": "已经被别的东西占用了。",
+            "Swipe again straight after, and it refines instead of starting over":
+                "紧接着再滑一次，会细分而不是重新开始",
+            "Narrower: a third, then two thirds": "更窄：三分之一，然后三分之二",
+            "Top quarter of that side": "该侧的上四分之一",
+            "Bottom quarter of that side": "该侧的下四分之一",
+            "Right works the same. Pause for a moment and the next swipe starts fresh.":
+                "向右同理。稍等片刻，下一次滑动就重新开始。",
         ],
     ]
 }

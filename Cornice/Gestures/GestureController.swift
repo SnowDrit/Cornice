@@ -49,6 +49,23 @@ final class GestureController {
     /// dropping the oldest is a cheaper cure than watching for their destruction.
     private static let rememberedWindows = 32
 
+    /// A run of swipes on one window that are refining a single position.
+    private struct Chain {
+        let key: WindowKey
+        let slot: WindowSlot
+        let at: ContinuousClock.Instant
+    }
+
+    private var chain: Chain?
+
+    /// How long a chain stays open.
+    ///
+    /// Long enough to swipe twice without hurrying, short enough that going back to a
+    /// window minutes later starts from scratch rather than continuing something the user
+    /// has forgotten about. Also what makes a lone downward swipe mean undo: past this,
+    /// there is no chain for it to belong to.
+    private static let chainWindow: Duration = .milliseconds(1500)
+
     var isRunning: Bool { monitor != nil }
 
     // MARK: - The switch
@@ -88,6 +105,7 @@ final class GestureController {
         NSEvent.removeMonitor(monitor)
         self.monitor = nil
         pending = nil
+        chain = nil
         previousFrames.removeAll()
         gestureLog.info("gesture monitor removed")
     }
@@ -130,8 +148,11 @@ final class GestureController {
 
     private func apply(_ direction: SwipeRecognizer.Direction, to window: TargetWindow) {
         let key = WindowKey(window.element)
+        let running = openChain(for: key)
 
-        if direction == .down {
+        guard let slot = WindowSlot.next(after: running, swipe: direction) else {
+            // No chain and a downward swipe: the one gesture that means undo.
+            chain = nil
             guard let restored = previousFrames.removeValue(forKey: key) else {
                 gestureLog.info("nothing remembered for this window, leaving it where it is")
                 return
@@ -140,27 +161,31 @@ final class GestureController {
             return
         }
 
-        let slot: WindowSlot
-        switch direction {
-        case .left:  slot = .leftHalf
-        case .right: slot = .rightHalf
-        case .up:    slot = .fill
-        case .down:  return
-        }
-
         guard let area = ScreenGeometry.workArea(forWindowAt: window.frame) else {
             gestureLog.info("no display found for this window")
             return
         }
 
-        let target = slot.frame(in: area)
         // Only the frame from before the *first* move is worth keeping. Snapping left and
         // then right and then swiping down should restore the window the user last placed
         // by hand, not the left half it passed through on the way.
         if previousFrames[key] == nil {
             remember(window.frame, for: key)
         }
-        window.setFrame(target)
+
+        window.setFrame(slot.frame(in: area))
+        chain = Chain(key: key, slot: slot, at: ContinuousClock.now)
+    }
+
+    /// The slot this window is being refined towards, or `nil` to start over.
+    ///
+    /// Tied to the window as well as to the clock. Swiping one window and then another
+    /// within the second and a half is two separate intentions, and continuing the first
+    /// window's chain on the second would put it somewhere nobody asked for.
+    private func openChain(for key: WindowKey) -> WindowSlot? {
+        guard let chain, chain.key == key else { return nil }
+        guard ContinuousClock.now - chain.at <= Self.chainWindow else { return nil }
+        return chain.slot
     }
 
     private func remember(_ frame: CGRect, for key: WindowKey) {

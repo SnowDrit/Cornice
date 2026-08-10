@@ -187,6 +187,15 @@ struct SettingsView: View {
                 gestureRow("arrow.up", L.t("Fill the screen"))
                 gestureRow("arrow.down", L.t("Put it back where it was"))
             }
+
+            Section(L.t("Swipe again straight after, and it refines instead of starting over")) {
+                gestureRow("arrow.left", "arrow.left", L.t("Narrower: a third, then two thirds"))
+                gestureRow("arrow.left", "arrow.up", L.t("Top quarter of that side"))
+                gestureRow("arrow.left", "arrow.down", L.t("Bottom quarter of that side"))
+                Text(L.t("Right works the same. Pause for a moment and the next swipe starts fresh."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         // The permission can be granted in System Settings while this window is open, and
@@ -201,6 +210,21 @@ struct SettingsView: View {
             Image(systemName: symbol)
                 .foregroundStyle(.secondary)
                 .frame(width: 20)
+        }
+    }
+
+    /// Two arrows for the chained gestures, so the pair reads as one movement followed by
+    /// another rather than as two separate entries.
+    private func gestureRow(_ first: String, _ second: String, _ meaning: String) -> some View {
+        LabeledContent {
+            Text(meaning)
+        } label: {
+            HStack(spacing: 2) {
+                Image(systemName: first)
+                Image(systemName: second)
+            }
+            .foregroundStyle(.secondary)
+            .frame(width: 40, alignment: .leading)
         }
     }
 

@@ -582,31 +582,90 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Self.writeReport(report + "no display matched that window\n", named: "gesture-check.txt")
             return
         }
-        let expected = WindowSlot.leftHalf.frame(in: area)
-        report += "work area (AX): \(area)\n"
-        report += "expected (AX):  \(expected)\n"
+        report += "work area (AX): \(area)\n\n"
 
         let target = TargetWindow(element: found.element, frame: found.frame)
-        let accepted = target.setFrame(expected)
-        report += "setFrame accepted: \(accepted)\n"
 
-        try? await Task.sleep(for: .milliseconds(400))
+        // The same run of swipes a hand would make, driven straight through the transition
+        // table. This checks two different things at once: that chaining lands on the slot
+        // it claims to, and that the slot's arithmetic survives the trip through
+        // Accessibility into a real window.
+        let script: [(String, SwipeRecognizer.Direction)] = [
+            ("left",        .left),
+            ("left again",  .left),
+            ("left again",  .left),
+            ("up",          .up),
+            ("down",        .down),
+        ]
 
-        guard let after = Self.frameOf(found.element) else {
-            Self.writeReport(report + "could not read the frame back\n", named: "gesture-check.txt")
-            return
+        var slot: WindowSlot?
+        var failures: [String] = []
+
+        for (name, direction) in script {
+            guard let next = WindowSlot.next(after: slot, swipe: direction) else {
+                failures.append("\(name): chain unexpectedly ended")
+                break
+            }
+            slot = next
+
+            let wantedFrame = next.frame(in: area)
+            target.setFrame(wantedFrame)
+            try? await Task.sleep(for: .milliseconds(350))
+
+            guard let actual = Self.frameOf(found.element) else {
+                failures.append("\(name): could not read the frame back")
+                continue
+            }
+
+            report += "\(name)\n"
+            report += "  slot:   \(next)\n"
+            report += "  wanted: \(Self.brief(wantedFrame))\n"
+            report += "  actual: \(Self.brief(actual))\n"
+
+            // The origin is the part Cornice controls outright. Size gets clamped by
+            // applications with their own minimums, so it is reported but not judged.
+            if abs(actual.minX - wantedFrame.minX) > 2 || abs(actual.minY - wantedFrame.minY) > 2 {
+                failures.append("\(name): origin landed wrong")
+            }
         }
-        report += "after (AX):     \(after)\n"
 
-        // Two points of slack: some applications round to their own grid, and a few
-        // enforce a minimum width wider than half a narrow screen.
-        let dx = abs(after.minX - expected.minX)
-        let dy = abs(after.minY - expected.minY)
-        report += "origin off by: \(Int(dx)) x \(Int(dy))\n"
-        report += (dx <= 2 && dy <= 2) ? "\nORIGIN CORRECT\n" : "\nORIGIN WRONG\n"
+        // Independent of the arithmetic above: the fractions have to *be* fractions. This
+        // is what would catch a third that is really a quarter, which comparing the code
+        // against itself never would.
+        report += "\nfractions of the work area\n"
+        let checks: [(String, WindowSlot, CGFloat, Bool)] = [
+            ("left half",       .leftHalf,                                                    1.0 / 2, true),
+            ("left third",      WindowSlot(column: .left, width: .third, row: .whole),         1.0 / 3, true),
+            ("left two thirds", WindowSlot(column: .left, width: .twoThirds, row: .whole),     2.0 / 3, true),
+            ("top left half",   WindowSlot(column: .left, width: .half, row: .top),            1.0 / 2, false),
+        ]
+        for (name, candidate, fraction, horizontal) in checks {
+            let box = candidate.frame(in: area)
+            let got = horizontal ? box.width / area.width : box.height / area.height
+            let ok = abs(got - fraction) < 0.01
+            report += "  \(name): \(horizontal ? "width" : "height") \(String(format: "%.3f", got))"
+            report += " expected \(String(format: "%.3f", fraction))\(ok ? "" : "  WRONG")\n"
+            if !ok { failures.append("\(name): fraction is \(got)") }
+        }
+
+        // Quarters sit in the half of the screen they are named after.
+        let topLeft = WindowSlot(column: .left, width: .half, row: .top).frame(in: area)
+        let bottomLeft = WindowSlot(column: .left, width: .half, row: .bottom).frame(in: area)
+        report += "  top quarter y: \(Int(topLeft.minY)) (area starts \(Int(area.minY)))\n"
+        report += "  bottom quarter y: \(Int(bottomLeft.minY)) (area middle \(Int(area.midY)))\n"
+        if abs(topLeft.minY - area.minY) > 1 { failures.append("top quarter is not at the top") }
+        if abs(bottomLeft.minY - area.midY) > 1 { failures.append("bottom quarter is not at the middle") }
+
+        report += failures.isEmpty
+            ? "\nALL CHECKS PASSED\n"
+            : "\nFAILED:\n" + failures.map { "  \($0)\n" }.joined()
 
         log.info("\(report, privacy: .public)")
         Self.writeReport(report, named: "gesture-check.txt")
+    }
+
+    private static func brief(_ rect: CGRect) -> String {
+        "x=\(Int(rect.minX)) y=\(Int(rect.minY)) w=\(Int(rect.width)) h=\(Int(rect.height))"
     }
 
     private static func frameOf(_ element: AXUIElement) -> CGRect? {
