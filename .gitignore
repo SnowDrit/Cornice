@@ -24,3 +24,6 @@ Package.resolved
 # Packaged builds
 Cornice-*.zip
 Cornice.zip
+
+# Notes for the assistant, not for the repository
+CLAUDE.md
