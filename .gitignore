@@ -24,6 +24,9 @@ Package.resolved
 # Packaged builds
 Cornice-*.zip
 Cornice.zip
+Cornice-*.dmg
+Cornice.dmg
 
-# Notes for the assistant, not for the repository
+# Not for the people who download the app
 CLAUDE.md
+ARCHITECTURE.md

@@ -72,9 +72,6 @@ Translations are machine-made and want a native reader's eye. Each one is a plai
 dictionary in `Cornice/Localization.swift`, keyed by the English text, so fixing a string is
 a single line.
 
-`ARCHITECTURE.md` explains why the app is shaped the way it is, and is worth reading before
-changing `SeparatorController`.
-
 ## Building
 
 ```bash
