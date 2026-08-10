@@ -68,7 +68,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     ///
     /// Polled rather than observed. A global event monitor would do it, but that is
     /// precisely the mechanism Apple has told developers not to rely on for status items
-    /// — and this is the daily path, the half of Cornice that is meant to keep working.
+    /// - and this is the daily path, the half of Cornice that is meant to keep working.
     /// Five samples a second costs nothing and depends on nothing.
     private func startWatchingPointer() {
         pointerWatcher = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
@@ -182,9 +182,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// The smallest possible question: does a drag still move anything at all?
     ///
-    /// Stage 3 proved it did. Stage 4 changed several things at once — the separator
+    /// Stage 3 proved it did. Stage 4 changed several things at once, the separator
     /// gained an explicit width and alignment, the enumerator started discarding
-    /// zero-sized frames, and this class became `@MainActor` — and moves stopped
+    /// zero-sized frames, and this class became `@MainActor` - and moves stopped
     /// landing. This bisects all of that away: no separator, no destination arithmetic,
     /// just an item and 100 points to the left.
     private func runIsolatedDragCheck() async {
@@ -220,7 +220,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Sweep the menu bar vertically instead of testing one guess per rebuild.
         //
         // The accessibility frame puts the item's centre at a negative y, which the
-        // system clamps to 0 — the very top row of pixels. Whether that row is live is
+        // system clamps to 0, the very top row of pixels. Whether that row is live is
         // not something to reason about; four attempts across the bar's height answer it
         // outright, and a working value identifies itself by the item moving.
         var current = frame
@@ -255,7 +255,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             report += "landed \(newX.map { String(Int($0)) } ?? "off-screen") "
             report += moved ? "MOVED\n" : "no change\n"
             if moved, let after, let newFrame = after.frame {
-                report += "\nDRAG WORKS — \(label)\n"
+                report += "\nDRAG WORKS: \(label)\n"
                 writeCheckReport(report)
                 return
             }
@@ -268,8 +268,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Does widening the separator hide anything?
     ///
-    /// Takes the arrangement as it finds it — wherever the user has dragged the chevron
-    /// — and only toggles. No moves, so nothing here depends on the broken mechanism.
+    /// Takes the arrangement as it finds it, wherever the user has dragged the chevron
+    /// - and only toggles. No moves, so nothing here depends on the broken mechanism.
     /// This is the whole of stage 4 as a question.
     private func runHideOnlyCheck() async {
         guard let separator else { return }
@@ -295,10 +295,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         separator.setHiding(true)
         try? await Task.sleep(for: .milliseconds(800))
         report += "\nboundary while hiding: "
-        report += separator.boundaryFrame.map { "\($0)" } ?? "NO WINDOW — item dropped"
+        report += separator.boundaryFrame.map { "\($0)" } ?? "NO WINDOW, item dropped"
         report += "\ngeometry hiding: \(separator.geometry)\n"
         // "Gone" means pushed past the left edge, not absent. A hidden item keeps
-        // answering the accessibility query and keeps a frame — with a large negative x,
+        // answering the accessibility query and keeps a frame, with a large negative x,
         // exactly as Bartender's hidden items do. Checking only for presence therefore
         // reports nothing hidden while the screen plainly shows otherwise, which is what
         // it did.
@@ -321,12 +321,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         report += "came back: \(returned.count) of \(vanished.count)\n\n"
 
         if vanished.isEmpty {
-            report += "NOTHING HIDDEN — either the separator has nothing to its left, "
+            report += "NOTHING HIDDEN, either the separator has nothing to its left, "
             report += "or widening does not push items off.\n"
         } else if returned.count == vanished.count {
-            report += "HIDING WORKS — \(vanished.count) items left and all came back.\n"
+            report += "HIDING WORKS: \(vanished.count) items left and all came back.\n"
         } else {
-            report += "PARTIAL — \(vanished.count) hidden, only \(returned.count) returned.\n"
+            report += "PARTIAL: \(vanished.count) hidden, only \(returned.count) returned.\n"
         }
         writeCheckReport(report)
     }
@@ -342,7 +342,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// nothing, expected to keep working). The second half passing while the first fails
     /// is exactly the degradation ARCHITECTURE.md predicts.
     private func runHideCheck() async {
-        var report = "stage 4 check — hide by widening the separator\n\n"
+        var report = "stage 4 check, hide by widening the separator\n\n"
 
         guard let separator else {
             writeCheckReport(report + "FAILED: no separator\n")
@@ -408,7 +408,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let stillVisible = behind.filter { subject in
             (hidden.first { $0.id == subject.id }?.frame?.minX ?? -.infinity) > 0
         }
-        report += "\nafter hiding — still on screen: "
+        report += "\nafter hiding, still on screen: "
         report += stillVisible.isEmpty ? "none\n" : "\(stillVisible.map(\.id))\n"
 
         // 3. Reveal, and confirm they came back.
@@ -418,16 +418,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let missing = behind.filter { subject in
             (revealed.first { $0.id == subject.id }?.frame?.minX ?? -1) <= 0
         }
-        report += "after revealing — still off screen: "
+        report += "after revealing, still off screen: "
         report += missing.isEmpty ? "none\n" : "\(missing.map(\.id))\n"
 
         report += "\n"
         if stillVisible.isEmpty && missing.isEmpty {
-            report += "VERDICT: WORKS — items left on hide and returned on reveal.\n"
+            report += "VERDICT: WORKS, items left on hide and returned on reveal.\n"
         } else if stillVisible.isEmpty {
-            report += "VERDICT: PARTIAL — hiding works, revealing does not.\n"
+            report += "VERDICT: PARTIAL, hiding works, revealing does not.\n"
         } else {
-            report += "VERDICT: BROKEN — widening the separator did not push items off.\n"
+            report += "VERDICT: BROKEN, widening the separator did not push items off.\n"
         }
 
         report += "\n--- menu bar, revealed (raw AX frames) ---\n"
@@ -456,7 +456,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// the unified log and to a plain text file.
     ///
     /// The file is redundant on a normal machine, but `log show` is not always reachable
-    /// — it returns nothing at all under some restricted shells — and a scan that cannot
+    /// - it returns nothing at all under some restricted shells, and a scan that cannot
     /// be read is a scan that cannot be checked. Removed once the settings UI exists.
     private func dumpMenuBar(reason: String) {
         let items = enumerator.enumerateItems()

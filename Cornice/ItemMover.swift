@@ -28,7 +28,7 @@ protocol ItemMover {
 extension ItemMover {
     /// Moves `item` and reports where it actually ended up.
     ///
-    /// A drag can be posted successfully and still not move anything — the gesture may
+    /// A drag can be posted successfully and still not move anything, the gesture may
     /// be swallowed, or the drop may land back where it started. Callers that care
     /// whether the arrangement changed must not infer it from the absence of a thrown
     /// error; twice during development a check reported success for a move that never
@@ -66,7 +66,7 @@ enum MoveError: Error, CustomStringConvertible {
 /// Reproduces what a user does by hand: hold ⌘ and drag the item.
 ///
 /// There is no API for this. The menu bar only rearranges in response to a ⌘-drag, so the
-/// only way to move an item programmatically is to synthesise that gesture — press at the
+/// only way to move an item programmatically is to synthesise that gesture, press at the
 /// item, drag across, release. Because the events are addressed by screen position rather
 /// than by window, this needs no Screen Recording permission, only Accessibility.
 struct CommandDragItemMover: ItemMover {
@@ -76,7 +76,7 @@ struct CommandDragItemMover: ItemMover {
     ///
     /// The count has to follow the distance rather than being fixed. With a constant
     /// number of steps a longer drag simply moves faster, and past some speed the menu
-    /// bar stops following it — a short swap between neighbours would succeed while a
+    /// bar stops following it, a short swap between neighbours would succeed while a
     /// drag across a few items did nothing at all, with no error either way. Roughly one
     /// step every few points keeps the pointer speed constant however far it travels.
     private let pointsPerStep: CGFloat = 4
@@ -114,7 +114,7 @@ struct CommandDragItemMover: ItemMover {
         }
 
         // Both coordinates come from the accessibility frame, including the vertical one
-        // — even though it looks wrong.
+        // - even though it looks wrong.
         //
         // Menu bar extras report a centre line around y = -47 on a display that AppKit
         // describes as (0, 0, 1440, 900), so the obvious correction is to substitute the
@@ -141,8 +141,8 @@ struct CommandDragItemMover: ItemMover {
 
         // Clear any button the system still believes is held.
         //
-        // A drag that is interrupted between its press and its release — a hang, a
-        // crash, a cancelled task — leaves the session thinking the left button is
+        // A drag that is interrupted between its press and its release, a hang, a
+        // crash, a cancelled task, leaves the session thinking the left button is
         // down. Every subsequent synthetic drag is then ignored, silently and
         // permanently, until something releases it. That is not a hypothetical: it is
         // how this stopped working.
@@ -160,7 +160,7 @@ struct CommandDragItemMover: ItemMover {
         //
         // Tagging each mouse event with `.maskCommand` describes the modifier without
         // setting it: the session's global modifier state stays clear, so anything that
-        // consults it — as the menu bar's rearrange gesture appears to — sees no ⌘ at
+        // consults it, as the menu bar's rearrange gesture appears to, sees no ⌘ at
         // all. A real key event is the difference between the drag being honoured and
         // being silently ignored, which is exactly how a working drag stopped working.
         setCommandKey(down: true, source: source)

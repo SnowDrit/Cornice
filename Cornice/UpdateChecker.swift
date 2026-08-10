@@ -8,7 +8,7 @@ import OSLog
 
 /// Asks GitHub whether a newer release exists.
 ///
-/// Only when the user presses the button. Cornice makes no network request otherwise —
+/// Only when the user presses the button. Cornice makes no network request otherwise:
 /// there is no background poll, no telemetry, and nothing sent: the request carries no
 /// identifier and the reply is a public list of releases.
 ///
@@ -79,7 +79,7 @@ enum UpdateChecker {
         }
     }
 
-    /// Compares dotted versions numerically, so 0.10 is newer than 0.9 — which string
+    /// Compares dotted versions numerically, so 0.10 is newer than 0.9, which string
     /// comparison gets backwards, and which is exactly the release where it would start
     /// mattering.
     static func isOlder(_ lhs: String, than rhs: String) -> Bool {

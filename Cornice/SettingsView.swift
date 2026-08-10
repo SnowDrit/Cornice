@@ -8,7 +8,7 @@ import SwiftUI
 /// Cornice's only window.
 ///
 /// The list is a *reading* of the menu bar, not a control for it. Which items are hidden
-/// is decided by where the boundary sits, and the boundary is placed by dragging it —
+/// is decided by where the boundary sits, and the boundary is placed by dragging it:
 /// Cornice cannot move anybody else's status item, and the mechanism that would let it
 /// is both unreliable and due to be removed. Showing the arrangement by name is still
 /// worth doing: without it there is no way to tell what is behind the boundary.
@@ -171,14 +171,14 @@ struct SettingsView: View {
     private var arrangementList: some View {
         VStack(alignment: .leading, spacing: 0) {
             List {
-                Section(L.t("Hidden — left of the divider")) {
+                Section(L.t("Hidden, left of the divider")) {
                     if snapshot.hidden.isEmpty {
                         Text(L.t("Nothing. Drag the divider left of the icons you want out of the way."))
                             .foregroundStyle(.secondary)
                     }
                     ForEach(snapshot.hidden) { item in row(item) }
                 }
-                Section(L.t("Visible — right of the divider")) {
+                Section(L.t("Visible, right of the divider")) {
                     ForEach(snapshot.visible) { item in row(item) }
                 }
             }

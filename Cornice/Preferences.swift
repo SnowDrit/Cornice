@@ -8,7 +8,7 @@ import Observation
 
 /// Everything the user can change, and the only thing that persists between launches.
 ///
-/// Deliberately small. Cornice's configuration is mostly *positional* — where the user
+/// Deliberately small. Cornice's configuration is mostly *positional* - where the user
 /// dragged the boundary is the configuration, and macOS already remembers that under
 /// `NSStatusItem Preferred Position`. What is left is behaviour, and behaviour is a
 /// handful of values.
@@ -23,7 +23,7 @@ final class Preferences {
         self.defaults = defaults
         // Auto-collapse is off until asked for. On by default it reads as a bug: the
         // icons are revealed, the pointer moves away, and half a second later they are
-        // gone again — which looks exactly like the toggle working only every other
+        // gone again, which looks exactly like the toggle working only every other
         // press. Bartender's 0.4 seconds is kept as the default *delay*, but it belongs
         // to a hover interaction, not to a click.
         defaults.register(defaults: [
@@ -114,7 +114,7 @@ final class Preferences {
     }
 
     /// How long to wait after the pointer leaves. Matches the delay this was built
-    /// against — Bartender's `MouseExitDelay` was 0.4 seconds.
+    /// against: Bartender's `MouseExitDelay` was 0.4 seconds.
     var autoCollapseDelay: Double {
         get { access(keyPath: \.autoCollapseDelay); return defaults.double(forKey: Key.autoCollapseDelay) }
         set { withMutation(keyPath: \.autoCollapseDelay) { defaults.set(newValue, forKey: Key.autoCollapseDelay) } }

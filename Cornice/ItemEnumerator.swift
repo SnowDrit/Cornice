@@ -25,7 +25,7 @@ enum EnumerationError: Error {
 ///
 /// Every application that owns status items exposes them as children of its
 /// `AXExtrasMenuBar` element. Walking all running applications therefore yields the
-/// whole menu bar, including items currently pushed off-screen — which is precisely why
+/// whole menu bar, including items currently pushed off-screen, which is precisely why
 /// this works as a source of truth even after Cornice has hidden things.
 struct AXItemEnumerator: ItemEnumerator {
 
@@ -62,7 +62,7 @@ struct AXItemEnumerator: ItemEnumerator {
             }
 
             for (index, child) in children.enumerated() {
-                // An item macOS itself has hidden — Control Center's own toggles, say —
+                // An item macOS itself has hidden: Control Center's own toggles, say:
                 // still answers the accessibility query, but reports a zero-sized frame
                 // at the origin. It is not laid out anywhere, so treating that as a
                 // position invites nonsense: every such item compares as being further

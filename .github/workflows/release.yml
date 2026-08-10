@@ -71,16 +71,13 @@ jobs:
       - name: Package
         run: |
           set -euo pipefail
-          # ditto rather than zip: it preserves the bundle's symlinks and metadata,
-          # which a plain zip mangles.
-          ditto -c -k --keepParent \
-            "build/Build/Products/Release/Cornice.app" \
-            "Cornice.zip"
+          chmod +x scripts/make-dmg.sh
+          scripts/make-dmg.sh "build/Build/Products/Release/Cornice.app" "Cornice.dmg"
 
       - uses: actions/upload-artifact@v4
         with:
           name: Cornice
-          path: Cornice.zip
+          path: Cornice.dmg
 
       - name: Publish the release
         if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
@@ -93,9 +90,9 @@ jobs:
           # Create if absent, otherwise just attach the build to the existing release,
           # so notes written by hand are never overwritten by a re-run.
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" Cornice.zip --clobber
+            gh release upload "$tag" Cornice.dmg --clobber
           else
-            gh release create "$tag" Cornice.zip \
+            gh release create "$tag" Cornice.dmg \
               --title "Cornice $tag" \
               --prerelease \
               --generate-notes

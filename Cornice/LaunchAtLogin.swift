@@ -8,7 +8,7 @@ import OSLog
 
 /// Registers Cornice with macOS as a login item.
 ///
-/// `SMAppService.mainApp` needs no helper bundle and no privileged install — the app
+/// `SMAppService.mainApp` needs no helper bundle and no privileged install, the app
 /// registers itself, and the user can revoke it from System Settings like any other
 /// login item. Reading the status is cheap enough to do whenever the settings window
 /// wants it, so nothing is cached.
@@ -18,7 +18,7 @@ enum LaunchAtLogin {
         SMAppService.mainApp.status == .enabled
     }
 
-    /// - Returns: whether the request succeeded. macOS can refuse — most often because
+    /// - Returns: whether the request succeeded. macOS can refuse, most often because
     ///   the user has disabled the item in System Settings, which an app is not allowed
     ///   to override.
     @discardableResult

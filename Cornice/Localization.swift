@@ -83,8 +83,8 @@ enum L {
             "Triangle": "Треугольник",
             "Sidebar": "Боковая панель",
             "Language": "Язык",
-            "Hidden — left of the divider": "Скрытые — левее разделителя",
-            "Visible — right of the divider": "Видимые — правее разделителя",
+            "Hidden, left of the divider": "Скрытые, левее разделителя",
+            "Visible, right of the divider": "Видимые, правее разделителя",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Пусто. Перетащите разделитель левее значков, которые хотите убрать.",
             "⌘-drag the divider to change what is hidden.":
@@ -123,8 +123,8 @@ enum L {
             "Triangle": "Трикутник",
             "Sidebar": "Бічна панель",
             "Language": "Мова",
-            "Hidden — left of the divider": "Приховані — ліворуч від роздільника",
-            "Visible — right of the divider": "Видимі — праворуч від роздільника",
+            "Hidden, left of the divider": "Приховані, ліворуч від роздільника",
+            "Visible, right of the divider": "Видимі, праворуч від роздільника",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Порожньо. Перетягніть роздільник ліворуч від значків, які хочете прибрати.",
             "⌘-drag the divider to change what is hidden.":
@@ -163,8 +163,8 @@ enum L {
             "Triangle": "Dreieck",
             "Sidebar": "Seitenleiste",
             "Language": "Sprache",
-            "Hidden — left of the divider": "Ausgeblendet — links vom Trenner",
-            "Visible — right of the divider": "Sichtbar — rechts vom Trenner",
+            "Hidden, left of the divider": "Ausgeblendet, links vom Trenner",
+            "Visible, right of the divider": "Sichtbar, rechts vom Trenner",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nichts. Ziehen Sie den Trenner links neben die Symbole, die verschwinden sollen.",
             "⌘-drag the divider to change what is hidden.":
@@ -203,8 +203,8 @@ enum L {
             "Triangle": "Triangle",
             "Sidebar": "Barre latérale",
             "Language": "Langue",
-            "Hidden — left of the divider": "Masqués — à gauche du séparateur",
-            "Visible — right of the divider": "Visibles — à droite du séparateur",
+            "Hidden, left of the divider": "Masqués: à gauche du séparateur",
+            "Visible, right of the divider": "Visibles: à droite du séparateur",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Rien. Faites glisser le séparateur à gauche des icônes à écarter.",
             "⌘-drag the divider to change what is hidden.":
@@ -243,8 +243,8 @@ enum L {
             "Triangle": "Triángulo",
             "Sidebar": "Barra lateral",
             "Language": "Idioma",
-            "Hidden — left of the divider": "Ocultos — a la izquierda del separador",
-            "Visible — right of the divider": "Visibles — a la derecha del separador",
+            "Hidden, left of the divider": "Ocultos, a la izquierda del separador",
+            "Visible, right of the divider": "Visibles, a la derecha del separador",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nada. Arrastre el separador a la izquierda de los iconos que quiera apartar.",
             "⌘-drag the divider to change what is hidden.":
@@ -283,8 +283,8 @@ enum L {
             "Triangle": "Triângulo",
             "Sidebar": "Barra lateral",
             "Language": "Idioma",
-            "Hidden — left of the divider": "Ocultos — à esquerda do divisor",
-            "Visible — right of the divider": "Visíveis — à direita do divisor",
+            "Hidden, left of the divider": "Ocultos: à esquerda do divisor",
+            "Visible, right of the divider": "Visíveis: à direita do divisor",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nada. Arraste o divisor para a esquerda dos ícones que quer afastar.",
             "⌘-drag the divider to change what is hidden.":
@@ -323,8 +323,8 @@ enum L {
             "Triangle": "Triangolo",
             "Sidebar": "Barra laterale",
             "Language": "Lingua",
-            "Hidden — left of the divider": "Nascosti — a sinistra del divisore",
-            "Visible — right of the divider": "Visibili — a destra del divisore",
+            "Hidden, left of the divider": "Nascosti, a sinistra del divisore",
+            "Visible, right of the divider": "Visibili, a destra del divisore",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Niente. Trascina il divisore a sinistra delle icone da togliere di mezzo.",
             "⌘-drag the divider to change what is hidden.":
@@ -363,8 +363,8 @@ enum L {
             "Triangle": "Driehoek",
             "Sidebar": "Navigatiekolom",
             "Language": "Taal",
-            "Hidden — left of the divider": "Verborgen — links van de scheiding",
-            "Visible — right of the divider": "Zichtbaar — rechts van de scheiding",
+            "Hidden, left of the divider": "Verborgen, links van de scheiding",
+            "Visible, right of the divider": "Zichtbaar, rechts van de scheiding",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Niets. Sleep de scheiding links van de symbolen die u weg wilt hebben.",
             "⌘-drag the divider to change what is hidden.":
@@ -403,8 +403,8 @@ enum L {
             "Triangle": "Trójkąt",
             "Sidebar": "Panel boczny",
             "Language": "Język",
-            "Hidden — left of the divider": "Ukryte — na lewo od separatora",
-            "Visible — right of the divider": "Widoczne — na prawo od separatora",
+            "Hidden, left of the divider": "Ukryte, na lewo od separatora",
+            "Visible, right of the divider": "Widoczne, na prawo od separatora",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Pusto. Przeciągnij separator na lewo od ikon, które chcesz schować.",
             "⌘-drag the divider to change what is hidden.":
@@ -443,8 +443,8 @@ enum L {
             "Triangle": "Trojúhelník",
             "Sidebar": "Postranní panel",
             "Language": "Jazyk",
-            "Hidden — left of the divider": "Skryté — vlevo od oddělovače",
-            "Visible — right of the divider": "Viditelné — vpravo od oddělovače",
+            "Hidden, left of the divider": "Skryté, vlevo od oddělovače",
+            "Visible, right of the divider": "Viditelné, vpravo od oddělovače",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nic. Přetáhněte oddělovač vlevo od ikon, které chcete uklidit.",
             "⌘-drag the divider to change what is hidden.":
@@ -483,8 +483,8 @@ enum L {
             "Triangle": "Triangel",
             "Sidebar": "Sidofält",
             "Language": "Språk",
-            "Hidden — left of the divider": "Dolda — till vänster om avdelaren",
-            "Visible — right of the divider": "Synliga — till höger om avdelaren",
+            "Hidden, left of the divider": "Dolda, till vänster om avdelaren",
+            "Visible, right of the divider": "Synliga, till höger om avdelaren",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Inget. Dra avdelaren till vänster om symbolerna du vill få undan.",
             "⌘-drag the divider to change what is hidden.":
@@ -523,8 +523,8 @@ enum L {
             "Triangle": "Üçgen",
             "Sidebar": "Yan çubuk",
             "Language": "Dil",
-            "Hidden — left of the divider": "Gizli — ayırıcının solunda",
-            "Visible — right of the divider": "Görünür — ayırıcının sağında",
+            "Hidden, left of the divider": "Gizli, ayırıcının solunda",
+            "Visible, right of the divider": "Görünür, ayırıcının sağında",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Boş. Ayırıcıyı, kaldırmak istediğiniz simgelerin soluna sürükleyin.",
             "⌘-drag the divider to change what is hidden.":
@@ -563,8 +563,8 @@ enum L {
             "Triangle": "三角形",
             "Sidebar": "サイドバー",
             "Language": "言語",
-            "Hidden — left of the divider": "非表示 — 区切りの左側",
-            "Visible — right of the divider": "表示中 — 区切りの右側",
+            "Hidden, left of the divider": "非表示: 区切りの左側",
+            "Visible, right of the divider": "表示中: 区切りの右側",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "なし。隠したいアイコンの左へ区切りをドラッグしてください。",
             "⌘-drag the divider to change what is hidden.":
@@ -603,8 +603,8 @@ enum L {
             "Triangle": "삼각형",
             "Sidebar": "사이드바",
             "Language": "언어",
-            "Hidden — left of the divider": "가려짐 — 구분선 왼쪽",
-            "Visible — right of the divider": "표시됨 — 구분선 오른쪽",
+            "Hidden, left of the divider": "가려짐: 구분선 왼쪽",
+            "Visible, right of the divider": "표시됨: 구분선 오른쪽",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "없음. 치우고 싶은 아이콘의 왼쪽으로 구분선을 드래그하십시오.",
             "⌘-drag the divider to change what is hidden.":
@@ -643,8 +643,8 @@ enum L {
             "Triangle": "三角形",
             "Sidebar": "边栏",
             "Language": "语言",
-            "Hidden — left of the divider": "已隐藏 — 分隔线左侧",
-            "Visible — right of the divider": "显示中 — 分隔线右侧",
+            "Hidden, left of the divider": "已隐藏: 分隔线左侧",
+            "Visible, right of the divider": "显示中: 分隔线右侧",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "无。把分隔线拖到想收起的图标左侧。",
             "⌘-drag the divider to change what is hidden.":

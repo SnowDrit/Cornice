@@ -13,9 +13,9 @@ import OSLog
 /// somebody else's item; what there is, is an item wide enough to leave them nowhere
 /// to sit. Everything to its left goes past the edge of the screen.
 ///
-/// Two items, and — this is the point — **they are unrelated in space**:
+/// Two items, and, this is the point: **they are unrelated in space**:
 ///
-///     [ hidden items ][ │ boundary — grows ][ visible items ][ ❯ toggle ]
+///     [ hidden items ][ │ boundary, grows ][ visible items ][ ❯ toggle ]
 ///
 /// The boundary is where the user dragged it, and nothing ever moves it. The toggle is
 /// wherever the user dragged *it*, usually over by the clock. A click on the toggle
@@ -26,12 +26,12 @@ import OSLog
 /// history: a status item cannot be placed next to another one on demand. Its saved
 /// position is consulted when it is created and never again, the value written and the
 /// position produced are not the same scale, feeding the error back diverges, and a
-/// divider computed into place lands tens of points away — close enough to look right
+/// divider computed into place lands tens of points away, close enough to look right
 /// and far enough that whatever sits in the gap never hides. Dropping the requirement
 /// deletes all of it.
 ///
 /// One item cannot do both jobs either. Six attempts were made to keep a chevron visible
-/// on an item that widens, the last measuring correct while still drawing nothing —
+/// on an item that widens, the last measuring correct while still drawing nothing:
 /// `length=1218 buttonBounds=1218 chevronX=1190`, a glyph well inside the screen. macOS
 /// appears not to render an item too wide for the bar at all: laid out for spacing,
 /// skipped for display. Which is fine for a boundary that has nothing to say.
@@ -75,7 +75,7 @@ final class SeparatorController: NSObject {
         //
         // Only here, and only before the item exists. Doing it while running means
         // destroying and recreating a status item from a timer, against a position macOS
-        // is writing to at the same time — that was tried twice and lost the chevron
+        // is writing to at the same time, that was tried twice and lost the chevron
         // outright both times. Written once at startup it is just the value the item is
         // created with, which is the one moment the system reads it.
         //
@@ -107,7 +107,7 @@ final class SeparatorController: NSObject {
         // Watch for the toggle being dragged, and put it back.
         //
         // Detection compares the item's *observed* position against where it was last
-        // seen sitting correctly — not the value in defaults. macOS writes an item's
+        // seen sitting correctly, not the value in defaults. macOS writes an item's
         // real position back to that key as it lays out, so comparing against the key
         // sees a difference immediately after writing one, rebuilds, and never stops.
         // That loop is how the chevron disappeared entirely, twice.
@@ -173,7 +173,7 @@ final class SeparatorController: NSObject {
     ///
     /// Read from the item's own window rather than through the accessibility API. Asking
     /// AX about an element in one's *own* process returns coordinates in a different
-    /// space from the ones it reports for other applications — this item described
+    /// space from the ones it reports for other applications, this item described
     /// itself as `x=7 y=888` while genuinely sitting near x=935.
     var boundaryFrame: CGRect? {
         guard let frame = boundary.button?.window?.frame, frame.width > 0 else { return nil }
@@ -232,7 +232,7 @@ final class SeparatorController: NSObject {
     /// Redraws both glyphs from the current preferences.
     ///
     /// Driven by `UserDefaults.didChangeNotification` rather than by the settings window
-    /// calling back, so appearance follows the stored value however it was changed —
+    /// calling back, so appearance follows the stored value however it was changed:
     /// including from the command line, which is how it gets tested.
     func refreshAppearance() {
         boundary.button?.image = Self.boundaryImage()

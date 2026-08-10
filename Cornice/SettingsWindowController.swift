@@ -9,8 +9,8 @@ import SwiftUI
 /// Owns the settings window.
 ///
 /// Built by hand rather than through SwiftUI's `Settings` scene. That scene is opened by
-/// sending `showSettingsWindow:` — a selector looked up by name, on an app that has no
-/// Dock icon and no menu bar of its own — and nothing happened when it was sent. An
+/// sending `showSettingsWindow:` - a selector looked up by name, on an app that has no
+/// Dock icon and no menu bar of its own, and nothing happened when it was sent. An
 /// `NSWindow` created here opens because it was created; there is no lookup to fail.
 @MainActor
 final class SettingsWindowController {

@@ -27,26 +27,26 @@ to protect.
 ## Two items, unrelated in space
 
 ```
-[ hidden items ][ │ boundary — grows ][ visible items ][ ❯ toggle ]
+[ hidden items ][ │ boundary, grows ][ visible items ][ ❯ toggle ]
 ```
 
 The **boundary** is where the user dragged it, and Cornice never moves it. Its position
-*is* the configuration — macOS already persists that under `NSStatusItem Preferred
+*is* the configuration, macOS already persists that under `NSStatusItem Preferred
 Position`, so there is nothing else to store.
 
 The **toggle** is a switch. It is never resized, so its glyph draws like any other status
 icon. Where it sits means nothing; it is placed at the right-hand end on each launch and
 is otherwise the user's to move.
 
-**They are deliberately not tied together.** Making them adjacent — so the pair could
-read as one control — is what caused every failure this file's history records. A status
+**They are deliberately not tied together.** Making them adjacent, so the pair could
+read as one control, is what caused every failure this file's history records. A status
 item cannot be placed next to another one on demand:
 
 - its saved position is consulted when it is created, and at no other time, so changing
   its width does not make macOS look again
 - the number written and the position produced are not on the same scale
 - feeding the observed error back diverges, and the item ends up at the far left
-- computed into place it lands tens of points away — close enough to look right, far
+- computed into place it lands tens of points away, close enough to look right, far
   enough that whatever sits in the gap never hides
 
 Dropping the requirement deleted all of it, along with an alignment timer and a
@@ -55,7 +55,7 @@ rebuild-on-drift.
 ## One item cannot do both jobs
 
 A status item wide enough to hide things does not render. Six approaches were tried to
-keep a chevron visible on it — centring the image, padding the image to the item's width,
+keep a chevron visible on it, centring the image, padding the image to the item's width,
 disabling image scaling, a right-aligned title, a right-aligned paragraph style, and a
 hand-positioned subview. The last measured correct and still drew nothing:
 
@@ -90,7 +90,7 @@ Do not let `ItemMover` details leak upward. No `CGEvent`, no window IDs, and no
 
 ## Why ItemMover is not used
 
-Moving another application's item is the only way to build a named configuration — "hide
+Moving another application's item is the only way to build a named configuration: "hide
 Telegram" means putting Telegram to the left of the boundary. It was implemented, and it
 worked: three consecutive runs dragged an item across the boundary and back on
 macOS 26.5.
@@ -113,7 +113,7 @@ Things that cost hours and are not visible in the code:
 - **The target must not be sandboxed.** Xcode's macOS app template sets
   `ENABLE_APP_SANDBOX = YES`, and there is no `.entitlements` file in the source tree and
   no literal "Sandbox" string in the project to grep for. A sandboxed build reports
-  `AXIsProcessTrusted() == true`, enumerates without error, and finds exactly one item —
+  `AXIsProcessTrusted() == true`, enumerates without error, and finds exactly one item:
   its own. Check the shipped signature, not the project:
 
       codesign -d --entitlements - /path/to/Cornice.app
@@ -126,7 +126,7 @@ Things that cost hours and are not visible in the code:
   six seconds per unanswered request, and a few slow processes serialise into what looks
   like a deadlock. Capped at 250ms per application.
 
-- **A hidden item still has a frame**, at a large negative x — exactly as Bartender's
+- **A hidden item still has a frame**, at a large negative x, exactly as Bartender's
   hidden items do. Checking only whether an item is present reports nothing hidden while
   the screen plainly shows otherwise.
 

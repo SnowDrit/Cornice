@@ -14,11 +14,11 @@ chevron, and comes back when you click again.
 [ hidden ]  │  [ visible ]  ❯
 ```
 
-- **Hide and reveal** — one click, no delay
-- **You decide where the line falls** — ⌘-drag the divider; Cornice never moves it
-- **Auto-hide** — optionally put the icons away once the pointer leaves the menu bar
+- **Hide and reveal** - one click, no delay
+- **You decide where the line falls** - ⌘-drag the divider; Cornice never moves it
+- **Auto-hide** - optionally put the icons away once the pointer leaves the menu bar
 - **Open at login**
-- **Appearance** — divider thickness and height, five choices of chevron
+- **Appearance** - divider thickness and height, five choices of chevron
 - **16 languages**, switched without restarting
 
 **No permissions are needed to use it.** Hiding and revealing are done with Cornice's own
@@ -40,19 +40,19 @@ first things to break.
 
 Menu bar managers on macOS are in a bad way:
 
-- **Ice** (29k stars) — last stable release October 2024, repository untouched since
+- **Ice** (29k stars) - last stable release October 2024, repository untouched since
   September 2025, 400+ open issues. Does not support macOS 26.
-- **SaneBar** — [sunset by its author on 1 July 2026](https://github.com/sane-apps/SaneBar/releases/tag/sunset)
+- **SaneBar** - [sunset by its author on 1 July 2026](https://github.com/sane-apps/SaneBar/releases/tag/sunset)
   and relicensed to MIT, because macOS 27 breaks it.
-- **Bartender** — commercial, and its macOS 27 build is an early technical preview with
+- **Bartender** - commercial, and its macOS 27 build is an early technical preview with
   most features not yet restored.
 
 Apple provides **no public API** for managing other applications' menu bar items. Every
 tool in this category is built on accessibility APIs and undocumented behaviour, and
 every macOS release moves the ground.
 
-Cornice's answer is to need almost none of it. The thing you do every day — hide, reveal
-— touches nothing Apple has signalled it will change.
+Cornice's answer is to need almost none of it. The thing you do every day, hide, reveal
+- touches nothing Apple has signalled it will change.
 
 ## Requirements
 
@@ -65,6 +65,18 @@ The parts of Cornice that need permissions are the parts you use least. If macOS
 withdraws them, the settings window loses its list of icon names; hiding and revealing
 carry on, because that path asks the system for nothing.
 
+## Installing
+
+Open `Cornice.dmg` from the [latest release](https://github.com/SnowDrit/Cornice/releases)
+and drag the app onto the Applications shortcut in the window.
+
+macOS will refuse to open it the first time: the builds are signed for development, not
+notarised, which needs a paid Apple Developer account. Right-click the app in Applications,
+choose Open, then Open again in the warning. Once is enough.
+
+Cornice asks for Accessibility on first launch. It uses it only to list your icons by name
+in the settings window; hiding and revealing need no permission at all.
+
 ## Releasing
 
 Pushing a tag builds and publishes:
@@ -75,10 +87,10 @@ git push --follow-tags origin main
 ```
 
 The workflow in `.github/workflows/release.yml` builds on a macOS runner, refuses to
-ship a sandboxed bundle, and attaches `Cornice.zip` to a pre-release.
+ship a sandboxed bundle, and attaches `Cornice.dmg` to a pre-release.
 
 Those builds are **ad-hoc signed**, because the runner has no certificate. macOS will
-warn on first open, and — because the Accessibility permission is keyed to the signature —
+warn on first open, and, because the Accessibility permission is keyed to the signature:
 it has to be granted again after each such update. A build signed on your own machine
 does not have that problem. Adding a real certificate to the workflow via repository
 secrets would fix it for everyone.
@@ -93,7 +105,7 @@ open Cornice.xcodeproj
 
 Set your own signing team in the target settings. A real signing certificate is needed
 rather than ad-hoc signing, otherwise macOS revokes the Accessibility permission on every
-rebuild. The app must **not** be sandboxed — Xcode's template enables the sandbox, and a
+rebuild. The app must **not** be sandboxed: Xcode's template enables the sandbox, and a
 sandboxed build sees only its own status item while reporting no error at all.
 
 ## Roadmap
@@ -109,7 +121,7 @@ sandboxed build sees only its own status item while reporting no error at all.
 | 6 | A second divider for an always-hidden zone | later |
 
 Stage 3 was meant to be the go/no-go for moving items automatically. It worked three
-times and then never again — not after a reboot, a fresh permission, or rebuilding the
+times and then never again, not after a reboot, a fresh permission, or rebuilding the
 exact commit that had passed. Nine explanations were tested and ruled out. The feature
 was dropped rather than shipped on something that behaves like that; the code survives
 behind `ItemMover` and nothing in the product calls it.
