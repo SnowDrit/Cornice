@@ -65,6 +65,24 @@ The parts of Cornice that need permissions are the parts you use least. If macOS
 withdraws them, the settings window loses its list of icon names; hiding and revealing
 carry on, because that path asks the system for nothing.
 
+## Releasing
+
+Pushing a tag builds and publishes:
+
+```bash
+git tag -a v0.2.0 -m "Cornice 0.2.0"
+git push --follow-tags origin main
+```
+
+The workflow in `.github/workflows/release.yml` builds on a macOS runner, refuses to
+ship a sandboxed bundle, and attaches `Cornice.zip` to a pre-release.
+
+Those builds are **ad-hoc signed**, because the runner has no certificate. macOS will
+warn on first open, and — because the Accessibility permission is keyed to the signature —
+it has to be granted again after each such update. A build signed on your own machine
+does not have that problem. Adding a real certificate to the workflow via repository
+secrets would fix it for everyone.
+
 ## Building
 
 ```bash
