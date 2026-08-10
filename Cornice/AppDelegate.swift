@@ -37,6 +37,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         installMenu()
 
+        // The menu's titles are built once, so they would keep the language they were
+        // built in. Rebuilt whenever a preference changes, which is the only way the
+        // language can change.
+        NotificationCenter.default.addObserver(
+            forName: UserDefaults.didChangeNotification,
+            object: nil,
+            queue: .main) { [weak self] _ in
+                Task { @MainActor in self?.installMenu() }
+            }
+
         // Restore what the user left, unless they asked for a fixed starting state.
         let preferences = Preferences.shared
         let shouldHide = preferences.startHidden || preferences.wasHiding
@@ -98,10 +108,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// with no Dock icon still needs a way to reach its settings and to quit.
     private func installMenu() {
         let menu = NSMenu()
-        menu.addItem(withTitle: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+        menu.addItem(withTitle: L.t("Settings…"), action: #selector(openSettings), keyEquivalent: ",")
             .target = self
         menu.addItem(.separator())
-        menu.addItem(withTitle: "Quit Cornice", action: #selector(quit), keyEquivalent: "q")
+        menu.addItem(withTitle: L.t("Quit Cornice"), action: #selector(quit), keyEquivalent: "q")
             .target = self
         separator?.contextMenu = menu
     }

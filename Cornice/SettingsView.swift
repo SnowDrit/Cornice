@@ -27,9 +27,9 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
-            behaviour.tabItem { Label("Behaviour", systemImage: "slider.horizontal.3") }
-            appearance.tabItem { Label("Appearance", systemImage: "paintbrush") }
-            arrangementList.tabItem { Label("Menu Bar", systemImage: "menubar.rectangle") }
+            behaviour.tabItem { Label(L.t("Behaviour"), systemImage: "slider.horizontal.3") }
+            appearance.tabItem { Label(L.t("Appearance"), systemImage: "paintbrush") }
+            arrangementList.tabItem { Label(L.t("Menu Bar"), systemImage: "menubar.rectangle") }
         }
         .frame(width: 470, height: 400)
         .task { snapshot = arrangement() }
@@ -38,15 +38,22 @@ struct SettingsView: View {
     private var behaviour: some View {
         Form {
             Section {
-                Toggle("Start hidden", isOn: $preferences.startHidden)
-                Text("Otherwise Cornice comes up the way you left it.")
+                Picker(L.t("Language"), selection: $preferences.language) {
+                    ForEach(Language.allCases) { language in
+                        Text(language.endonym).tag(language)
+                    }
+                }
+            }
+            Section {
+                Toggle(L.t("Start hidden"), isOn: $preferences.startHidden)
+                Text(L.t("Otherwise Cornice comes up the way you left it."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Section {
-                Toggle("Hide again automatically", isOn: $preferences.autoCollapse)
+                Toggle(L.t("Hide again automatically"), isOn: $preferences.autoCollapse)
                 if preferences.autoCollapse {
-                    LabeledContent("After") {
+                    LabeledContent(L.t("After")) {
                         HStack {
                             Slider(value: $preferences.autoCollapseDelay, in: 0.1...3, step: 0.1)
                             Text("\(preferences.autoCollapseDelay, specifier: "%.1f") s")
@@ -55,12 +62,12 @@ struct SettingsView: View {
                         }
                     }
                 }
-                Text("Counted from the moment the pointer leaves the menu bar.")
+                Text(L.t("Counted from the moment the pointer leaves the menu bar."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Section {
-                Toggle("Open at login", isOn: $launchAtLogin)
+                Toggle(L.t("Open at login"), isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, wanted in
                         if !LaunchAtLogin.set(wanted) {
                             launchAtLogin = LaunchAtLogin.isEnabled
@@ -73,8 +80,8 @@ struct SettingsView: View {
 
     private var appearance: some View {
         Form {
-            Section("Divider") {
-                LabeledContent("Thickness") {
+            Section(L.t("Divider")) {
+                LabeledContent(L.t("Thickness")) {
                     HStack {
                         Slider(value: $preferences.dividerThickness, in: 0.5...5, step: 0.5)
                         Text("\(preferences.dividerThickness, specifier: "%.1f")")
@@ -82,7 +89,7 @@ struct SettingsView: View {
                             .frame(width: 32, alignment: .trailing)
                     }
                 }
-                LabeledContent("Height") {
+                LabeledContent(L.t("Height")) {
                     HStack {
                         Slider(value: $preferences.dividerHeight, in: 4...20, step: 1)
                         Text("\(Int(preferences.dividerHeight))")
@@ -92,7 +99,7 @@ struct SettingsView: View {
                 }
                 // Drawn at the real size so the sliders can be judged by eye rather than
                 // by number; the menu bar is small and 2 points is a visible difference.
-                LabeledContent("Preview") {
+                LabeledContent(L.t("Preview")) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 4).fill(.quaternary)
                         Capsule()
@@ -103,10 +110,10 @@ struct SettingsView: View {
                     .frame(width: 60, height: 24)
                 }
             }
-            Section("Toggle") {
-                Picker("Symbol", selection: $preferences.toggleSymbol) {
+            Section(L.t("Toggle")) {
+                Picker(L.t("Symbol"), selection: $preferences.toggleSymbol) {
                     ForEach(Preferences.ToggleSymbol.allCases) { symbol in
-                        Label(symbol.label, systemImage: symbol.symbolName(hiding: false))
+                        Label(L.t(symbol.label), systemImage: symbol.symbolName(hiding: false))
                             .tag(symbol)
                     }
                 }
@@ -119,24 +126,24 @@ struct SettingsView: View {
     private var arrangementList: some View {
         VStack(alignment: .leading, spacing: 0) {
             List {
-                Section("Hidden — left of the divider") {
+                Section(L.t("Hidden — left of the divider")) {
                     if snapshot.hidden.isEmpty {
-                        Text("Nothing. Drag the divider left of the icons you want out of the way.")
+                        Text(L.t("Nothing. Drag the divider left of the icons you want out of the way."))
                             .foregroundStyle(.secondary)
                     }
                     ForEach(snapshot.hidden) { item in row(item) }
                 }
-                Section("Visible — right of the divider") {
+                Section(L.t("Visible — right of the divider")) {
                     ForEach(snapshot.visible) { item in row(item) }
                 }
             }
             Divider()
             HStack {
-                Text("⌘-drag the divider to change what is hidden.")
+                Text(L.t("⌘-drag the divider to change what is hidden."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Button("Refresh") { snapshot = arrangement() }
+                Button(L.t("Refresh")) { snapshot = arrangement() }
             }
             .padding(10)
         }
@@ -149,7 +156,7 @@ struct SettingsView: View {
                 Text(title).foregroundStyle(.secondary)
             }
             Spacer()
-            Text(item.frame.map { "x \(Int($0.minX))" } ?? "off-screen")
+            Text(item.frame.map { "x \(Int($0.minX))" } ?? L.t("off-screen"))
                 .font(.caption)
                 .monospacedDigit()
                 .foregroundStyle(.tertiary)

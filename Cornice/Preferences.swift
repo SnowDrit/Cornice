@@ -44,6 +44,18 @@ final class Preferences {
         static let dividerThickness = "dividerThickness"
         static let dividerHeight = "dividerHeight"
         static let toggleSymbol = "toggleSymbol"
+        static let language = "language"
+    }
+
+    /// Interface language. Defaults to whichever of Cornice's languages the system asks
+    /// for first, and to English if it asks for none of them.
+    var language: Language {
+        get {
+            access(keyPath: \.language)
+            let raw = defaults.string(forKey: Key.language) ?? ""
+            return Language(rawValue: raw) ?? .systemDefault
+        }
+        set { withMutation(keyPath: \.language) { defaults.set(newValue.rawValue, forKey: Key.language) } }
     }
 
     /// Which pair of glyphs the toggle uses. The pair matters, not the single icon: it
