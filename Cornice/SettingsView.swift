@@ -19,6 +19,20 @@ struct SettingsView: View {
 
     @State private var snapshot = Arrangement(visible: [], hidden: [])
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
+    @State private var isChecking = false
+    @State private var updateResult: UpdateChecker.Result?
+
+    private func checkForUpdates() {
+        isChecking = true
+        updateResult = nil
+        Task {
+            let result = await UpdateChecker.check()
+            await MainActor.run {
+                updateResult = result
+                isChecking = false
+            }
+        }
+    }
 
     struct Arrangement {
         var visible: [MenuBarItem]
@@ -73,6 +87,37 @@ struct SettingsView: View {
                             launchAtLogin = LaunchAtLogin.isEnabled
                         }
                     }
+            }
+            Section {
+                LabeledContent(L.t("Version")) {
+                    Text(UpdateChecker.currentVersion).monospacedDigit()
+                }
+                HStack {
+                    Button(L.t("Check for Updates")) { checkForUpdates() }
+                        .disabled(isChecking)
+                    if isChecking { ProgressView().controlSize(.small) }
+                    Spacer()
+                }
+                switch updateResult {
+                case .none:
+                    EmptyView()
+                case .upToDate:
+                    Text(L.t("You have the latest version."))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                case .available(let release):
+                    // Deliberately a link rather than a download. Cornice does not
+                    // install anything over itself; the release page says what changed
+                    // and the decision stays with the reader.
+                    Link(
+                        L.t("Version") + " \(release.version) " + L.t("is available"),
+                        destination: release.url)
+                        .font(.caption)
+                case .failed(let reason):
+                    Text(L.t("Could not check:") + " \(reason)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .formStyle(.grouped)

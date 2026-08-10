@@ -20,3 +20,7 @@ Package.resolved
 
 # Local overrides (never commit signing details)
 *.local.xcconfig
+
+# Packaged builds
+Cornice-*.zip
+Cornice.zip
