@@ -94,6 +94,5 @@ jobs:
           else
             gh release create "$tag" Cornice.dmg \
               --title "Cornice $tag" \
-              --prerelease \
               --generate-notes
           fi
