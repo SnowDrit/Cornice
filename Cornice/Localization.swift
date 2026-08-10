@@ -98,6 +98,31 @@ enum L {
             "is available": "доступна",
             "Could not check:": "Не удалось проверить:",
             "off-screen": "за экраном",
+            "Gestures": "Жесты",
+            "Move windows with trackpad gestures": "Двигать окна жестами тачпада",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "По умолчанию выключено. Доступ к Универсальному доступу запрашивается только при включении.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Универсальный доступ не выдан, жесты не работают.",
+            "Open Accessibility settings": "Открыть настройки Универсального доступа",
+            "Two fingers, pointer on a window's title bar":
+                "Два пальца, курсор на заголовке окна",
+            "Left half": "Левая половина",
+            "Right half": "Правая половина",
+            "Fill the screen": "На весь экран",
+            "Put it back where it was": "Вернуть как было",
+            "Keyboard shortcuts": "Горячие клавиши",
+            "Hide or reveal the icons": "Скрыть или показать значки",
+            "Turn automatic hiding on or off": "Включить или выключить автоскрытие",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Пока вы ничего не назначили, ничего и не работает. Действуют из любого приложения.",
+            "Click, then press the combination you want.":
+                "Нажмите, потом нажмите нужное сочетание.",
+            "Remove this shortcut": "Убрать это сочетание",
+            "Press keys…": "Нажмите клавиши…",
+            "Not set": "Не задано",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Нужно минимум два модификатора, один из них ⌘, ⌥ или ⌃.",
+            "Something else already uses that.": "Это сочетание уже занято.",
         ],
         .uk: [
             "Behaviour": "Поведінка",
@@ -138,6 +163,31 @@ enum L {
             "is available": "доступна",
             "Could not check:": "Не вдалося перевірити:",
             "off-screen": "за екраном",
+            "Gestures": "Жести",
+            "Move windows with trackpad gestures": "Рухати вікна жестами трекпада",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Типово вимкнено. Доступ до Універсального доступу запитується лише при увімкненні.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Універсальний доступ не надано, жести не працюють.",
+            "Open Accessibility settings": "Відкрити налаштування Універсального доступу",
+            "Two fingers, pointer on a window's title bar":
+                "Два пальці, курсор на заголовку вікна",
+            "Left half": "Ліва половина",
+            "Right half": "Права половина",
+            "Fill the screen": "На весь екран",
+            "Put it back where it was": "Повернути як було",
+            "Keyboard shortcuts": "Гарячі клавіші",
+            "Hide or reveal the icons": "Сховати або показати значки",
+            "Turn automatic hiding on or off": "Увімкнути або вимкнути автоприховування",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Поки ви нічого не призначили, нічого й не працює. Діють з будь-якої програми.",
+            "Click, then press the combination you want.":
+                "Натисніть, потім натисніть потрібне поєднання.",
+            "Remove this shortcut": "Прибрати це поєднання",
+            "Press keys…": "Натисніть клавіші…",
+            "Not set": "Не задано",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Потрібно щонайменше два модифікатори, один з них ⌘, ⌥ або ⌃.",
+            "Something else already uses that.": "Це поєднання вже зайняте.",
         ],
         .de: [
             "Behaviour": "Verhalten",
@@ -178,6 +228,31 @@ enum L {
             "is available": "ist verfügbar",
             "Could not check:": "Prüfung fehlgeschlagen:",
             "off-screen": "außerhalb des Bildschirms",
+            "Gestures": "Gesten",
+            "Move windows with trackpad gestures": "Fenster mit Trackpad-Gesten bewegen",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Standardmäßig aus. Bedienungshilfen werden erst beim Einschalten angefragt.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Bedienungshilfen wurden nicht erteilt, Gesten laufen nicht.",
+            "Open Accessibility settings": "Bedienungshilfen öffnen",
+            "Two fingers, pointer on a window's title bar":
+                "Zwei Finger, Zeiger auf der Titelleiste eines Fensters",
+            "Left half": "Linke Hälfte",
+            "Right half": "Rechte Hälfte",
+            "Fill the screen": "Bildschirm füllen",
+            "Put it back where it was": "Zurück an den alten Platz",
+            "Keyboard shortcuts": "Tastaturkurzbefehle",
+            "Hide or reveal the icons": "Symbole aus- oder einblenden",
+            "Turn automatic hiding on or off": "Automatisches Ausblenden ein- oder ausschalten",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Solange nichts belegt ist, passiert nichts. Sie wirken aus jedem Programm.",
+            "Click, then press the combination you want.":
+                "Klicken, dann die gewünschte Kombination drücken.",
+            "Remove this shortcut": "Kurzbefehl entfernen",
+            "Press keys…": "Tasten drücken…",
+            "Not set": "Nicht belegt",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Mindestens zwei Sondertasten, davon eine ⌘, ⌥ oder ⌃.",
+            "Something else already uses that.": "Etwas anderes belegt das schon.",
         ],
         .fr: [
             "Behaviour": "Comportement",
@@ -218,6 +293,32 @@ enum L {
             "is available": "est disponible",
             "Could not check:": "Vérification impossible :",
             "off-screen": "hors écran",
+            "Gestures": "Gestes",
+            "Move windows with trackpad gestures":
+                "Déplacer les fenêtres avec des gestes du trackpad",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Désactivé par défaut. L'accessibilité n'est demandée qu'à l'activation.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "L'accessibilité n'a pas été accordée, les gestes ne fonctionnent pas.",
+            "Open Accessibility settings": "Ouvrir les réglages d'accessibilité",
+            "Two fingers, pointer on a window's title bar":
+                "Deux doigts, pointeur sur la barre de titre d'une fenêtre",
+            "Left half": "Moitié gauche",
+            "Right half": "Moitié droite",
+            "Fill the screen": "Remplir l'écran",
+            "Put it back where it was": "Remettre où c'était",
+            "Keyboard shortcuts": "Raccourcis clavier",
+            "Hide or reveal the icons": "Masquer ou afficher les icônes",
+            "Turn automatic hiding on or off": "Activer ou désactiver le masquage automatique",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Tant que rien n'est défini, rien ne se passe. Ils marchent depuis n'importe quelle app.",
+            "Click, then press the combination you want.":
+                "Cliquez, puis appuyez sur la combinaison voulue.",
+            "Remove this shortcut": "Retirer ce raccourci",
+            "Press keys…": "Appuyez sur les touches…",
+            "Not set": "Non défini",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Au moins deux modificateurs, dont ⌘, ⌥ ou ⌃.",
+            "Something else already uses that.": "Autre chose l'utilise déjà.",
         ],
         .es: [
             "Behaviour": "Comportamiento",
@@ -258,6 +359,31 @@ enum L {
             "is available": "está disponible",
             "Could not check:": "No se pudo comprobar:",
             "off-screen": "fuera de pantalla",
+            "Gestures": "Gestos",
+            "Move windows with trackpad gestures": "Mover ventanas con gestos del trackpad",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Desactivado por omisión. La accesibilidad se pide solo al activarlo.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "No se ha concedido la accesibilidad, los gestos no funcionan.",
+            "Open Accessibility settings": "Abrir ajustes de accesibilidad",
+            "Two fingers, pointer on a window's title bar":
+                "Dos dedos, puntero sobre la barra de título de una ventana",
+            "Left half": "Mitad izquierda",
+            "Right half": "Mitad derecha",
+            "Fill the screen": "Llenar la pantalla",
+            "Put it back where it was": "Devolver donde estaba",
+            "Keyboard shortcuts": "Atajos de teclado",
+            "Hide or reveal the icons": "Ocultar o mostrar los iconos",
+            "Turn automatic hiding on or off": "Activar o desactivar la ocultación automática",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Mientras no asignes nada, no pasa nada. Funcionan desde cualquier app.",
+            "Click, then press the combination you want.":
+                "Haz clic y pulsa la combinación que quieras.",
+            "Remove this shortcut": "Quitar este atajo",
+            "Press keys…": "Pulsa las teclas…",
+            "Not set": "Sin asignar",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Al menos dos modificadores, uno de ellos ⌘, ⌥ o ⌃.",
+            "Something else already uses that.": "Ya lo usa otra cosa.",
         ],
         .pt: [
             "Behaviour": "Comportamento",
@@ -298,6 +424,31 @@ enum L {
             "is available": "está disponível",
             "Could not check:": "Não foi possível verificar:",
             "off-screen": "fora da tela",
+            "Gestures": "Gestos",
+            "Move windows with trackpad gestures": "Mover janelas com gestos do trackpad",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Desligado por omissão. A acessibilidade só é pedida ao ligar isto.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "A acessibilidade não foi concedida, os gestos não funcionam.",
+            "Open Accessibility settings": "Abrir definições de acessibilidade",
+            "Two fingers, pointer on a window's title bar":
+                "Dois dedos, ponteiro sobre a barra de título de uma janela",
+            "Left half": "Metade esquerda",
+            "Right half": "Metade direita",
+            "Fill the screen": "Preencher o ecrã",
+            "Put it back where it was": "Repor onde estava",
+            "Keyboard shortcuts": "Atalhos de teclado",
+            "Hide or reveal the icons": "Ocultar ou mostrar os ícones",
+            "Turn automatic hiding on or off": "Ligar ou desligar a ocultação automática",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Enquanto nada estiver definido, nada acontece. Funcionam a partir de qualquer app.",
+            "Click, then press the combination you want.":
+                "Clique e depois prima a combinação que quiser.",
+            "Remove this shortcut": "Remover este atalho",
+            "Press keys…": "Prima as teclas…",
+            "Not set": "Por definir",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Pelo menos dois modificadores, um deles ⌘, ⌥ ou ⌃.",
+            "Something else already uses that.": "Outra coisa já usa isso.",
         ],
         .it: [
             "Behaviour": "Comportamento",
@@ -338,6 +489,32 @@ enum L {
             "is available": "è disponibile",
             "Could not check:": "Impossibile verificare:",
             "off-screen": "fuori schermo",
+            "Gestures": "Gesti",
+            "Move windows with trackpad gestures":
+                "Spostare le finestre con i gesti del trackpad",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Disattivato di serie. L'accessibilità viene chiesta solo all'attivazione.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "L'accessibilità non è stata concessa, i gesti non funzionano.",
+            "Open Accessibility settings": "Apri impostazioni di accessibilità",
+            "Two fingers, pointer on a window's title bar":
+                "Due dita, puntatore sulla barra del titolo di una finestra",
+            "Left half": "Metà sinistra",
+            "Right half": "Metà destra",
+            "Fill the screen": "Riempi lo schermo",
+            "Put it back where it was": "Rimetti dov'era",
+            "Keyboard shortcuts": "Scorciatoie da tastiera",
+            "Hide or reveal the icons": "Nascondi o mostra le icone",
+            "Turn automatic hiding on or off": "Attiva o disattiva la chiusura automatica",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Finché non assegni nulla, non succede nulla. Funzionano da qualsiasi app.",
+            "Click, then press the combination you want.":
+                "Fai clic, poi premi la combinazione che vuoi.",
+            "Remove this shortcut": "Togli questa scorciatoia",
+            "Press keys…": "Premi i tasti…",
+            "Not set": "Non assegnata",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Almeno due modificatori, uno dei quali ⌘, ⌥ o ⌃.",
+            "Something else already uses that.": "Qualcos'altro la usa già.",
         ],
         .nl: [
             "Behaviour": "Gedrag",
@@ -378,6 +555,32 @@ enum L {
             "is available": "is beschikbaar",
             "Could not check:": "Controleren mislukt:",
             "off-screen": "buiten beeld",
+            "Gestures": "Bewegingen",
+            "Move windows with trackpad gestures":
+                "Vensters verplaatsen met trackpadbewegingen",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Standaard uit. Toegankelijkheid wordt pas gevraagd als je dit aanzet.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Toegankelijkheid is niet verleend, bewegingen werken niet.",
+            "Open Accessibility settings": "Open toegankelijkheidsinstellingen",
+            "Two fingers, pointer on a window's title bar":
+                "Twee vingers, aanwijzer op de titelbalk van een venster",
+            "Left half": "Linkerhelft",
+            "Right half": "Rechterhelft",
+            "Fill the screen": "Scherm vullen",
+            "Put it back where it was": "Terug waar het stond",
+            "Keyboard shortcuts": "Toetscombinaties",
+            "Hide or reveal the icons": "Symbolen verbergen of tonen",
+            "Turn automatic hiding on or off": "Automatisch verbergen aan- of uitzetten",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Zolang je niets instelt, gebeurt er niets. Ze werken vanuit elk programma.",
+            "Click, then press the combination you want.":
+                "Klik en druk daarna op de gewenste combinatie.",
+            "Remove this shortcut": "Deze combinatie verwijderen",
+            "Press keys…": "Druk op toetsen…",
+            "Not set": "Niet ingesteld",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Minstens twee modificatietoetsen, waarvan één ⌘, ⌥ of ⌃.",
+            "Something else already uses that.": "Iets anders gebruikt dat al.",
         ],
         .pl: [
             "Behaviour": "Zachowanie",
@@ -418,6 +621,31 @@ enum L {
             "is available": "jest dostępna",
             "Could not check:": "Nie udało się sprawdzić:",
             "off-screen": "poza ekranem",
+            "Gestures": "Gesty",
+            "Move windows with trackpad gestures": "Przesuwaj okna gestami gładzika",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Domyślnie wyłączone. Dostępność jest proszona dopiero przy włączeniu.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Dostępność nie została przyznana, gesty nie działają.",
+            "Open Accessibility settings": "Otwórz ustawienia dostępności",
+            "Two fingers, pointer on a window's title bar":
+                "Dwa palce, wskaźnik na pasku tytułu okna",
+            "Left half": "Lewa połowa",
+            "Right half": "Prawa połowa",
+            "Fill the screen": "Wypełnij ekran",
+            "Put it back where it was": "Przywróć na miejsce",
+            "Keyboard shortcuts": "Skróty klawiszowe",
+            "Hide or reveal the icons": "Ukryj lub pokaż ikony",
+            "Turn automatic hiding on or off": "Włącz lub wyłącz automatyczne ukrywanie",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Dopóki nic nie przypiszesz, nic się nie dzieje. Działają z każdego programu.",
+            "Click, then press the combination you want.":
+                "Kliknij, potem naciśnij wybraną kombinację.",
+            "Remove this shortcut": "Usuń ten skrót",
+            "Press keys…": "Naciśnij klawisze…",
+            "Not set": "Nieprzypisane",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Co najmniej dwa modyfikatory, jeden z nich ⌘, ⌥ lub ⌃.",
+            "Something else already uses that.": "Coś innego już tego używa.",
         ],
         .cs: [
             "Behaviour": "Chování",
@@ -458,6 +686,31 @@ enum L {
             "is available": "je k dispozici",
             "Could not check:": "Kontrola se nezdařila:",
             "off-screen": "mimo obrazovku",
+            "Gestures": "Gesta",
+            "Move windows with trackpad gestures": "Posouvat okna gesty trackpadu",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Ve výchozím stavu vypnuto. Zpřístupnění se vyžádá až při zapnutí.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Zpřístupnění nebylo uděleno, gesta nefungují.",
+            "Open Accessibility settings": "Otevřít nastavení zpřístupnění",
+            "Two fingers, pointer on a window's title bar":
+                "Dva prsty, ukazatel na titulku okna",
+            "Left half": "Levá polovina",
+            "Right half": "Pravá polovina",
+            "Fill the screen": "Vyplnit obrazovku",
+            "Put it back where it was": "Vrátit tam, kde bylo",
+            "Keyboard shortcuts": "Klávesové zkratky",
+            "Hide or reveal the icons": "Skrýt nebo zobrazit ikony",
+            "Turn automatic hiding on or off": "Zapnout nebo vypnout automatické skrývání",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Dokud nic nepřiřadíte, nic se neděje. Fungují z jakékoli aplikace.",
+            "Click, then press the combination you want.":
+                "Klepněte a pak stiskněte požadovanou kombinaci.",
+            "Remove this shortcut": "Odebrat tuto zkratku",
+            "Press keys…": "Stiskněte klávesy…",
+            "Not set": "Nepřiřazeno",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Nejméně dva modifikátory, jeden z nich ⌘, ⌥ nebo ⌃.",
+            "Something else already uses that.": "Používá to už něco jiného.",
         ],
         .sv: [
             "Behaviour": "Beteende",
@@ -498,6 +751,31 @@ enum L {
             "is available": "är tillgänglig",
             "Could not check:": "Kunde inte söka:",
             "off-screen": "utanför skärmen",
+            "Gestures": "Gester",
+            "Move windows with trackpad gestures": "Flytta fönster med styrplattegester",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Av som standard. Hjälpmedel efterfrågas först när du slår på det här.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Hjälpmedel har inte beviljats, gesterna körs inte.",
+            "Open Accessibility settings": "Öppna hjälpmedelsinställningar",
+            "Two fingers, pointer on a window's title bar":
+                "Två fingrar, pekaren på ett fönsters namnlist",
+            "Left half": "Vänster halva",
+            "Right half": "Höger halva",
+            "Fill the screen": "Fyll skärmen",
+            "Put it back where it was": "Lägg tillbaka där det var",
+            "Keyboard shortcuts": "Kortkommandon",
+            "Hide or reveal the icons": "Dölj eller visa symbolerna",
+            "Turn automatic hiding on or off": "Slå på eller av automatisk döljning",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Så länge inget är angivet händer inget. De fungerar från vilket program som helst.",
+            "Click, then press the combination you want.":
+                "Klicka och tryck sedan på kombinationen du vill ha.",
+            "Remove this shortcut": "Ta bort det här kortkommandot",
+            "Press keys…": "Tryck på tangenter…",
+            "Not set": "Inte angivet",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "Minst två modifierare, varav en ⌘, ⌥ eller ⌃.",
+            "Something else already uses that.": "Något annat använder redan det.",
         ],
         .tr: [
             "Behaviour": "Davranış",
@@ -538,6 +816,32 @@ enum L {
             "is available": "kullanılabilir",
             "Could not check:": "Denetlenemedi:",
             "off-screen": "ekran dışında",
+            "Gestures": "Hareketler",
+            "Move windows with trackpad gestures":
+                "Pencereleri izleme dörtgeni hareketleriyle taşı",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "Öntanımlı olarak kapalı. Erişilebilirlik yalnızca bunu açtığınızda istenir.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "Erişilebilirlik verilmedi, hareketler çalışmıyor.",
+            "Open Accessibility settings": "Erişilebilirlik ayarlarını aç",
+            "Two fingers, pointer on a window's title bar":
+                "İki parmak, imleç bir pencerenin başlık çubuğunda",
+            "Left half": "Sol yarı",
+            "Right half": "Sağ yarı",
+            "Fill the screen": "Ekranı doldur",
+            "Put it back where it was": "Eski yerine koy",
+            "Keyboard shortcuts": "Klavye kısayolları",
+            "Hide or reveal the icons": "Simgeleri gizle veya göster",
+            "Turn automatic hiding on or off": "Otomatik gizlemeyi aç veya kapat",
+            "Nothing is bound until you bind it. They work from any application.":
+                "Siz atama yapmadıkça hiçbir şey olmaz. Her uygulamadan çalışırlar.",
+            "Click, then press the combination you want.":
+                "Tıklayın, sonra istediğiniz birleşime basın.",
+            "Remove this shortcut": "Bu kısayolu kaldır",
+            "Press keys…": "Tuşlara basın…",
+            "Not set": "Atanmadı",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "En az iki değiştirici, biri ⌘, ⌥ veya ⌃ olmalı.",
+            "Something else already uses that.": "Bunu başka bir şey kullanıyor.",
         ],
         .ja: [
             "Behaviour": "動作",
@@ -578,6 +882,29 @@ enum L {
             "is available": "が利用できます",
             "Could not check:": "確認できませんでした:",
             "off-screen": "画面外",
+            "Gestures": "ジェスチャ",
+            "Move windows with trackpad gestures": "トラックパッドのジェスチャでウインドウを動かす",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "初期状態ではオフ。アクセシビリティはオンにしたときだけ求めます。",
+            "Accessibility has not been granted, so gestures are not running.":
+                "アクセシビリティが許可されていないため、ジェスチャは動作しません。",
+            "Open Accessibility settings": "アクセシビリティ設定を開く",
+            "Two fingers, pointer on a window's title bar": "2本指、ポインタはウインドウのタイトルバーの上",
+            "Left half": "左半分",
+            "Right half": "右半分",
+            "Fill the screen": "画面いっぱい",
+            "Put it back where it was": "元の位置に戻す",
+            "Keyboard shortcuts": "キーボードショートカット",
+            "Hide or reveal the icons": "アイコンを隠す、または表示する",
+            "Turn automatic hiding on or off": "自動的に隠す機能をオン、オフする",
+            "Nothing is bound until you bind it. They work from any application.":
+                "割り当てるまで何も起きません。どのアプリからでも使えます。",
+            "Click, then press the combination you want.": "クリックしてから、使いたい組み合わせを押してください。",
+            "Remove this shortcut": "このショートカットを削除",
+            "Press keys…": "キーを押してください…",
+            "Not set": "未設定",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "修飾キーは2つ以上、うち1つは ⌘、⌥、⌃ のどれか。",
+            "Something else already uses that.": "ほかのものがすでに使っています。",
         ],
         .ko: [
             "Behaviour": "동작",
@@ -618,6 +945,29 @@ enum L {
             "is available": "사용 가능",
             "Could not check:": "확인할 수 없음:",
             "off-screen": "화면 밖",
+            "Gestures": "제스처",
+            "Move windows with trackpad gestures": "트랙패드 제스처로 윈도우 옮기기",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "기본값은 꺼짐. 손쉬운 사용 권한은 켤 때만 요청합니다.",
+            "Accessibility has not been granted, so gestures are not running.":
+                "손쉬운 사용 권한이 없어 제스처가 동작하지 않습니다.",
+            "Open Accessibility settings": "손쉬운 사용 설정 열기",
+            "Two fingers, pointer on a window's title bar": "두 손가락, 포인터는 윈도우 제목 막대 위에",
+            "Left half": "왼쪽 절반",
+            "Right half": "오른쪽 절반",
+            "Fill the screen": "화면 가득",
+            "Put it back where it was": "원래 자리로 되돌리기",
+            "Keyboard shortcuts": "키보드 단축키",
+            "Hide or reveal the icons": "아이콘 숨기기 또는 보이기",
+            "Turn automatic hiding on or off": "자동 숨김 켜기 또는 끄기",
+            "Nothing is bound until you bind it. They work from any application.":
+                "지정하기 전까지는 아무 일도 없습니다. 어느 앱에서나 동작합니다.",
+            "Click, then press the combination you want.": "누른 다음, 원하는 조합을 누르세요.",
+            "Remove this shortcut": "이 단축키 지우기",
+            "Press keys…": "키를 누르세요…",
+            "Not set": "지정 안 됨",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "조합키는 두 개 이상, 그중 하나는 ⌘, ⌥ 또는 ⌃.",
+            "Something else already uses that.": "다른 것이 이미 쓰고 있습니다.",
         ],
         .zh: [
             "Behaviour": "行为",
@@ -658,6 +1008,29 @@ enum L {
             "is available": "可用",
             "Could not check:": "无法检查：",
             "off-screen": "屏幕外",
+            "Gestures": "手势",
+            "Move windows with trackpad gestures": "用触控板手势移动窗口",
+            "Off by default. Accessibility is asked for only when you turn this on.":
+                "默认关闭。仅在开启此项时才申请辅助功能权限。",
+            "Accessibility has not been granted, so gestures are not running.":
+                "未获得辅助功能权限，手势未运行。",
+            "Open Accessibility settings": "打开辅助功能设置",
+            "Two fingers, pointer on a window's title bar": "双指，指针位于窗口标题栏上",
+            "Left half": "左半屏",
+            "Right half": "右半屏",
+            "Fill the screen": "占满屏幕",
+            "Put it back where it was": "放回原处",
+            "Keyboard shortcuts": "键盘快捷键",
+            "Hide or reveal the icons": "隐藏或显示图标",
+            "Turn automatic hiding on or off": "打开或关闭自动隐藏",
+            "Nothing is bound until you bind it. They work from any application.":
+                "没有指定之前不会发生任何事。在任何应用中都有效。",
+            "Click, then press the combination you want.": "点一下，然后按下想要的组合键。",
+            "Remove this shortcut": "移除此快捷键",
+            "Press keys…": "请按键…",
+            "Not set": "未指定",
+            "Use at least two modifiers, one of them ⌘, ⌥ or ⌃.": "至少两个修饰键，其中一个是 ⌘、⌥ 或 ⌃。",
+            "Something else already uses that.": "已经被别的东西占用了。",
         ],
     ]
 }

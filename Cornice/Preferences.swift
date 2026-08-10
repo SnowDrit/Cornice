@@ -33,6 +33,10 @@ final class Preferences {
             Key.dividerThickness: 1.5,
             Key.dividerHeight: 14.0,
             Key.toggleSymbol: ToggleSymbol.chevron.rawValue,
+            Key.gesturesEnabled: false,
+            // True, so that a first launch is not mistaken for a crashed one. Only a run
+            // that actually started and then died leaves this false.
+            Key.cleanExit: true,
         ])
     }
 
@@ -45,6 +49,8 @@ final class Preferences {
         static let dividerHeight = "dividerHeight"
         static let toggleSymbol = "toggleSymbol"
         static let language = "language"
+        static let gesturesEnabled = "gesturesEnabled"
+        static let cleanExit = "cleanExit"
     }
 
     /// Interface language. Defaults to whichever of Cornice's languages the system asks
@@ -134,5 +140,48 @@ final class Preferences {
     var wasHiding: Bool {
         get { defaults.bool(forKey: Key.wasHiding) }
         set { defaults.set(newValue, forKey: Key.wasHiding) }
+    }
+
+    /// Trackpad gestures for window management.
+    ///
+    /// Off on a fresh install and off after an update that introduces it. The gesture
+    /// module is the only part of Cornice that needs Accessibility to do its everyday job,
+    /// and a permission dialog for a feature nobody asked for is exactly the kind of
+    /// welcome this app is trying not to give.
+    var gesturesEnabled: Bool {
+        get { access(keyPath: \.gesturesEnabled); return defaults.bool(forKey: Key.gesturesEnabled) }
+        set { withMutation(keyPath: \.gesturesEnabled) { defaults.set(newValue, forKey: Key.gesturesEnabled) } }
+    }
+
+    /// The combination bound to an action, or `nil` when the user has not set one.
+    ///
+    /// Nothing is bound out of the box. Cornice is not important enough to claim a
+    /// keyboard shortcut on a machine it was just installed on, and a shortcut the user
+    /// chose is one they will remember.
+    func hotKey(for action: HotKeyAction) -> HotKey? {
+        guard let data = defaults.data(forKey: action.storageKey) else { return nil }
+        return try? JSONDecoder().decode(HotKey.self, from: data)
+    }
+
+    func setHotKey(_ hotKey: HotKey?, for action: HotKeyAction) {
+        guard let hotKey else {
+            defaults.removeObject(forKey: action.storageKey)
+            return
+        }
+        guard let data = try? JSONEncoder().encode(hotKey) else { return }
+        defaults.set(data, forKey: action.storageKey)
+    }
+
+    /// Whether the previous run ended by being quit rather than by dying.
+    ///
+    /// Written `true` from `applicationWillTerminate`, which a crash never reaches, and set
+    /// back to `false` immediately on launch. Reading `false` at startup therefore means
+    /// the last run did not finish, and Cornice comes up revealed no matter what the other
+    /// preferences say. Without it a crash while hiding leaves the icons parked off the
+    /// side of the screen, and the app that put them there is no longer running to bring
+    /// them back.
+    var cleanExit: Bool {
+        get { defaults.bool(forKey: Key.cleanExit) }
+        set { defaults.set(newValue, forKey: Key.cleanExit) }
     }
 }

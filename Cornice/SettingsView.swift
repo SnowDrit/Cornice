@@ -16,11 +16,15 @@ struct SettingsView: View {
 
     @Bindable var preferences = Preferences.shared
     let arrangement: () -> Arrangement
+    let gestures: GestureController
+    let hotKeys: HotKeyCenter
 
     @State private var snapshot = Arrangement(visible: [], hidden: [])
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var isChecking = false
     @State private var updateResult: UpdateChecker.Result?
+    @State private var gesturesOn = Preferences.shared.gesturesEnabled
+    @State private var accessibilityGranted = AccessibilityPermission.isGranted
 
     private func checkForUpdates() {
         isChecking = true
@@ -44,8 +48,13 @@ struct SettingsView: View {
             behaviour.tabItem { Label(L.t("Behaviour"), systemImage: "slider.horizontal.3") }
             appearance.tabItem { Label(L.t("Appearance"), systemImage: "paintbrush") }
             arrangementList.tabItem { Label(L.t("Menu Bar"), systemImage: "menubar.rectangle") }
+            gestureSettings.tabItem { Label(L.t("Gestures"), systemImage: "hand.draw") }
         }
-        .frame(width: 470, height: 400)
+        // Wide enough for four tabs to sit side by side in every language Cornice speaks.
+        // At 470 macOS gave up on fitting them and swept all four into a "more toolbar
+        // items" chevron, which turned one click into two and hid the tabs behind a
+        // control that names none of them.
+        .frame(width: 620, height: 400)
         .task { snapshot = arrangement() }
     }
 
@@ -77,6 +86,16 @@ struct SettingsView: View {
                     }
                 }
                 Text(L.t("Counted from the moment the pointer leaves the menu bar."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Section(L.t("Keyboard shortcuts")) {
+                ForEach(HotKeyAction.allCases) { action in
+                    LabeledContent(L.t(action.title)) {
+                        HotKeyRecorder(action: action) { hotKeys.refresh() }
+                    }
+                }
+                Text(L.t("Nothing is bound until you bind it. They work from any application."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -121,6 +140,68 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    /// The gesture module's whole interface: one switch and a reminder of what it does.
+    ///
+    /// The list is not configurable yet, and saying so plainly beats an empty customiser.
+    /// Four gestures fit on the screen; when chaining arrives and they become twelve, this
+    /// becomes a table worth scrolling.
+    private var gestureSettings: some View {
+        Form {
+            Section {
+                Toggle(L.t("Move windows with trackpad gestures"), isOn: $gesturesOn)
+                    .onChange(of: gesturesOn) { _, wanted in
+                        // Turning it on is the one moment Cornice is allowed to ask for
+                        // Accessibility, because it is the one moment the user has asked
+                        // for something that cannot work without it.
+                        Task {
+                            if wanted {
+                                await gestures.enable()
+                            } else {
+                                gestures.disable()
+                            }
+                            accessibilityGranted = AccessibilityPermission.isGranted
+                        }
+                    }
+                Text(L.t("Off by default. Accessibility is asked for only when you turn this on."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if gesturesOn && !accessibilityGranted {
+                Section {
+                    Label(
+                        L.t("Accessibility has not been granted, so gestures are not running."),
+                        systemImage: "exclamationmark.triangle")
+                        .font(.caption)
+                    Button(L.t("Open Accessibility settings")) {
+                        AccessibilityPermission.openSettings()
+                    }
+                }
+            }
+
+            Section(L.t("Two fingers, pointer on a window's title bar")) {
+                gestureRow("arrow.left", L.t("Left half"))
+                gestureRow("arrow.right", L.t("Right half"))
+                gestureRow("arrow.up", L.t("Fill the screen"))
+                gestureRow("arrow.down", L.t("Put it back where it was"))
+            }
+        }
+        .formStyle(.grouped)
+        // The permission can be granted in System Settings while this window is open, and
+        // macOS says nothing when it happens.
+        .onAppear { accessibilityGranted = AccessibilityPermission.isGranted }
+    }
+
+    private func gestureRow(_ symbol: String, _ meaning: String) -> some View {
+        LabeledContent {
+            Text(meaning)
+        } label: {
+            Image(systemName: symbol)
+                .foregroundStyle(.secondary)
+                .frame(width: 20)
+        }
     }
 
     private var appearance: some View {

@@ -14,7 +14,10 @@ struct CorniceApp: App {
         // (see INFOPLIST_KEY_LSUIElement in the build settings). The settings window is
         // the only window it ever shows, and only when asked.
         Settings {
-            SettingsView(arrangement: appDelegate.currentArrangement)
+            SettingsView(
+                arrangement: appDelegate.currentArrangement,
+                gestures: appDelegate.gestures,
+                hotKeys: appDelegate.hotKeys)
         }
     }
 }

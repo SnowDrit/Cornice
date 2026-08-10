@@ -27,8 +27,36 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pointerWatcher: Timer?
     private var leftMenuBarAt: Date?
 
+    /// Trackpad gestures. Constructed always, running only when the user has asked for it:
+    /// an idle controller holds no event monitor and costs nothing.
+    let gestures = GestureController()
+
+    /// Keyboard shortcuts. Nothing is bound until the user binds it.
+    let hotKeys = HotKeyCenter()
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         log.info("Cornice launched, build \(Bundle.main.shortVersion, privacy: .public)")
+
+        // The geometry check runs headless: no status item, no menu, no preferences
+        // written. That is what makes it safe to run while the installed copy is going
+        // about its business, and removing a status item is the one thing that must not
+        // happen behind the user's back, because macOS rebuilds the bar around it and
+        // leaves anything already pushed off the edge pushed off the edge.
+        if ProcessInfo.processInfo.environment["CORNICE_RUN_GESTURECHECK"] != nil {
+            Task {
+                await runGestureCheck()
+                NSApp.terminate(nil)
+            }
+            return
+        }
+
+        // Opens the settings window on its own, so its layout can be looked at without
+        // clicking a status item. Headless for the same reason as the check above: this
+        // instance must not touch the menu bar the real one is managing.
+        if ProcessInfo.processInfo.environment["CORNICE_SHOW_SETTINGS"] != nil {
+            openSettings()
+            return
+        }
 
         let separator = SeparatorController { hiding in
             Preferences.shared.wasHiding = hiding
@@ -44,12 +72,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             forName: UserDefaults.didChangeNotification,
             object: nil,
             queue: .main) { [weak self] _ in
-                Task { @MainActor in self?.installMenu() }
+                Task { @MainActor [weak self] in
+                    self?.installMenu()
+                    // The gesture switch lives in the same preferences, so the same
+                    // notification is what tells the module it was turned on or off.
+                    self?.gestures.refresh()
+                    self?.hotKeys.refresh()
+                }
             }
 
-        // Restore what the user left, unless they asked for a fixed starting state.
         let preferences = Preferences.shared
-        let shouldHide = preferences.startHidden || preferences.wasHiding
+
+        // Insurance against dying while hidden. `cleanExit` is written true only from
+        // `applicationWillTerminate`, which a crash never reaches, so finding it false
+        // here means the previous run ended badly. Coming up revealed in that case costs
+        // the user one keypress; coming up hidden would leave their icons parked off the
+        // side of the screen with nothing running that knows how to bring them back.
+        let crashed = !preferences.cleanExit
+        preferences.cleanExit = false
+        if crashed {
+            log.error("previous run did not exit cleanly, coming up revealed")
+        }
+
+        // Restore what the user left, unless they asked for a fixed starting state.
+        let shouldHide = !crashed && (preferences.startHidden || preferences.wasHiding)
         if shouldHide {
             // Only after the bar has settled: the separator needs a position before it
             // can work out how wide to become.
@@ -61,7 +107,38 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         startWatchingPointer()
 
+        // Only does anything if the user switched gestures on in an earlier run. It never
+        // prompts: a module that finds its permission missing stays quiet and stays off,
+        // and the switch in Settings is the only thing allowed to ask.
+        gestures.refresh()
+
+        hotKeys.onAction = { [weak self] action in
+            self?.perform(action)
+        }
+        hotKeys.refresh()
+
         Task { await start() }
+    }
+
+    /// What a bound key actually does.
+    ///
+    /// Both of these are things Cornice can do to itself. Neither reaches for anybody
+    /// else's status item, which is why neither needs a permission and why the list is
+    /// this short.
+    private func perform(_ action: HotKeyAction) {
+        switch action {
+        case .toggleHiding:
+            separator?.toggleHiding()
+        case .toggleAutoCollapse:
+            Preferences.shared.autoCollapse.toggle()
+        }
+    }
+
+    /// The only place `cleanExit` is written true, which is what makes it mean anything.
+    /// A crash, a force quit or a kill all skip this, and the next launch reads that.
+    func applicationWillTerminate(_ notification: Notification) {
+        Preferences.shared.cleanExit = true
+        log.info("quitting cleanly")
     }
 
     /// Puts the icons away again once the pointer has left the menu bar.
@@ -119,7 +196,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let settingsWindow = SettingsWindowController()
 
     @objc private func openSettings() {
-        settingsWindow.show(SettingsView(arrangement: currentArrangement))
+        settingsWindow.show(SettingsView(
+            arrangement: currentArrangement, gestures: gestures, hotKeys: hotKeys))
     }
 
     @objc private func quit() {
@@ -443,6 +521,112 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             report += "visibleFrame: \(screen.visibleFrame)\n"
         }
         writeCheckReport(report)
+    }
+
+    /// Snaps somebody's window to the left half without anyone touching the trackpad.
+    ///
+    /// The recogniser needs real fingers to test, but everything downstream of it does
+    /// not, and everything downstream of it is where the mistakes live: the flip between
+    /// Accessibility's top-left origin and AppKit's bottom-left one, and the order the
+    /// size and position have to be written in. This drives that half directly and checks
+    /// the window landed where the arithmetic said it would.
+    ///
+    /// Development only, in the same way as the checks above, and goes the same way.
+    private func runGestureCheck() async {
+        var report = "gesture geometry check\n\n"
+
+        guard AccessibilityPermission.isGranted else {
+            report += "no Accessibility, nothing to check\n"
+            Self.writeReport(report, named: "gesture-check.txt")
+            log.info("\(report, privacy: .public)")
+            return
+        }
+
+        // Naming a bundle id keeps the check off the user's real windows: point it at a
+        // throwaway document and only that document moves. Without one it takes whatever
+        // regular application answers first, which is fine on a test machine and rude on
+        // a working one.
+        let wanted = ProcessInfo.processInfo.environment["CORNICE_GESTURECHECK_BUNDLE"]
+        report += "target bundle: \(wanted ?? "(first regular app)")\n"
+
+        var found: (name: String, element: AXUIElement, frame: CGRect)?
+        for app in NSWorkspace.shared.runningApplications
+        where app.activationPolicy == .regular
+            && app.processIdentifier != ProcessInfo.processInfo.processIdentifier
+            && (wanted == nil || app.bundleIdentifier == wanted) {
+
+            let element = AXUIElementCreateApplication(app.processIdentifier)
+            AXUIElementSetMessagingTimeout(element, 0.25)
+
+            var value: CFTypeRef?
+            guard AXUIElementCopyAttributeValue(
+                    element, kAXFocusedWindowAttribute as CFString, &value) == .success,
+                  let value, CFGetTypeID(value) == AXUIElementGetTypeID()
+            else { continue }
+
+            let window = value as! AXUIElement
+            guard let frame = Self.frameOf(window) else { continue }
+            found = (app.localizedName ?? "?", window, frame)
+            break
+        }
+
+        guard let found else {
+            Self.writeReport(report + "no window found to test with\n", named: "gesture-check.txt")
+            return
+        }
+
+        report += "window: \(found.name)\n"
+        report += "before (AX): \(found.frame)\n"
+
+        guard let area = ScreenGeometry.workArea(forWindowAt: found.frame) else {
+            Self.writeReport(report + "no display matched that window\n", named: "gesture-check.txt")
+            return
+        }
+        let expected = WindowSlot.leftHalf.frame(in: area)
+        report += "work area (AX): \(area)\n"
+        report += "expected (AX):  \(expected)\n"
+
+        let target = TargetWindow(element: found.element, frame: found.frame)
+        let accepted = target.setFrame(expected)
+        report += "setFrame accepted: \(accepted)\n"
+
+        try? await Task.sleep(for: .milliseconds(400))
+
+        guard let after = Self.frameOf(found.element) else {
+            Self.writeReport(report + "could not read the frame back\n", named: "gesture-check.txt")
+            return
+        }
+        report += "after (AX):     \(after)\n"
+
+        // Two points of slack: some applications round to their own grid, and a few
+        // enforce a minimum width wider than half a narrow screen.
+        let dx = abs(after.minX - expected.minX)
+        let dy = abs(after.minY - expected.minY)
+        report += "origin off by: \(Int(dx)) x \(Int(dy))\n"
+        report += (dx <= 2 && dy <= 2) ? "\nORIGIN CORRECT\n" : "\nORIGIN WRONG\n"
+
+        log.info("\(report, privacy: .public)")
+        Self.writeReport(report, named: "gesture-check.txt")
+    }
+
+    private static func frameOf(_ element: AXUIElement) -> CGRect? {
+        var positionValue: CFTypeRef?
+        var sizeValue: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+                element, kAXPositionAttribute as CFString, &positionValue) == .success,
+              AXUIElementCopyAttributeValue(
+                element, kAXSizeAttribute as CFString, &sizeValue) == .success,
+              let positionValue, let sizeValue,
+              CFGetTypeID(positionValue) == AXValueGetTypeID(),
+              CFGetTypeID(sizeValue) == AXValueGetTypeID()
+        else { return nil }
+
+        var origin = CGPoint.zero
+        var size = CGSize.zero
+        guard AXValueGetValue(positionValue as! AXValue, .cgPoint, &origin),
+              AXValueGetValue(sizeValue as! AXValue, .cgSize, &size)
+        else { return nil }
+        return CGRect(origin: origin, size: size)
     }
 
     private func writeCheckReport(_ text: String) {
