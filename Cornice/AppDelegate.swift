@@ -17,6 +17,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var pointerWatcher: Timer?
     private var leftMenuBarAt: Date?
 
+    /// Whether the pointer has been in the menu bar since the icons were revealed.
+    ///
+    /// Without it, auto-collapse fires on a reveal the pointer was never near, which is
+    /// every reveal made with the keyboard shortcut.
+    private var visitedMenuBar = false
+
     /// Trackpad gestures. Constructed always, running only when the user has asked for it:
     /// an idle controller holds no event monitor and costs nothing.
     let gestures = GestureController()
@@ -153,23 +159,38 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
               let screen = NSScreen.main
         else {
             leftMenuBarAt = nil
+            visitedMenuBar = false
             return
         }
 
         let pointer = NSEvent.mouseLocation
-        let menuBarBottom = screen.frame.maxY - (screen.frame.maxY - screen.visibleFrame.maxY)
-        let inMenuBar = pointer.y >= menuBarBottom
+        // `visibleFrame` starts below the menu bar, so its top edge is the menu bar's
+        // bottom edge. The Dock is excluded too, which does not matter here.
+        let inMenuBar = pointer.y >= screen.visibleFrame.maxY
 
         if inMenuBar {
+            visitedMenuBar = true
             leftMenuBarAt = nil
             return
         }
+
+        // Auto-collapse is a *leaving* gesture, so there has to have been an arriving one.
+        // Revealing by keyboard shortcut leaves the pointer wherever it already was, and
+        // without this the icons appear and vanish again a third of a second later, which
+        // makes the shortcut useless to anyone who has this switched on. Clicking the
+        // chevron sets this on the same tick, because the click happened in the menu bar.
+        guard visitedMenuBar else {
+            leftMenuBarAt = nil
+            return
+        }
+
         guard let since = leftMenuBarAt else {
             leftMenuBarAt = Date()
             return
         }
         if Date().timeIntervalSince(since) >= preferences.autoCollapseDelay {
             leftMenuBarAt = nil
+            visitedMenuBar = false
             separator.setHiding(true)
         }
     }
