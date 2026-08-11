@@ -29,7 +29,10 @@ final class Preferences {
         defaults.register(defaults: [
             Key.autoCollapse: false,
             Key.autoCollapseDelay: 0.4,
-            Key.startHidden: true,
+            // False, so a first launch changes nothing the user can see. See `startHidden`
+            // below for why, and note that this only ever decides the very first launch:
+            // afterwards `wasHiding` carries whatever state was last left.
+            Key.startHidden: false,
             Key.dividerThickness: 1.5,
             Key.dividerHeight: 14.0,
             Key.toggleSymbol: ToggleSymbol.chevron.rawValue,

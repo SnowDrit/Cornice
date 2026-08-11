@@ -55,7 +55,10 @@ struct SettingsView: View {
         // items" chevron, which turned one click into two and hid the tabs behind a
         // control that names none of them.
         .frame(width: 620, height: 400)
-        .task { snapshot = arrangement() }
+        .task {
+            snapshot = arrangement()
+            accessibilityGranted = AccessibilityPermission.isGranted
+        }
     }
 
     private var behaviour: some View {
@@ -282,6 +285,23 @@ struct SettingsView: View {
 
     private var arrangementList: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Cornice no longer asks for Accessibility on launch, because hiding and
+            // revealing never needed it. Reading the bar by name does, so this is the one
+            // place the absence shows, and an empty list with no explanation would read as
+            // a broken window rather than a missing permission.
+            if !accessibilityGranted {
+                HStack {
+                    Text(L.t("Listing the icons by name needs Accessibility. Hiding them does not."))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button(L.t("Open Accessibility settings")) {
+                        AccessibilityPermission.openSettings()
+                    }
+                }
+                .padding(10)
+                Divider()
+            }
             List {
                 Section(L.t("Hidden, left of the divider")) {
                     if snapshot.hidden.isEmpty {

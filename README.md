@@ -17,13 +17,38 @@ chevron, and comes back when you click again.
 - Hide and reveal with one click
 - You choose where the line falls: ⌘-drag the divider, and Cornice never moves it
 - Optional auto-hide once the pointer leaves the menu bar
+- A keyboard shortcut of your choosing, for hiding and for auto-hide
 - Open at login
 - Adjustable divider thickness and height, five chevron styles
 - 16 interface languages, switched without restarting
 
-**No permissions are needed to use it.** Hiding and revealing are done with Cornice's own
-status item, which any application may resize freely. Accessibility is asked for once, and
-only so the settings window can list your icons by name.
+**No permissions are needed for any of that.** Hiding and revealing are done with Cornice's
+own status item, which any application may resize freely, and the keyboard shortcuts use an
+API that asks for nothing. Cornice does not request Accessibility at startup, or at all,
+unless you turn on something that cannot work without it.
+
+## Window gestures
+
+Off by default. Turn them on in Settings, and only then does Cornice ask for Accessibility.
+
+Put the pointer over a window's title bar and swipe two fingers on the trackpad. Title bars
+are the whole trigger surface, which is what keeps this from colliding with anything else:
+nothing scrolls a title bar.
+
+| Gesture | Result |
+|---|---|
+| Swipe left or right | Left or right half |
+| Swipe up | Fill the screen |
+| Swipe down | Put the window back where it was |
+| Swipe again, straight after | Narrows to a third, then two thirds |
+| Swipe up or down after that | The quarter above or below |
+| Pinch in | Send the window to the Dock |
+
+Four movements, twelve positions. A second swipe within a second and a half refines the
+first rather than replacing it; pause, and the next swipe starts over.
+
+Cornice only ever watches these events. It cannot swallow one, so a gesture read wrong still
+reaches the application under your pointer exactly as it would have.
 
 ## Installing
 
@@ -33,6 +58,11 @@ and drag the app onto the Applications shortcut.
 macOS will refuse to open it the first time. The builds are signed for development and not
 notarised, which needs a paid Apple Developer account. Right-click the app in Applications,
 choose Open, then Open again in the warning. Once is enough.
+
+The same limitation has a second effect, and only if you use the gestures: because the
+builds are ad-hoc signed, macOS ties the Accessibility grant to that exact build, so
+updating means granting it again. The menu bar half is unaffected, since it never needed the
+permission in the first place.
 
 Requires macOS 26 (Tahoe) or later on Apple Silicon.
 
@@ -46,6 +76,10 @@ hand.
 No second menu bar, no screen capture, no widgets, no triggers, no profiles, no menu bar
 styling, no per-icon hotkeys. Those are what make the other tools large, and they are the
 first things to break.
+
+The gesture module stops at moving windows around one screen. No thirty-gesture catalogue,
+no per-application rules, no gesture for closing a window: a trackpad is not precise enough
+to be trusted with something that can take unsaved work with it.
 
 ## Why
 

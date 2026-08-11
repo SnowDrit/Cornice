@@ -133,6 +133,8 @@ enum L {
             "Send the window to the Dock": "Убрать окно в Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Щипок внутрь, на заголовке. Ничего никогда не закрывает.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Список значков по именам требует Универсального доступа. Скрытие нет.",
         ],
         .uk: [
             "Behaviour": "Поведінка",
@@ -208,6 +210,8 @@ enum L {
             "Send the window to the Dock": "Прибрати вікно в Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Щипок усередину, на заголовку. Нічого ніколи не закриває.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Список значків за іменами потребує Універсального доступу. Приховування ні.",
         ],
         .de: [
             "Behaviour": "Verhalten",
@@ -283,6 +287,8 @@ enum L {
             "Send the window to the Dock": "Das Fenster ins Dock legen",
             "Pinch in, on the title bar. It never closes anything.":
                 "Zusammenziehen, auf der Titelleiste. Schließt nie etwas.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Die Symbole namentlich aufzulisten braucht Bedienungshilfen. Ausblenden nicht.",
         ],
         .fr: [
             "Behaviour": "Comportement",
@@ -359,6 +365,8 @@ enum L {
             "Send the window to the Dock": "Envoyer la fenêtre dans le Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Pincez vers l'intérieur, sur la barre de titre. Ne ferme jamais rien.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Lister les icônes par nom demande l'accessibilité. Les masquer, non.",
         ],
         .es: [
             "Behaviour": "Comportamiento",
@@ -434,6 +442,8 @@ enum L {
             "Send the window to the Dock": "Mandar la ventana al Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Pellizca hacia dentro, en la barra de título. Nunca cierra nada.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Listar los iconos por nombre necesita accesibilidad. Ocultarlos no.",
         ],
         .pt: [
             "Behaviour": "Comportamento",
@@ -509,6 +519,8 @@ enum L {
             "Send the window to the Dock": "Mandar a janela para a Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Aperte para dentro, na barra de título. Nunca fecha nada.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Listar os ícones pelo nome precisa de acessibilidade. Ocultá-los não.",
         ],
         .it: [
             "Behaviour": "Comportamento",
@@ -585,6 +597,8 @@ enum L {
             "Send the window to the Dock": "Manda la finestra nel Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Pizzica verso l'interno, sulla barra del titolo. Non chiude mai nulla.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Elencare le icone per nome richiede l'accessibilità. Nasconderle no.",
         ],
         .nl: [
             "Behaviour": "Gedrag",
@@ -661,6 +675,8 @@ enum L {
             "Send the window to the Dock": "Het venster naar het Dock sturen",
             "Pinch in, on the title bar. It never closes anything.":
                 "Knijp naar binnen, op de titelbalk. Sluit nooit iets.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Symbolen op naam tonen vraagt toegankelijkheid. Verbergen niet.",
         ],
         .pl: [
             "Behaviour": "Zachowanie",
@@ -736,6 +752,8 @@ enum L {
             "Send the window to the Dock": "Schowaj okno do Docka",
             "Pinch in, on the title bar. It never closes anything.":
                 "Uszczypnij do środka, na pasku tytułu. Nigdy nic nie zamyka.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Wypisanie ikon po nazwie wymaga dostępności. Ukrywanie nie.",
         ],
         .cs: [
             "Behaviour": "Chování",
@@ -811,6 +829,8 @@ enum L {
             "Send the window to the Dock": "Poslat okno do Docku",
             "Pinch in, on the title bar. It never closes anything.":
                 "Stáhněte prsty k sobě, na titulku okna. Nikdy nic nezavře.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Výpis ikon podle jména vyžaduje zpřístupnění. Skrývání ne.",
         ],
         .sv: [
             "Behaviour": "Beteende",
@@ -887,6 +907,8 @@ enum L {
             "Send the window to the Dock": "Lägg fönstret i Dock",
             "Pinch in, on the title bar. It never closes anything.":
                 "Nyp ihop, på namnlisten. Stänger aldrig något.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Att lista symbolerna vid namn kräver hjälpmedel. Att dölja dem gör det inte.",
         ],
         .tr: [
             "Behaviour": "Davranış",
@@ -963,6 +985,8 @@ enum L {
             "Send the window to the Dock": "Pencereyi Dock'a gönder",
             "Pinch in, on the title bar. It never closes anything.":
                 "Başlık çubuğunda içe doğru kıstırın. Hiçbir şeyi kapatmaz.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "Simgeleri adlarıyla listelemek erişilebilirlik ister. Gizlemek istemez.",
         ],
         .ja: [
             "Behaviour": "動作",
@@ -1036,6 +1060,8 @@ enum L {
             "Send the window to the Dock": "ウインドウをDockにしまう",
             "Pinch in, on the title bar. It never closes anything.":
                 "タイトルバーの上でピンチイン。何かを閉じることはありません。",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "アイコンを名前で並べるにはアクセシビリティが要ります。隠すのには要りません。",
         ],
         .ko: [
             "Behaviour": "동작",
@@ -1109,6 +1135,8 @@ enum L {
             "Send the window to the Dock": "윈도우를 Dock으로 보내기",
             "Pinch in, on the title bar. It never closes anything.":
                 "제목 막대 위에서 오므리기. 무엇도 닫지 않습니다.",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "아이콘을 이름으로 나열하려면 손쉬운 사용 권한이 필요합니다. 숨기는 데는 필요 없습니다.",
         ],
         .zh: [
             "Behaviour": "行为",
@@ -1181,6 +1209,8 @@ enum L {
                 "向右同理。稍等片刻，下一次滑动就重新开始。",
             "Send the window to the Dock": "把窗口收进程序坞",
             "Pinch in, on the title bar. It never closes anything.": "在标题栏上向内捏合。从不关闭任何东西。",
+            "Listing the icons by name needs Accessibility. Hiding them does not.":
+                "按名称列出图标需要辅助功能权限。隐藏则不需要。",
         ],
     ]
 }
