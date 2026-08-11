@@ -130,9 +130,6 @@ enum L {
             "Bottom quarter of that side": "Нижняя четверть этой стороны",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Вправо работает так же. Выждите мгновение, и следующий свайп начнёт заново.",
-            "Send the window to the Dock": "Убрать окно в Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Щипок внутрь, на заголовке. Ничего никогда не закрывает.",
         ],
         .uk: [
             "Behaviour": "Поведінка",
@@ -205,9 +202,6 @@ enum L {
             "Bottom quarter of that side": "Нижня чверть цього боку",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Праворуч працює так само. Зачекайте мить, і наступний свайп почне заново.",
-            "Send the window to the Dock": "Прибрати вікно в Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Щипок усередину, на заголовку. Нічого ніколи не закриває.",
         ],
         .de: [
             "Behaviour": "Verhalten",
@@ -280,9 +274,6 @@ enum L {
             "Bottom quarter of that side": "Unteres Viertel dieser Seite",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Nach rechts geht es genauso. Kurz warten, und der nächste Wisch fängt neu an.",
-            "Send the window to the Dock": "Das Fenster ins Dock legen",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Zusammenziehen, auf der Titelleiste. Schließt nie etwas.",
         ],
         .fr: [
             "Behaviour": "Comportement",
@@ -356,9 +347,6 @@ enum L {
             "Bottom quarter of that side": "Quart inférieur de ce côté",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "À droite, c'est pareil. Attendez un instant et le balayage suivant repart de zéro.",
-            "Send the window to the Dock": "Envoyer la fenêtre dans le Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Pincez vers l'intérieur, sur la barre de titre. Ne ferme jamais rien.",
         ],
         .es: [
             "Behaviour": "Comportamiento",
@@ -431,9 +419,6 @@ enum L {
             "Bottom quarter of that side": "Cuarto inferior de ese lado",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "A la derecha funciona igual. Espera un momento y el siguiente deslizamiento empieza de cero.",
-            "Send the window to the Dock": "Mandar la ventana al Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Pellizca hacia dentro, en la barra de título. Nunca cierra nada.",
         ],
         .pt: [
             "Behaviour": "Comportamento",
@@ -506,9 +491,6 @@ enum L {
             "Bottom quarter of that side": "Quarto inferior desse lado",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Para a direita funciona igual. Espere um momento e o próximo deslize recomeça.",
-            "Send the window to the Dock": "Mandar a janela para a Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Aperte para dentro, na barra de título. Nunca fecha nada.",
         ],
         .it: [
             "Behaviour": "Comportamento",
@@ -582,9 +564,6 @@ enum L {
             "Bottom quarter of that side": "Quarto in basso di quel lato",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "A destra funziona uguale. Aspetta un attimo e il prossimo gesto ricomincia.",
-            "Send the window to the Dock": "Manda la finestra nel Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Pizzica verso l'interno, sulla barra del titolo. Non chiude mai nulla.",
         ],
         .nl: [
             "Behaviour": "Gedrag",
@@ -658,9 +637,6 @@ enum L {
             "Bottom quarter of that side": "Onderste kwart van die kant",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Naar rechts werkt hetzelfde. Wacht even en de volgende veeg begint opnieuw.",
-            "Send the window to the Dock": "Het venster naar het Dock sturen",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Knijp naar binnen, op de titelbalk. Sluit nooit iets.",
         ],
         .pl: [
             "Behaviour": "Zachowanie",
@@ -733,9 +709,6 @@ enum L {
             "Bottom quarter of that side": "Dolna ćwiartka tej strony",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "W prawo działa tak samo. Odczekaj chwilę, a następny gest zacznie od nowa.",
-            "Send the window to the Dock": "Schowaj okno do Docka",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Uszczypnij do środka, na pasku tytułu. Nigdy nic nie zamyka.",
         ],
         .cs: [
             "Behaviour": "Chování",
@@ -808,9 +781,6 @@ enum L {
             "Bottom quarter of that side": "Dolní čtvrtina té strany",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Doprava to funguje stejně. Chvíli počkejte a další přejetí začne od začátku.",
-            "Send the window to the Dock": "Poslat okno do Docku",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Stáhněte prsty k sobě, na titulku okna. Nikdy nic nezavře.",
         ],
         .sv: [
             "Behaviour": "Beteende",
@@ -884,9 +854,6 @@ enum L {
             "Bottom quarter of that side": "Nedre fjärdedelen på den sidan",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Åt höger fungerar likadant. Vänta ett ögonblick, så börjar nästa svep om.",
-            "Send the window to the Dock": "Lägg fönstret i Dock",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Nyp ihop, på namnlisten. Stänger aldrig något.",
         ],
         .tr: [
             "Behaviour": "Davranış",
@@ -960,9 +927,6 @@ enum L {
             "Bottom quarter of that side": "O tarafın alt çeyreği",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "Sağa da aynı şekilde çalışır. Bir an bekleyin, sonraki kaydırma baştan başlar.",
-            "Send the window to the Dock": "Pencereyi Dock'a gönder",
-            "Pinch in, on the title bar. It never closes anything.":
-                "Başlık çubuğunda içe doğru kıstırın. Hiçbir şeyi kapatmaz.",
         ],
         .ja: [
             "Behaviour": "動作",
@@ -1033,9 +997,6 @@ enum L {
             "Bottom quarter of that side": "その側の下の4分の1",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "右も同じです。少し待つと、次のスワイプは最初からになります。",
-            "Send the window to the Dock": "ウインドウをDockにしまう",
-            "Pinch in, on the title bar. It never closes anything.":
-                "タイトルバーの上でピンチイン。何かを閉じることはありません。",
         ],
         .ko: [
             "Behaviour": "동작",
@@ -1106,9 +1067,6 @@ enum L {
             "Bottom quarter of that side": "그쪽의 아래 4분의 1",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "오른쪽도 같습니다. 잠깐 쉬면 다음 쓸기는 처음부터 시작합니다.",
-            "Send the window to the Dock": "윈도우를 Dock으로 보내기",
-            "Pinch in, on the title bar. It never closes anything.":
-                "제목 막대 위에서 오므리기. 무엇도 닫지 않습니다.",
         ],
         .zh: [
             "Behaviour": "行为",
@@ -1179,8 +1137,6 @@ enum L {
             "Bottom quarter of that side": "该侧的下四分之一",
             "Right works the same. Pause for a moment and the next swipe starts fresh.":
                 "向右同理。稍等片刻，下一次滑动就重新开始。",
-            "Send the window to the Dock": "把窗口收进程序坞",
-            "Pinch in, on the title bar. It never closes anything.": "在标题栏上向内捏合。从不关闭任何东西。",
         ],
     ]
 }

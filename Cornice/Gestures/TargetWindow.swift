@@ -120,10 +120,10 @@ struct TargetWindow {
 
     /// Sends the window to the Dock, and reports whether it went.
     ///
-    /// Minimising rather than closing. A window put in the Dock comes back with a click and
-    /// loses nothing; a window closed on a gesture that was read wrong can take unsaved
-    /// work with it, and a trackpad is not a precise enough instrument to be trusted with
-    /// that difference.
+    /// No gesture reaches this any more: the pinch that used to has been removed, because
+    /// macOS never delivered the events it needed. Kept because the headless check still
+    /// exercises it, and because setting this attribute is the documented way to minimise
+    /// a window, proven on this machine and worth not having to rediscover.
     @discardableResult
     func minimize() -> Bool {
         guard isSettable(kAXMinimizedAttribute) else {

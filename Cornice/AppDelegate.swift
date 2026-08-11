@@ -656,7 +656,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if abs(topLeft.minY - area.minY) > 1 { failures.append("top quarter is not at the top") }
         if abs(bottomLeft.minY - area.midY) > 1 { failures.append("bottom quarter is not at the middle") }
 
-        // The pinch action, there and back again, so the check leaves nothing in the Dock.
+        // No gesture calls this any more, but the call itself is proven working and cheap
+        // to keep proven. There and back again, so the check leaves nothing in the Dock.
         report += "\nminimise round trip\n"
         if target.minimize() {
             try? await Task.sleep(for: .milliseconds(500))

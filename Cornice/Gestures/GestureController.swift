@@ -33,7 +33,6 @@ final class GestureController {
 
     private var monitor: Any?
     private let recognizer = SwipeRecognizer()
-    private let pinches = PinchRecognizer()
 
     /// The window the fingers came down on, decided at the start of the gesture.
     ///
@@ -83,7 +82,7 @@ final class GestureController {
             return
         }
 
-        monitor = NSEvent.addGlobalMonitorForEvents(matching: [.scrollWheel, .magnify]) { [weak self] event in
+        monitor = NSEvent.addGlobalMonitorForEvents(matching: [.scrollWheel]) { [weak self] event in
             // Handled synchronously, on this thread, because `began` has to read the
             // pointer position before the pointer moves; hopping to a later turn of the
             // run loop would sample it after the swipe had already carried it away.
@@ -135,10 +134,6 @@ final class GestureController {
     // MARK: - Doing the thing
 
     private func handle(_ event: NSEvent) {
-        if event.type == .magnify {
-            handlePinch(event)
-            return
-        }
         switch recognizer.consume(event) {
         case .began:
             pending = TargetWindow.underPointer()
@@ -148,27 +143,6 @@ final class GestureController {
             defer { pending = nil }
             guard let window = pending, let direction else { return }
             apply(direction, to: window)
-        }
-    }
-
-    /// Pinching in puts the window in the Dock.
-    ///
-    /// Pinching out is deliberately not wired to anything. Full screen is what it would
-    /// naturally mean, but an upward swipe already fills the screen without dragging the
-    /// window off into a Space of its own, so the gesture would be a worse spelling of one
-    /// that already exists.
-    private func handlePinch(_ event: NSEvent) {
-        switch pinches.consume(event) {
-        case .began:
-            pending = TargetWindow.underPointer()
-        case .ongoing, .ignored:
-            break
-        case .ended(let direction):
-            defer { pending = nil }
-            guard let window = pending, direction == .close else { return }
-            // A window sent to the Dock is no longer anywhere a chain could refine.
-            chain = nil
-            window.minimize()
         }
     }
 
