@@ -216,28 +216,34 @@ struct SettingsView: View {
         .onAppear { accessibilityGranted = AccessibilityPermission.isGranted }
     }
 
+    /// Arrow and meaning sit next to each other, not at opposite edges of the window.
+    ///
+    /// `LabeledContent` pushes its two halves apart, which is right for a setting and its
+    /// control and wrong for a picture and its caption: at this width it left the arrow
+    /// stranded on the left with the words against the far right, and the eye had to cross
+    /// an empty gap to connect them.
     private func gestureRow(_ symbol: String, _ meaning: String) -> some View {
-        LabeledContent {
-            Text(meaning)
-        } label: {
+        HStack(spacing: 10) {
             Image(systemName: symbol)
                 .foregroundStyle(.secondary)
-                .frame(width: 20)
+                .frame(width: 44, alignment: .leading)
+            Text(meaning)
+            Spacer(minLength: 0)
         }
     }
 
     /// Two arrows for the chained gestures, so the pair reads as one movement followed by
     /// another rather than as two separate entries.
     private func gestureRow(_ first: String, _ second: String, _ meaning: String) -> some View {
-        LabeledContent {
-            Text(meaning)
-        } label: {
+        HStack(spacing: 10) {
             HStack(spacing: 2) {
                 Image(systemName: first)
                 Image(systemName: second)
             }
             .foregroundStyle(.secondary)
-            .frame(width: 40, alignment: .leading)
+            .frame(width: 44, alignment: .leading)
+            Text(meaning)
+            Spacer(minLength: 0)
         }
     }
 

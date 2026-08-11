@@ -125,7 +125,14 @@ final class Preferences {
     /// How long to wait after the pointer leaves. Matches the delay this was built
     /// against: Bartender's `MouseExitDelay` was 0.4 seconds.
     var autoCollapseDelay: Double {
-        get { access(keyPath: \.autoCollapseDelay); return defaults.double(forKey: Key.autoCollapseDelay) }
+        // Clamped on the way out, because the slider used to offer values below 0.2 and
+        // anyone who chose one still has it stored. The pointer is sampled every 0.2
+        // seconds, so a smaller number was never honoured; showing it back would be
+        // promising something that was already not happening.
+        get {
+            access(keyPath: \.autoCollapseDelay)
+            return min(max(defaults.double(forKey: Key.autoCollapseDelay), 0.2), 3.0)
+        }
         set { withMutation(keyPath: \.autoCollapseDelay) { defaults.set(newValue, forKey: Key.autoCollapseDelay) } }
     }
 
