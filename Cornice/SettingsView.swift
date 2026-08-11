@@ -196,6 +196,13 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            Section {
+                gestureRow("arrow.down.right.and.arrow.up.left", L.t("Send the window to the Dock"))
+                Text(L.t("Pinch in, on the title bar. It never closes anything."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         // The permission can be granted in System Settings while this window is open, and

@@ -118,6 +118,27 @@ struct TargetWindow {
         return true
     }
 
+    /// Sends the window to the Dock, and reports whether it went.
+    ///
+    /// Minimising rather than closing. A window put in the Dock comes back with a click and
+    /// loses nothing; a window closed on a gesture that was read wrong can take unsaved
+    /// work with it, and a trackpad is not a precise enough instrument to be trusted with
+    /// that difference.
+    @discardableResult
+    func minimize() -> Bool {
+        guard isSettable(kAXMinimizedAttribute) else {
+            gestureLog.info("window cannot be minimised, leaving it alone")
+            return false
+        }
+        let result = AXUIElementSetAttributeValue(
+            element, kAXMinimizedAttribute as CFString, kCFBooleanTrue)
+        if result != .success {
+            gestureLog.info("minimising returned \(result.rawValue, privacy: .public)")
+            return false
+        }
+        return true
+    }
+
     private func set(_ attribute: String, value: AXValue?) {
         guard let value else { return }
         let result = AXUIElementSetAttributeValue(element, attribute as CFString, value)

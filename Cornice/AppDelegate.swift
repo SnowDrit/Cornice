@@ -656,12 +656,38 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if abs(topLeft.minY - area.minY) > 1 { failures.append("top quarter is not at the top") }
         if abs(bottomLeft.minY - area.midY) > 1 { failures.append("bottom quarter is not at the middle") }
 
+        // The pinch action, there and back again, so the check leaves nothing in the Dock.
+        report += "\nminimise round trip\n"
+        if target.minimize() {
+            try? await Task.sleep(for: .milliseconds(500))
+            let went = Self.boolOf(found.element, attribute: kAXMinimizedAttribute)
+            report += "  minimised: \(String(describing: went))\n"
+            if went != true { failures.append("minimise did not take") }
+
+            AXUIElementSetAttributeValue(
+                found.element, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
+            try? await Task.sleep(for: .milliseconds(500))
+            let back = Self.boolOf(found.element, attribute: kAXMinimizedAttribute)
+            report += "  restored: \(String(describing: back == false))\n"
+            if back != false { failures.append("window did not come back out of the Dock") }
+        } else {
+            failures.append("minimise was refused outright")
+        }
+
         report += failures.isEmpty
             ? "\nALL CHECKS PASSED\n"
             : "\nFAILED:\n" + failures.map { "  \($0)\n" }.joined()
 
         log.info("\(report, privacy: .public)")
         Self.writeReport(report, named: "gesture-check.txt")
+    }
+
+    private static func boolOf(_ element: AXUIElement, attribute: String) -> Bool? {
+        var value: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+                element, attribute as CFString, &value) == .success
+        else { return nil }
+        return value as? Bool
     }
 
     private static func brief(_ rect: CGRect) -> String {
