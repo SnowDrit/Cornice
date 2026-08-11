@@ -63,19 +63,20 @@ enum L {
             "Behaviour": "Поведение",
             "Appearance": "Оформление",
             "Menu Bar": "Строка меню",
-            "Start hidden": "Запускаться свёрнутым",
+            "Start with the icons hidden": "Запускаться со скрытыми значками",
             "Otherwise Cornice comes up the way you left it.":
                 "Иначе Cornice откроется так, как вы его оставили.",
-            "Hide again automatically": "Сворачивать автоматически",
+            "Hide again when the pointer leaves the menu bar":
+                "Сворачивать, когда курсор уходит из строки меню",
             "After": "Через",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Отсчёт с момента, когда курсор покидает строку меню.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Небольшая пауза, чтобы случайное движение вдоль верха экрана ничего не прятало.",
             "Open at login": "Запускать при входе",
             "Divider": "Разделитель",
             "Thickness": "Толщина",
             "Height": "Высота",
             "Preview": "Образец",
-            "Toggle": "Переключатель",
+            "Toggle button": "Кнопка-переключатель",
             "Symbol": "Символ",
             "Chevron": "Шеврон",
             "Chevron, compact": "Шеврон, узкий",
@@ -135,24 +136,27 @@ enum L {
                 "Щипок внутрь, на заголовке. Ничего никогда не закрывает.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Список значков по именам требует Универсального доступа. Скрытие нет.",
+            "Cornice already uses that for something else.":
+                "Cornice уже использует это для другого действия.",
         ],
         .uk: [
             "Behaviour": "Поведінка",
             "Appearance": "Оформлення",
             "Menu Bar": "Рядок меню",
-            "Start hidden": "Запускатися згорнутим",
+            "Start with the icons hidden": "Запускатися зі схованими значками",
             "Otherwise Cornice comes up the way you left it.":
                 "Інакше Cornice відкриється так, як ви його залишили.",
-            "Hide again automatically": "Згортати автоматично",
+            "Hide again when the pointer leaves the menu bar":
+                "Згортати, коли курсор залишає рядок меню",
             "After": "Через",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Відлік від моменту, коли курсор залишає рядок меню.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Невелика пауза, щоб випадковий рух уздовж верху екрана нічого не ховав.",
             "Open at login": "Запускати під час входу",
             "Divider": "Роздільник",
             "Thickness": "Товщина",
             "Height": "Висота",
             "Preview": "Зразок",
-            "Toggle": "Перемикач",
+            "Toggle button": "Кнопка-перемикач",
             "Symbol": "Символ",
             "Chevron": "Шеврон",
             "Chevron, compact": "Шеврон, вузький",
@@ -212,24 +216,27 @@ enum L {
                 "Щипок усередину, на заголовку. Нічого ніколи не закриває.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Список значків за іменами потребує Універсального доступу. Приховування ні.",
+            "Cornice already uses that for something else.":
+                "Cornice уже використовує це для іншої дії.",
         ],
         .de: [
             "Behaviour": "Verhalten",
             "Appearance": "Erscheinungsbild",
             "Menu Bar": "Menüleiste",
-            "Start hidden": "Ausgeblendet starten",
+            "Start with the icons hidden": "Mit ausgeblendeten Symbolen starten",
             "Otherwise Cornice comes up the way you left it.":
                 "Andernfalls startet Cornice so, wie Sie es verlassen haben.",
-            "Hide again automatically": "Automatisch wieder ausblenden",
+            "Hide again when the pointer leaves the menu bar":
+                "Wieder ausblenden, wenn der Zeiger die Menüleiste verlässt",
             "After": "Nach",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Gezählt ab dem Moment, in dem der Zeiger die Menüleiste verlässt.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Eine kurze Pause, damit ein Streifen über den oberen Bildschirmrand nichts wegräumt.",
             "Open at login": "Bei der Anmeldung öffnen",
             "Divider": "Trenner",
             "Thickness": "Stärke",
             "Height": "Höhe",
             "Preview": "Vorschau",
-            "Toggle": "Schalter",
+            "Toggle button": "Schaltfläche",
             "Symbol": "Symbol",
             "Chevron": "Pfeilspitze",
             "Chevron, compact": "Pfeilspitze, schmal",
@@ -289,24 +296,27 @@ enum L {
                 "Zusammenziehen, auf der Titelleiste. Schließt nie etwas.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Die Symbole namentlich aufzulisten braucht Bedienungshilfen. Ausblenden nicht.",
+            "Cornice already uses that for something else.":
+                "Cornice benutzt das schon für etwas anderes.",
         ],
         .fr: [
             "Behaviour": "Comportement",
             "Appearance": "Apparence",
             "Menu Bar": "Barre des menus",
-            "Start hidden": "Démarrer masqué",
+            "Start with the icons hidden": "Démarrer avec les icônes masquées",
             "Otherwise Cornice comes up the way you left it.":
                 "Sinon Cornice reprend l'état dans lequel vous l'avez laissé.",
-            "Hide again automatically": "Masquer à nouveau automatiquement",
+            "Hide again when the pointer leaves the menu bar":
+                "Masquer à nouveau quand le pointeur quitte la barre des menus",
             "After": "Après",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Compté à partir du moment où le pointeur quitte la barre des menus.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Une courte pause, pour qu'un passage près du haut de l'écran ne range rien.",
             "Open at login": "Ouvrir à l'ouverture de session",
             "Divider": "Séparateur",
             "Thickness": "Épaisseur",
             "Height": "Hauteur",
             "Preview": "Aperçu",
-            "Toggle": "Bouton",
+            "Toggle button": "Bouton",
             "Symbol": "Symbole",
             "Chevron": "Chevron",
             "Chevron, compact": "Chevron, compact",
@@ -367,24 +377,27 @@ enum L {
                 "Pincez vers l'intérieur, sur la barre de titre. Ne ferme jamais rien.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Lister les icônes par nom demande l'accessibilité. Les masquer, non.",
+            "Cornice already uses that for something else.":
+                "Cornice s'en sert déjà pour autre chose.",
         ],
         .es: [
             "Behaviour": "Comportamiento",
             "Appearance": "Apariencia",
             "Menu Bar": "Barra de menús",
-            "Start hidden": "Iniciar oculto",
+            "Start with the icons hidden": "Empezar con los iconos ocultos",
             "Otherwise Cornice comes up the way you left it.":
                 "De lo contrario, Cornice se abrirá tal como lo dejó.",
-            "Hide again automatically": "Ocultar de nuevo automáticamente",
+            "Hide again when the pointer leaves the menu bar":
+                "Ocultar de nuevo cuando el puntero sale de la barra de menús",
             "After": "Después de",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Contado desde que el puntero sale de la barra de menús.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Una breve pausa, para que rozar el borde superior no lo oculte todo.",
             "Open at login": "Abrir al iniciar sesión",
             "Divider": "Separador",
             "Thickness": "Grosor",
             "Height": "Altura",
             "Preview": "Vista previa",
-            "Toggle": "Interruptor",
+            "Toggle button": "Botón",
             "Symbol": "Símbolo",
             "Chevron": "Chevrón",
             "Chevron, compact": "Chevrón, compacto",
@@ -444,24 +457,27 @@ enum L {
                 "Pellizca hacia dentro, en la barra de título. Nunca cierra nada.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Listar los iconos por nombre necesita accesibilidad. Ocultarlos no.",
+            "Cornice already uses that for something else.":
+                "Cornice ya lo usa para otra cosa.",
         ],
         .pt: [
             "Behaviour": "Comportamento",
             "Appearance": "Aparência",
             "Menu Bar": "Barra de menus",
-            "Start hidden": "Iniciar oculto",
+            "Start with the icons hidden": "Começar com os ícones ocultos",
             "Otherwise Cornice comes up the way you left it.":
                 "Caso contrário, o Cornice abre como você o deixou.",
-            "Hide again automatically": "Ocultar novamente de forma automática",
+            "Hide again when the pointer leaves the menu bar":
+                "Ocultar de novo quando o ponteiro sai da barra de menus",
             "After": "Após",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Contado a partir do momento em que o ponteiro sai da barra de menus.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Uma pausa curta, para que roçar o topo do ecrã não arrume nada.",
             "Open at login": "Abrir ao iniciar sessão",
             "Divider": "Divisor",
             "Thickness": "Espessura",
             "Height": "Altura",
             "Preview": "Pré-visualização",
-            "Toggle": "Botão",
+            "Toggle button": "Botão",
             "Symbol": "Símbolo",
             "Chevron": "Divisa",
             "Chevron, compact": "Divisa, compacta",
@@ -521,24 +537,27 @@ enum L {
                 "Aperte para dentro, na barra de título. Nunca fecha nada.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Listar os ícones pelo nome precisa de acessibilidade. Ocultá-los não.",
+            "Cornice already uses that for something else.":
+                "O Cornice já usa isso para outra coisa.",
         ],
         .it: [
             "Behaviour": "Comportamento",
             "Appearance": "Aspetto",
             "Menu Bar": "Barra dei menu",
-            "Start hidden": "Avvia nascosto",
+            "Start with the icons hidden": "Avvia con le icone nascoste",
             "Otherwise Cornice comes up the way you left it.":
                 "Altrimenti Cornice si apre come l'hai lasciato.",
-            "Hide again automatically": "Nascondi di nuovo automaticamente",
+            "Hide again when the pointer leaves the menu bar":
+                "Nascondi di nuovo quando il puntatore lascia la barra dei menu",
             "After": "Dopo",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Conteggiato da quando il puntatore lascia la barra dei menu.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Una breve pausa, così sfiorare il bordo alto dello schermo non nasconde nulla.",
             "Open at login": "Apri all'accesso",
             "Divider": "Divisore",
             "Thickness": "Spessore",
             "Height": "Altezza",
             "Preview": "Anteprima",
-            "Toggle": "Interruttore",
+            "Toggle button": "Pulsante",
             "Symbol": "Simbolo",
             "Chevron": "Chevron",
             "Chevron, compact": "Chevron, compatto",
@@ -599,24 +618,27 @@ enum L {
                 "Pizzica verso l'interno, sulla barra del titolo. Non chiude mai nulla.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Elencare le icone per nome richiede l'accessibilità. Nasconderle no.",
+            "Cornice already uses that for something else.":
+                "Cornice lo usa già per qualcos'altro.",
         ],
         .nl: [
             "Behaviour": "Gedrag",
             "Appearance": "Weergave",
             "Menu Bar": "Menubalk",
-            "Start hidden": "Verborgen starten",
+            "Start with the icons hidden": "Starten met verborgen symbolen",
             "Otherwise Cornice comes up the way you left it.":
                 "Anders start Cornice zoals u het hebt achtergelaten.",
-            "Hide again automatically": "Automatisch weer verbergen",
+            "Hide again when the pointer leaves the menu bar":
+                "Weer verbergen als de aanwijzer de menubalk verlaat",
             "After": "Na",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Geteld vanaf het moment dat de aanwijzer de menubalk verlaat.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Een korte pauze, zodat langs de bovenrand strijken niets opbergt.",
             "Open at login": "Openen bij inloggen",
             "Divider": "Scheiding",
             "Thickness": "Dikte",
             "Height": "Hoogte",
             "Preview": "Voorbeeld",
-            "Toggle": "Schakelaar",
+            "Toggle button": "Knop",
             "Symbol": "Symbool",
             "Chevron": "Pijlpunt",
             "Chevron, compact": "Pijlpunt, smal",
@@ -677,24 +699,27 @@ enum L {
                 "Knijp naar binnen, op de titelbalk. Sluit nooit iets.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Symbolen op naam tonen vraagt toegankelijkheid. Verbergen niet.",
+            "Cornice already uses that for something else.":
+                "Cornice gebruikt dat al voor iets anders.",
         ],
         .pl: [
             "Behaviour": "Zachowanie",
             "Appearance": "Wygląd",
             "Menu Bar": "Pasek menu",
-            "Start hidden": "Uruchamiaj ukryty",
+            "Start with the icons hidden": "Uruchamiaj z ukrytymi ikonami",
             "Otherwise Cornice comes up the way you left it.":
                 "W przeciwnym razie Cornice uruchomi się tak, jak go zostawiono.",
-            "Hide again automatically": "Ukrywaj ponownie automatycznie",
+            "Hide again when the pointer leaves the menu bar":
+                "Ukryj ponownie, gdy wskaźnik opuści pasek menu",
             "After": "Po",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Liczone od chwili, gdy wskaźnik opuszcza pasek menu.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Krótka pauza, żeby muśnięcie górnej krawędzi ekranu niczego nie chowało.",
             "Open at login": "Otwieraj przy logowaniu",
             "Divider": "Separator",
             "Thickness": "Grubość",
             "Height": "Wysokość",
             "Preview": "Podgląd",
-            "Toggle": "Przełącznik",
+            "Toggle button": "Przycisk",
             "Symbol": "Symbol",
             "Chevron": "Strzałka kątowa",
             "Chevron, compact": "Strzałka kątowa, wąska",
@@ -754,24 +779,27 @@ enum L {
                 "Uszczypnij do środka, na pasku tytułu. Nigdy nic nie zamyka.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Wypisanie ikon po nazwie wymaga dostępności. Ukrywanie nie.",
+            "Cornice already uses that for something else.":
+                "Cornice już tego używa do czegoś innego.",
         ],
         .cs: [
             "Behaviour": "Chování",
             "Appearance": "Vzhled",
             "Menu Bar": "Řádek nabídek",
-            "Start hidden": "Spouštět skrytý",
+            "Start with the icons hidden": "Spouštět se skrytými ikonami",
             "Otherwise Cornice comes up the way you left it.":
                 "Jinak se Cornice spustí tak, jak jste jej zanechali.",
-            "Hide again automatically": "Skrývat znovu automaticky",
+            "Hide again when the pointer leaves the menu bar":
+                "Znovu skrýt, když ukazatel opustí řádek nabídek",
             "After": "Po",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Počítáno od okamžiku, kdy ukazatel opustí řádek nabídek.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Krátká pauza, aby zavadění o horní okraj obrazovky nic neuklidilo.",
             "Open at login": "Otevírat při přihlášení",
             "Divider": "Oddělovač",
             "Thickness": "Tloušťka",
             "Height": "Výška",
             "Preview": "Náhled",
-            "Toggle": "Přepínač",
+            "Toggle button": "Tlačítko",
             "Symbol": "Symbol",
             "Chevron": "Šipka",
             "Chevron, compact": "Šipka, úzká",
@@ -831,24 +859,27 @@ enum L {
                 "Stáhněte prsty k sobě, na titulku okna. Nikdy nic nezavře.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Výpis ikon podle jména vyžaduje zpřístupnění. Skrývání ne.",
+            "Cornice already uses that for something else.":
+                "Cornice to už používá pro něco jiného.",
         ],
         .sv: [
             "Behaviour": "Beteende",
             "Appearance": "Utseende",
             "Menu Bar": "Menyrad",
-            "Start hidden": "Starta dolt",
+            "Start with the icons hidden": "Starta med symbolerna dolda",
             "Otherwise Cornice comes up the way you left it.":
                 "Annars startar Cornice som du lämnade det.",
-            "Hide again automatically": "Dölj igen automatiskt",
+            "Hide again when the pointer leaves the menu bar":
+                "Dölj igen när pekaren lämnar menyraden",
             "After": "Efter",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "Räknat från när pekaren lämnar menyraden.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "En kort paus, så att en sväng förbi skärmens överkant inte lägger undan något.",
             "Open at login": "Öppna vid inloggning",
             "Divider": "Avdelare",
             "Thickness": "Tjocklek",
             "Height": "Höjd",
             "Preview": "Förhandsvisning",
-            "Toggle": "Reglage",
+            "Toggle button": "Knapp",
             "Symbol": "Symbol",
             "Chevron": "Vinkelpil",
             "Chevron, compact": "Vinkelpil, smal",
@@ -909,24 +940,27 @@ enum L {
                 "Nyp ihop, på namnlisten. Stänger aldrig något.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Att lista symbolerna vid namn kräver hjälpmedel. Att dölja dem gör det inte.",
+            "Cornice already uses that for something else.":
+                "Cornice använder redan det till något annat.",
         ],
         .tr: [
             "Behaviour": "Davranış",
             "Appearance": "Görünüm",
             "Menu Bar": "Menü çubuğu",
-            "Start hidden": "Gizli başlat",
+            "Start with the icons hidden": "Simgeler gizli olarak başla",
             "Otherwise Cornice comes up the way you left it.":
                 "Aksi hâlde Cornice bıraktığınız durumda açılır.",
-            "Hide again automatically": "Otomatik olarak yeniden gizle",
+            "Hide again when the pointer leaves the menu bar":
+                "İmleç menü çubuğundan ayrılınca yeniden gizle",
             "After": "Şu süreden sonra",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "İmleç menü çubuğundan ayrıldığı andan itibaren sayılır.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "Kısa bir bekleme, ekranın üstünden geçmek hiçbir şeyi kaldırmasın diye.",
             "Open at login": "Oturum açıldığında aç",
             "Divider": "Ayırıcı",
             "Thickness": "Kalınlık",
             "Height": "Yükseklik",
             "Preview": "Önizleme",
-            "Toggle": "Düğme",
+            "Toggle button": "Düğme",
             "Symbol": "Simge",
             "Chevron": "Ok ucu",
             "Chevron, compact": "Ok ucu, dar",
@@ -987,24 +1021,26 @@ enum L {
                 "Başlık çubuğunda içe doğru kıstırın. Hiçbir şeyi kapatmaz.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "Simgeleri adlarıyla listelemek erişilebilirlik ister. Gizlemek istemez.",
+            "Cornice already uses that for something else.":
+                "Cornice bunu zaten başka bir şey için kullanıyor.",
         ],
         .ja: [
             "Behaviour": "動作",
             "Appearance": "外観",
             "Menu Bar": "メニューバー",
-            "Start hidden": "非表示の状態で起動",
+            "Start with the icons hidden": "アイコンを隠した状態で起動する",
             "Otherwise Cornice comes up the way you left it.":
                 "オフの場合、前回終了したときの状態で起動します。",
-            "Hide again automatically": "自動的に隠し直す",
+            "Hide again when the pointer leaves the menu bar": "ポインタがメニューバーから離れたら、また隠す",
             "After": "待機時間",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "ポインタがメニューバーから離れた時点から数えます。",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "画面の上端をかすめただけで隠れないよう、少し待ちます。",
             "Open at login": "ログイン時に開く",
             "Divider": "区切り",
             "Thickness": "太さ",
             "Height": "高さ",
             "Preview": "プレビュー",
-            "Toggle": "切り替え",
+            "Toggle button": "ボタン",
             "Symbol": "記号",
             "Chevron": "山形",
             "Chevron, compact": "山形（細）",
@@ -1062,24 +1098,26 @@ enum L {
                 "タイトルバーの上でピンチイン。何かを閉じることはありません。",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "アイコンを名前で並べるにはアクセシビリティが要ります。隠すのには要りません。",
+            "Cornice already uses that for something else.":
+                "Cornice がすでに別の動作で使っています。",
         ],
         .ko: [
             "Behaviour": "동작",
             "Appearance": "모양",
             "Menu Bar": "메뉴 막대",
-            "Start hidden": "가려진 상태로 시작",
+            "Start with the icons hidden": "아이콘을 숨긴 채로 시작",
             "Otherwise Cornice comes up the way you left it.":
                 "끄면 마지막으로 종료했을 때의 상태로 시작합니다.",
-            "Hide again automatically": "자동으로 다시 가리기",
+            "Hide again when the pointer leaves the menu bar": "포인터가 메뉴 막대를 벗어나면 다시 숨기기",
             "After": "지연 시간",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "포인터가 메뉴 막대를 벗어난 순간부터 셉니다.",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "화면 위쪽을 스쳐 지나갔다고 숨지 않도록 잠시 기다립니다.",
             "Open at login": "로그인 시 열기",
             "Divider": "구분선",
             "Thickness": "굵기",
             "Height": "높이",
             "Preview": "미리보기",
-            "Toggle": "전환 버튼",
+            "Toggle button": "버튼",
             "Symbol": "기호",
             "Chevron": "갈매기표",
             "Chevron, compact": "갈매기표, 좁게",
@@ -1137,24 +1175,26 @@ enum L {
                 "제목 막대 위에서 오므리기. 무엇도 닫지 않습니다.",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "아이콘을 이름으로 나열하려면 손쉬운 사용 권한이 필요합니다. 숨기는 데는 필요 없습니다.",
+            "Cornice already uses that for something else.":
+                "Cornice가 이미 다른 동작에 쓰고 있습니다.",
         ],
         .zh: [
             "Behaviour": "行为",
             "Appearance": "外观",
             "Menu Bar": "菜单栏",
-            "Start hidden": "启动时隐藏",
+            "Start with the icons hidden": "启动时隐藏图标",
             "Otherwise Cornice comes up the way you left it.":
                 "关闭时，Cornice 会按上次退出的状态启动。",
-            "Hide again automatically": "自动重新隐藏",
+            "Hide again when the pointer leaves the menu bar": "指针离开菜单栏后重新隐藏",
             "After": "延迟",
-            "Counted from the moment the pointer leaves the menu bar.":
-                "从指针离开菜单栏的那一刻开始计时。",
+            "A short wait, so brushing past the top of the screen does not put them away.":
+                "稍作等待，免得只是从屏幕顶部划过就把图标收起来。",
             "Open at login": "登录时打开",
             "Divider": "分隔线",
             "Thickness": "粗细",
             "Height": "高度",
             "Preview": "预览",
-            "Toggle": "开关",
+            "Toggle button": "按钮",
             "Symbol": "符号",
             "Chevron": "尖角",
             "Chevron, compact": "尖角（窄）",
@@ -1211,6 +1251,8 @@ enum L {
             "Pinch in, on the title bar. It never closes anything.": "在标题栏上向内捏合。从不关闭任何东西。",
             "Listing the icons by name needs Accessibility. Hiding them does not.":
                 "按名称列出图标需要辅助功能权限。隐藏则不需要。",
+            "Cornice already uses that for something else.":
+                "Cornice 已经把它用在别的动作上了。",
         ],
     ]
 }

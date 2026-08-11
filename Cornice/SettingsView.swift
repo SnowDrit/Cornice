@@ -71,24 +71,27 @@ struct SettingsView: View {
                 }
             }
             Section {
-                Toggle(L.t("Start hidden"), isOn: $preferences.startHidden)
+                Toggle(L.t("Start with the icons hidden"), isOn: $preferences.startHidden)
                 Text(L.t("Otherwise Cornice comes up the way you left it."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
             Section {
-                Toggle(L.t("Hide again automatically"), isOn: $preferences.autoCollapse)
+                Toggle(L.t("Hide again when the pointer leaves the menu bar"), isOn: $preferences.autoCollapse)
                 if preferences.autoCollapse {
                     LabeledContent(L.t("After")) {
                         HStack {
-                            Slider(value: $preferences.autoCollapseDelay, in: 0.1...3, step: 0.1)
+                            // Starts at 0.2 because the pointer is sampled every 0.2
+                            // seconds, so anything below that is a number the mechanism
+                            // cannot honour, and offering it is a small lie.
+                            Slider(value: $preferences.autoCollapseDelay, in: 0.2...3, step: 0.1)
                             Text("\(preferences.autoCollapseDelay, specifier: "%.1f") s")
                                 .monospacedDigit()
                                 .frame(width: 44, alignment: .trailing)
                         }
                     }
                 }
-                Text(L.t("Counted from the moment the pointer leaves the menu bar."))
+                Text(L.t("A short wait, so brushing past the top of the screen does not put them away."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -270,7 +273,7 @@ struct SettingsView: View {
                     .frame(width: 60, height: 24)
                 }
             }
-            Section(L.t("Toggle")) {
+            Section(L.t("Toggle button")) {
                 Picker(L.t("Symbol"), selection: $preferences.toggleSymbol) {
                     ForEach(Preferences.ToggleSymbol.allCases) { symbol in
                         Label(L.t(symbol.label), systemImage: symbol.symbolName(hiding: false))

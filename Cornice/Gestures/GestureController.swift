@@ -47,8 +47,10 @@ final class GestureController {
     private var previousFrames: [WindowKey: CGRect] = [:]
 
     /// Enough for any plausible number of windows in play, and bounded so a long session
-    /// cannot grow this without limit. Windows that close leave a stale entry behind;
-    /// dropping the oldest is a cheaper cure than watching for their destruction.
+    /// cannot grow this without limit. Windows that close leave a stale entry behind, and
+    /// dropping an arbitrary one when full is a cheaper cure than watching for their
+    /// destruction. Arbitrary rather than oldest: a dictionary has no order to take the
+    /// oldest from, and keeping insertion order would cost more than this is worth.
     private static let rememberedWindows = 32
 
     /// A run of swipes on one window that are refining a single position.

@@ -91,7 +91,20 @@ struct HotKeyRecorder: View {
             rejected = L.t("Use at least two modifiers, one of them ⌘, ⌥ or ⌃.")
             return
         }
-        guard HotKeyCenter.isAvailable(candidate) else {
+
+        // Cornice's own bindings are checked before the system is asked, because asking
+        // the system about them gives the wrong answer. `isAvailable` works by trying to
+        // register the combination, and a combination Cornice already holds is refused,
+        // so pressing the very keys that are already set for this action would be reported
+        // as taken by something else.
+        for other in HotKeyAction.allCases where other != action {
+            if Preferences.shared.hotKey(for: other) == candidate {
+                rejected = L.t("Cornice already uses that for something else.")
+                return
+            }
+        }
+        if Preferences.shared.hotKey(for: action) != candidate,
+           !HotKeyCenter.isAvailable(candidate) {
             rejected = L.t("Something else already uses that.")
             return
         }
