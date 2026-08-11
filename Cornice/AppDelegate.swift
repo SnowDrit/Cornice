@@ -137,6 +137,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// The only place `cleanExit` is written true, which is what makes it mean anything.
     /// A crash, a force quit or a kill all skip this, and the next launch reads that.
     func applicationWillTerminate(_ notification: Notification) {
+        // An event tap left registered at exit can outlive the process and cost the whole
+        // machine, not just Cornice.
+        gestures.shutdown()
+
         Preferences.shared.cleanExit = true
         log.info("quitting cleanly")
     }

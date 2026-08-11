@@ -33,6 +33,8 @@ final class GestureController {
 
     private var monitor: Any?
     private let recognizer = SwipeRecognizer()
+    private let pinches = PinchRecognizer()
+    private var tap: GestureEventTap?
 
     /// The window the fingers came down on, decided at the start of the gesture.
     ///
@@ -98,16 +100,38 @@ final class GestureController {
             MainActor.assumeIsolated { self?.handle(event) }
         }
         gestureLog.info("gesture monitor installed")
+
+        // Separate mechanism, separate reason: the monitor above is handed scroll events
+        // but never gesture ones, so pinches need a tap of their own. Listen only, so it
+        // cannot take an event away from whatever was going to receive it.
+        let tap = GestureEventTap { [weak self] event in
+            self?.handlePinch(event)
+        }
+        tap.start()
+        self.tap = tap
     }
 
+    /// Puts everything down. Each piece is released on its own terms, with no early
+    /// return: an event tap that outlived the monitor because of some ordering mistake
+    /// would be exactly the leftover that hurts the whole machine rather than this app.
     private func stop() {
-        guard let monitor else { return }
-        NSEvent.removeMonitor(monitor)
-        self.monitor = nil
+        if let monitor {
+            NSEvent.removeMonitor(monitor)
+            self.monitor = nil
+            gestureLog.info("gesture monitor removed")
+        }
+        tap?.stop()
+        tap = nil
         pending = nil
         chain = nil
         previousFrames.removeAll()
-        gestureLog.info("gesture monitor removed")
+    }
+
+    /// Called when Cornice is quitting, whatever the preference says. A tap still
+    /// registered at exit is the case macOS 26 handles badly: the entry outlives the
+    /// process and WindowServer can end up spinning on it.
+    func shutdown() {
+        stop()
     }
 
     /// Turns the module on, asking for Accessibility if it is not there yet.
@@ -143,6 +167,25 @@ final class GestureController {
             defer { pending = nil }
             guard let window = pending, let direction else { return }
             apply(direction, to: window)
+        }
+    }
+
+    /// Pinching in puts the window in the Dock.
+    ///
+    /// Minimising rather than closing, and that is deliberate: a window in the Dock comes
+    /// back with one click and loses nothing, while a window closed on a gesture read
+    /// wrong can take unsaved work with it.
+    private func handlePinch(_ event: NSEvent) {
+        switch pinches.consume(event) {
+        case .began:
+            pending = TargetWindow.underPointer()
+        case .ongoing, .ignored:
+            break
+        case .ended(let direction):
+            defer { pending = nil }
+            guard let window = pending, direction == .close else { return }
+            chain = nil
+            window.minimize()
         }
     }
 
