@@ -66,6 +66,16 @@ jobs:
             echo "::error::built app is sandboxed; it will see only its own menu bar item"
             exit 1
           fi
+          # A shipped build must not carry get-task-allow. It lets any process running as
+          # the same user attach to Cornice and read or rewrite its memory, and Cornice is
+          # a process that holds Accessibility and owns an event tap, so borrowing it means
+          # borrowing those. Xcode injects the entitlement for development-style signing,
+          # which is why the Release configuration turns the injection off, and why this
+          # checks the finished bundle rather than trusting the setting.
+          if codesign -d --entitlements - "$app" 2>/dev/null | grep -q "get-task-allow"; then
+            echo "::error::built app allows debugger attach; its Accessibility grant could be borrowed"
+            exit 1
+          fi
           codesign -dv --verbose=2 "$app" 2>&1 | grep -E "Identifier|Signature" || true
 
       - name: Package
