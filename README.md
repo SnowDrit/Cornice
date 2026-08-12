@@ -22,6 +22,8 @@ chevron, and comes back when you click again.
 - Adjustable divider thickness and height, five chevron styles
 - 16 interface languages, switched without restarting
 
+![Cornice settings, Behaviour tab](docs/settings-behaviour.png)
+
 **No permissions are needed for any of that.** Hiding and revealing are done with Cornice's
 own status item, which any application may resize freely, and the keyboard shortcuts use an
 API that asks for nothing. Cornice does not request Accessibility at startup, or at all,
@@ -44,11 +46,20 @@ nothing scrolls a title bar.
 | Swipe up or down after that | The quarter above or below |
 | Pinch in | Send the window to the Dock |
 
+![Cornice settings, Gestures tab](docs/settings-gestures.png)
+
 Four movements, twelve positions. A second swipe within a second and a half refines the
 first rather than replacing it; pause, and the next swipe starts over.
 
 Cornice only ever watches these events. It cannot swallow one, so a gesture read wrong still
 reaches the application under your pointer exactly as it would have.
+
+## Making it yours
+
+The divider is drawn, not an image, so its thickness and height are yours to set, and the
+preview is at real size because two points is a visible difference in a menu bar.
+
+![Cornice settings, Appearance tab](docs/settings-appearance.png)
 
 ## Installing
 
