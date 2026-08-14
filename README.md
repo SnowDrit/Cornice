@@ -33,7 +33,8 @@ revealed. It is off until you ask for it.
 - You choose where the line falls: ⌘-drag the divider, and Cornice never moves it
 - An optional [always hidden zone](#the-always-hidden-zone) behind a second divider
 - Optional auto-hide once the pointer leaves the menu bar
-- A keyboard shortcut of your choosing, for hiding and for auto-hide
+- Keyboard shortcuts of your choosing, for hiding, for the always hidden zone, and for
+  auto-hide
 - Open at login
 - Adjustable divider thickness and height, five chevron styles
 - [Sixteen interface languages](#languages), switched without restarting
@@ -83,7 +84,7 @@ nothing scrolls a title bar.
 
 ![Cornice settings, Gestures tab](docs/settings-gestures.png)
 
-Four movements, twelve positions. A second swipe within a second and a half refines the
+Four movements, twenty-one positions. A second swipe within a second and a half refines the
 first rather than replacing it; pause, and the next swipe starts over.
 
 Cornice only ever watches these events. It cannot swallow one, so a gesture read wrong still
@@ -92,7 +93,9 @@ reaches the application under your pointer exactly as it would have.
 ## Making it yours
 
 The divider is drawn, not an image, so its thickness and height are yours to set, and the
-preview is at real size because two points is a visible difference in a menu bar.
+preview is at real size because two points is a visible difference in a menu bar. With the
+always hidden zone switched on the preview shows both marks, since the double line follows
+the same two sliders.
 
 ![Cornice settings, Appearance tab](docs/settings-appearance.png)
 
@@ -112,6 +115,16 @@ permission in the first place.
 
 Requires macOS 26 (Tahoe) or later on Apple Silicon.
 
+### Updates
+
+Settings has a Check for Updates button, and a switch for asking once at launch that is off
+until you turn it on. Either way it is one anonymous request to GitHub's public list of
+releases, carrying nothing about you, and Cornice makes no network request at any other
+time. If something newer exists it says so in Settings and in the right-click menu, and the
+link opens the release page.
+
+It stops there on purpose. See below.
+
 ## What it deliberately does not do
 
 Cornice does not move other applications' icons for you, so there is no checklist of things
@@ -127,6 +140,12 @@ The gesture module stops at moving windows around one screen. No thirty-gesture 
 no per-application rules, no gesture for closing a window: a trackpad is not precise enough
 to be trusted with something that can take unsaved work with it.
 
+Cornice does not install updates over itself. Replacing a running application with something
+just downloaded means first proving the download is genuine, and these builds are ad-hoc
+signed on the runner, so there is no stable identity to check it against. This is a process
+that holds Accessibility and an event tap once you turn gestures on, and borrowing it would
+mean borrowing those. It finds the release and hands you the link.
+
 ## Why
 
 Apple provides no public API for managing other applications' menu bar items. Every tool in
@@ -135,10 +154,10 @@ release moves the ground.
 
 - **Ice** (29k stars): last stable release October 2024, repository untouched since
   September 2025, with two unfinished dev builds after it.
-- **Thaw** (9.7k stars): an active fork of Ice, on Homebrew, in twenty languages, shipping
-  release candidates this month. If you want the full feature set, use it. It reads the menu
-  bar continuously and rearranges items for you, which is what makes it powerful and what
-  makes Accessibility non-optional for it.
+- **[Thaw](https://github.com/thaw-app/Thaw)** (9.7k stars): an active fork of Ice, on
+  Homebrew, in twenty languages, shipping release candidates this month. If you want the
+  full feature set, use it. It reads the menu bar continuously and rearranges items for you,
+  which is what makes it powerful and what makes Accessibility non-optional for it.
 - **SaneBar**: [relicensed to MIT on 1 July 2026](https://github.com/sane-apps/SaneBar/releases/tag/sunset),
   when its author announced he was winding it down over macOS 27. Development has continued
   since, so read that as a change of footing rather than an ending.
