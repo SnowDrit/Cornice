@@ -33,6 +33,10 @@ final class Preferences {
             // below for why, and note that this only ever decides the very first launch:
             // afterwards `wasHiding` carries whatever state was last left.
             Key.startHidden: false,
+            // Off, because it costs a third permanent status item and menu bar room is
+            // the one thing this application exists to save. Nobody gets charged a slot
+            // for a feature they have not asked for.
+            Key.alwaysHiddenEnabled: false,
             Key.dividerThickness: 1.5,
             Key.dividerHeight: 14.0,
             Key.toggleSymbol: ToggleSymbol.chevron.rawValue,
@@ -48,6 +52,8 @@ final class Preferences {
         static let autoCollapseDelay = "autoCollapseDelay"
         static let startHidden = "startHidden"
         static let wasHiding = "wasHiding"
+        static let alwaysHiddenEnabled = "alwaysHiddenEnabled"
+        static let zoneOpen = "zoneOpen"
         static let dividerThickness = "dividerThickness"
         static let dividerHeight = "dividerHeight"
         static let toggleSymbol = "toggleSymbol"
@@ -150,6 +156,25 @@ final class Preferences {
     var wasHiding: Bool {
         get { defaults.bool(forKey: Key.wasHiding) }
         set { defaults.set(newValue, forKey: Key.wasHiding) }
+    }
+
+    /// A second divider, left of the first, for icons that should stay hidden even while
+    /// the rest are revealed.
+    ///
+    /// Off until asked for, and this one is not shyness. The divider is a third permanent
+    /// status item, and menu bar room is exactly the resource Cornice exists to hand back.
+    /// Charging a slot for a feature the user has not asked for would be taking with one
+    /// hand what the app gives with the other.
+    var alwaysHiddenEnabled: Bool {
+        get { access(keyPath: \.alwaysHiddenEnabled); return defaults.bool(forKey: Key.alwaysHiddenEnabled) }
+        set { withMutation(keyPath: \.alwaysHiddenEnabled) { defaults.set(newValue, forKey: Key.alwaysHiddenEnabled) } }
+    }
+
+    /// Whether the always hidden zone was left open, restored on launch the same way
+    /// `wasHiding` is, so a restart is not visible to the user.
+    var zoneOpen: Bool {
+        get { defaults.bool(forKey: Key.zoneOpen) }
+        set { defaults.set(newValue, forKey: Key.zoneOpen) }
     }
 
     /// Trackpad gestures for window management.

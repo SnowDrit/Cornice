@@ -59,12 +59,43 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        // The same subject one level up: the real separator, driven through every state
+        // the zone has. It writes preferences, which no other check does, so it saves them
+        // first and puts them back at the end.
+        if ProcessInfo.processInfo.environment["CORNICE_RUN_ZONECHECK"] != nil {
+            Task {
+                await SecondBoundaryCheck.runController()
+                NSApp.terminate(nil)
+            }
+            return
+        }
+
         // Opens the settings window on its own, so its layout can be looked at without
         // clicking a status item. Headless for the same reason as the gesture check: this
         // instance must not touch the menu bar the real one is managing.
         if ProcessInfo.processInfo.environment["CORNICE_SHOW_SETTINGS"] != nil {
             openSettings()
             return
+        }
+
+        let preferences = Preferences.shared
+
+        // Insurance against dying while hidden. `cleanExit` is written true only from
+        // `applicationWillTerminate`, which a crash never reaches, so finding it false
+        // here means the previous run ended badly. Coming up revealed in that case costs
+        // the user one keypress; coming up hidden would leave their icons parked off the
+        // side of the screen with nothing running that knows how to bring them back.
+        //
+        // Read and written before the separator exists, because the separator reads these
+        // when it is built and never asks again.
+        let crashed = !preferences.cleanExit
+        preferences.cleanExit = false
+        if crashed {
+            // The always hidden zone opens too, for the same reason and more so: it is
+            // the one thing Cornice never opens by itself, so a user who cannot find
+            // their icons has the fewest ways to guess where those went.
+            preferences.zoneOpen = true
+            log.error("previous run did not exit cleanly, coming up revealed")
         }
 
         let separator = SeparatorController { hiding in
@@ -89,19 +120,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     self?.hotKeys.refresh()
                 }
             }
-
-        let preferences = Preferences.shared
-
-        // Insurance against dying while hidden. `cleanExit` is written true only from
-        // `applicationWillTerminate`, which a crash never reaches, so finding it false
-        // here means the previous run ended badly. Coming up revealed in that case costs
-        // the user one keypress; coming up hidden would leave their icons parked off the
-        // side of the screen with nothing running that knows how to bring them back.
-        let crashed = !preferences.cleanExit
-        preferences.cleanExit = false
-        if crashed {
-            log.error("previous run did not exit cleanly, coming up revealed")
-        }
 
         // Restore what the user left, unless they asked for a fixed starting state.
         let shouldHide = !crashed && (preferences.startHidden || preferences.wasHiding)
@@ -137,6 +155,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         switch action {
         case .toggleHiding:
             separator?.toggleHiding()
+        case .toggleAlwaysHidden:
+            separator?.toggleZone()
         case .toggleAutoCollapse:
             Preferences.shared.autoCollapse.toggle()
         }
@@ -231,16 +251,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(nil)
     }
 
-    /// What the settings window lists. Split at the boundary rather than by any stored
+    /// What the settings window lists. Split at the dividers rather than by any stored
     /// configuration, because the arrangement *is* the configuration.
+    ///
+    /// It used to split at the toggle, which sits at the right-hand end of the bar and
+    /// means nothing: with the icons revealed that put almost everything in the hidden
+    /// list. The dividers are what decides, so the dividers are what it reads.
     func currentArrangement() -> SettingsView.Arrangement {
-        let boundary = separator?.controlFrame?.minX ?? 0
+        let main = separator?.mainDividerAnchor ?? 0
+        let zone = separator?.zoneDividerAnchor
         let items = enumerator.enumerateItems().filter {
             $0.ownerBundleID != Bundle.main.bundleIdentifier
         }
+        func x(_ item: MenuBarItem) -> CGFloat { item.frame?.minX ?? -1 }
+
         return SettingsView.Arrangement(
-            visible: items.filter { ($0.frame?.minX ?? -1) >= boundary },
-            hidden: items.filter { ($0.frame?.minX ?? -1) < boundary })
+            visible: items.filter { x($0) >= main },
+            hidden: items.filter { x($0) < main && x($0) >= (zone ?? -.greatestFiniteMagnitude) },
+            alwaysHidden: zone.map { anchor in items.filter { x($0) < anchor } } ?? [])
     }
 
     /// Cornice has no windows to reopen, so clicking the app in Finder while it is

@@ -41,6 +41,7 @@ struct SettingsView: View {
     struct Arrangement {
         var visible: [MenuBarItem]
         var hidden: [MenuBarItem]
+        var alwaysHidden: [MenuBarItem] = []
     }
 
     var body: some View {
@@ -94,6 +95,19 @@ struct SettingsView: View {
                 Text(L.t("A short wait, so brushing past the top of the screen does not put them away."))
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+            Section {
+                Toggle(
+                    L.t("Keep a second divider, for icons you never want to see"),
+                    isOn: $preferences.alwaysHiddenEnabled)
+                Text(L.t("It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if preferences.alwaysHiddenEnabled {
+                    Text(L.t("⌥-click the toggle button to open it, or bind a shortcut below."))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
             Section(L.t("Keyboard shortcuts")) {
                 ForEach(HotKeyAction.allCases) { action in
@@ -269,14 +283,14 @@ struct SettingsView: View {
                 // Drawn at the real size so the sliders can be judged by eye rather than
                 // by number; the menu bar is small and 2 points is a visible difference.
                 LabeledContent(L.t("Preview")) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 4).fill(.quaternary)
-                        Capsule()
-                            .frame(
-                                width: preferences.dividerThickness,
-                                height: preferences.dividerHeight)
+                    HStack(spacing: 8) {
+                        if preferences.alwaysHiddenEnabled {
+                            // Two bars share the width of one divider, so past a point
+                            // they thin out instead of the item growing wider.
+                            dividerSwatch(bars: 2)
+                        }
+                        dividerSwatch(bars: 1)
                     }
-                    .frame(width: 60, height: 24)
                 }
             }
             Section(L.t("Toggle button")) {
@@ -290,6 +304,23 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+    }
+
+    /// One divider as it will be drawn. Two bars means the always hidden one, which is
+    /// the only thing that tells the pair apart once they are both in the bar.
+    private func dividerSwatch(bars: Int) -> some View {
+        let thickness = bars == 2
+            ? min(preferences.dividerThickness, 4)
+            : preferences.dividerThickness
+        return ZStack {
+            RoundedRectangle(cornerRadius: 4).fill(.quaternary)
+            HStack(spacing: 2) {
+                ForEach(0..<bars, id: \.self) { _ in
+                    Capsule().frame(width: thickness, height: preferences.dividerHeight)
+                }
+            }
+        }
+        .frame(width: 60, height: 24)
     }
 
     private var arrangementList: some View {
@@ -312,6 +343,15 @@ struct SettingsView: View {
                 Divider()
             }
             List {
+                if preferences.alwaysHiddenEnabled {
+                    Section(L.t("Always hidden, left of the second divider")) {
+                        if snapshot.alwaysHidden.isEmpty {
+                            Text(L.t("Nothing. Drag the second divider left of the icons you never want to see."))
+                                .foregroundStyle(.secondary)
+                        }
+                        ForEach(snapshot.alwaysHidden) { item in row(item) }
+                    }
+                }
                 Section(L.t("Hidden, left of the divider")) {
                     if snapshot.hidden.isEmpty {
                         Text(L.t("Nothing. Drag the divider left of the icons you want out of the way."))

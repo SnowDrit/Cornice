@@ -13,6 +13,7 @@ import OSLog
 /// on its own, without Accessibility and without moving anybody's status item.
 enum HotKeyAction: String, CaseIterable, Identifiable, Sendable {
     case toggleHiding
+    case toggleAlwaysHidden
     case toggleAutoCollapse
 
     var id: String { rawValue }
@@ -21,6 +22,7 @@ enum HotKeyAction: String, CaseIterable, Identifiable, Sendable {
     var title: String {
         switch self {
         case .toggleHiding:       "Hide or reveal the icons"
+        case .toggleAlwaysHidden: "Open or close the always hidden zone"
         case .toggleAutoCollapse: "Turn automatic hiding on or off"
         }
     }

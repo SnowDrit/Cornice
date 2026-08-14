@@ -85,6 +85,17 @@ enum L {
             "Sidebar": "Боковая панель",
             "Language": "Язык",
             "Hidden, left of the divider": "Скрытые, левее разделителя",
+            "Keep a second divider, for icons you never want to see":
+                "Второй разделитель, для значков, которые видеть не нужно",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Занимает ещё одно место в строке меню. ⌘-перетащите его левее первого разделителя: всё, что окажется за ним, останется скрытым, даже когда остальное показано.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-клик по кнопке-переключателю открывает зону, или назначьте сочетание ниже.",
+            "Open or close the always hidden zone": "Открыть или закрыть всегда скрытую зону",
+            "Always hidden, left of the second divider":
+                "Всегда скрытые, левее второго разделителя",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Пусто. Перетащите второй разделитель левее значков, которые видеть не нужно.",
             "Visible, right of the divider": "Видимые, правее разделителя",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Пусто. Перетащите разделитель левее значков, которые хотите убрать.",
@@ -165,6 +176,18 @@ enum L {
             "Sidebar": "Бічна панель",
             "Language": "Мова",
             "Hidden, left of the divider": "Приховані, ліворуч від роздільника",
+            "Keep a second divider, for icons you never want to see":
+                "Другий роздільник, для значків, які бачити не потрібно",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Займає ще одне місце в рядку меню. ⌘-перетягніть його ліворуч від першого роздільника: усе, що опиниться за ним, лишиться прихованим, навіть коли решта показана.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-клік по кнопці-перемикачі відкриває зону, або призначте сполучення нижче.",
+            "Open or close the always hidden zone":
+                "Відкрити або закрити завжди приховану зону",
+            "Always hidden, left of the second divider":
+                "Завжди приховані, ліворуч від другого роздільника",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Порожньо. Перетягніть другий роздільник ліворуч від значків, які бачити не потрібно.",
             "Visible, right of the divider": "Видимі, праворуч від роздільника",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Порожньо. Перетягніть роздільник ліворуч від значків, які хочете прибрати.",
@@ -245,6 +268,18 @@ enum L {
             "Sidebar": "Seitenleiste",
             "Language": "Sprache",
             "Hidden, left of the divider": "Ausgeblendet, links vom Trenner",
+            "Keep a second divider, for icons you never want to see":
+                "Ein zweiter Trenner, für Symbole, die nie zu sehen sein sollen",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Kostet einen weiteren Platz in der Menüleiste. Mit ⌘ links neben den ersten Trenner ziehen: Was dahinter landet, bleibt verborgen, auch wenn der Rest sichtbar ist.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-Klick auf die Schaltfläche öffnet ihn, oder unten einen Kurzbefehl festlegen.",
+            "Open or close the always hidden zone":
+                "Den immer verborgenen Bereich öffnen oder schließen",
+            "Always hidden, left of the second divider":
+                "Immer verborgen, links vom zweiten Trenner",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Nichts. Den zweiten Trenner links neben die Symbole ziehen, die nie zu sehen sein sollen.",
             "Visible, right of the divider": "Sichtbar, rechts vom Trenner",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nichts. Ziehen Sie den Trenner links neben die Symbole, die verschwinden sollen.",
@@ -325,6 +360,17 @@ enum L {
             "Sidebar": "Barre latérale",
             "Language": "Langue",
             "Hidden, left of the divider": "Masqués: à gauche du séparateur",
+            "Keep a second divider, for icons you never want to see":
+                "Un second séparateur, pour les icônes que vous ne voulez jamais voir",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Cela prend une place de plus dans la barre des menus. Faites-le glisser avec ⌘ à gauche du premier séparateur: ce qui se retrouve derrière reste masqué, même quand le reste est affiché.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-cliquez sur le bouton pour l'ouvrir, ou associez un raccourci ci-dessous.",
+            "Open or close the always hidden zone": "Ouvrir ou fermer la zone toujours masquée",
+            "Always hidden, left of the second divider":
+                "Toujours masqués: à gauche du second séparateur",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Rien. Faites glisser le second séparateur à gauche des icônes que vous ne voulez jamais voir.",
             "Visible, right of the divider": "Visibles: à droite du séparateur",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Rien. Faites glisser le séparateur à gauche des icônes à écarter.",
@@ -406,6 +452,17 @@ enum L {
             "Sidebar": "Barra lateral",
             "Language": "Idioma",
             "Hidden, left of the divider": "Ocultos, a la izquierda del separador",
+            "Keep a second divider, for icons you never want to see":
+                "Un segundo separador, para los iconos que nunca quiere ver",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Ocupa un sitio más en la barra de menús. Arrástrelo con ⌘ a la izquierda del primer separador: lo que quede detrás sigue oculto incluso cuando lo demás está visible.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-clic en el botón para abrirla, o asigne un atajo abajo.",
+            "Open or close the always hidden zone": "Abrir o cerrar la zona siempre oculta",
+            "Always hidden, left of the second divider":
+                "Siempre ocultos, a la izquierda del segundo separador",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Nada. Arrastre el segundo separador a la izquierda de los iconos que nunca quiere ver.",
             "Visible, right of the divider": "Visibles, a la derecha del separador",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nada. Arrastre el separador a la izquierda de los iconos que quiera apartar.",
@@ -486,6 +543,17 @@ enum L {
             "Sidebar": "Barra lateral",
             "Language": "Idioma",
             "Hidden, left of the divider": "Ocultos: à esquerda do divisor",
+            "Keep a second divider, for icons you never want to see":
+                "Um segundo divisor, para os ícones que nunca quer ver",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Ocupa mais um lugar na barra de menus. Arraste-o com ⌘ para a esquerda do primeiro divisor: o que ficar atrás continua oculto mesmo quando o resto está visível.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-clique no botão para a abrir, ou defina um atalho abaixo.",
+            "Open or close the always hidden zone": "Abrir ou fechar a zona sempre oculta",
+            "Always hidden, left of the second divider":
+                "Sempre ocultos: à esquerda do segundo divisor",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Nada. Arraste o segundo divisor para a esquerda dos ícones que nunca quer ver.",
             "Visible, right of the divider": "Visíveis: à direita do divisor",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nada. Arraste o divisor para a esquerda dos ícones que quer afastar.",
@@ -566,6 +634,17 @@ enum L {
             "Sidebar": "Barra laterale",
             "Language": "Lingua",
             "Hidden, left of the divider": "Nascosti, a sinistra del divisore",
+            "Keep a second divider, for icons you never want to see":
+                "Un secondo divisore, per le icone che non vuoi mai vedere",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Occupa un posto in più nella barra dei menu. Trascinalo con ⌘ a sinistra del primo divisore: quello che resta dietro rimane nascosto anche quando il resto è visibile.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-clic sul pulsante per aprirla, oppure assegna una scorciatoia qui sotto.",
+            "Open or close the always hidden zone": "Aprire o chiudere la zona sempre nascosta",
+            "Always hidden, left of the second divider":
+                "Sempre nascosti, a sinistra del secondo divisore",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Niente. Trascina il secondo divisore a sinistra delle icone che non vuoi mai vedere.",
             "Visible, right of the divider": "Visibili, a destra del divisore",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Niente. Trascina il divisore a sinistra delle icone da togliere di mezzo.",
@@ -647,6 +726,18 @@ enum L {
             "Sidebar": "Navigatiekolom",
             "Language": "Taal",
             "Hidden, left of the divider": "Verborgen, links van de scheiding",
+            "Keep a second divider, for icons you never want to see":
+                "Een tweede scheiding, voor pictogrammen die je nooit wilt zien",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Kost een plek extra in de menubalk. Sleep hem met ⌘ links van de eerste scheiding: wat erachter belandt blijft verborgen, ook als de rest zichtbaar is.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-klik op de knop om hem te openen, of stel hieronder een sneltoets in.",
+            "Open or close the always hidden zone":
+                "De altijd verborgen zone openen of sluiten",
+            "Always hidden, left of the second divider":
+                "Altijd verborgen, links van de tweede scheiding",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Niets. Sleep de tweede scheiding links van de pictogrammen die je nooit wilt zien.",
             "Visible, right of the divider": "Zichtbaar, rechts van de scheiding",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Niets. Sleep de scheiding links van de symbolen die u weg wilt hebben.",
@@ -728,6 +819,17 @@ enum L {
             "Sidebar": "Panel boczny",
             "Language": "Język",
             "Hidden, left of the divider": "Ukryte, na lewo od separatora",
+            "Keep a second divider, for icons you never want to see":
+                "Drugi separator, dla ikon, których nigdy nie chcesz widzieć",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Zajmuje jeszcze jedno miejsce na pasku menu. Przeciągnij go z ⌘ na lewo od pierwszego separatora: to, co znajdzie się za nim, pozostaje ukryte nawet wtedy, gdy reszta jest widoczna.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-kliknięcie przycisku otwiera strefę, albo przypisz skrót poniżej.",
+            "Open or close the always hidden zone": "Otwórz lub zamknij zawsze ukrytą strefę",
+            "Always hidden, left of the second divider":
+                "Zawsze ukryte, na lewo od drugiego separatora",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Nic. Przeciągnij drugi separator na lewo od ikon, których nigdy nie chcesz widzieć.",
             "Visible, right of the divider": "Widoczne, na prawo od separatora",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Pusto. Przeciągnij separator na lewo od ikon, które chcesz schować.",
@@ -808,6 +910,17 @@ enum L {
             "Sidebar": "Postranní panel",
             "Language": "Jazyk",
             "Hidden, left of the divider": "Skryté, vlevo od oddělovače",
+            "Keep a second divider, for icons you never want to see":
+                "Druhý oddělovač, pro ikony, které nikdy nechcete vidět",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Zabere na liště menu ještě jedno místo. Přetáhněte ho s ⌘ nalevo od prvního oddělovače: co skončí za ním, zůstane skryté i když je ostatní vidět.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-klik na tlačítko ji otevře, nebo si níže přiřaďte zkratku.",
+            "Open or close the always hidden zone": "Otevřít nebo zavřít vždy skrytou zónu",
+            "Always hidden, left of the second divider":
+                "Vždy skryté, vlevo od druhého oddělovače",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Nic. Přetáhněte druhý oddělovač nalevo od ikon, které nikdy nechcete vidět.",
             "Visible, right of the divider": "Viditelné, vpravo od oddělovače",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Nic. Přetáhněte oddělovač vlevo od ikon, které chcete uklidit.",
@@ -888,6 +1001,17 @@ enum L {
             "Sidebar": "Sidofält",
             "Language": "Språk",
             "Hidden, left of the divider": "Dolda, till vänster om avdelaren",
+            "Keep a second divider, for icons you never want to see":
+                "En andra avdelare, för ikoner du aldrig vill se",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Tar en plats till i menyraden. Dra den med ⌘ till vänster om den första avdelaren: det som hamnar bakom förblir dolt även när resten visas.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-klicka på knappen för att öppna den, eller ange ett kortkommando nedan.",
+            "Open or close the always hidden zone": "Öppna eller stäng den alltid dolda zonen",
+            "Always hidden, left of the second divider":
+                "Alltid dolda, till vänster om den andra avdelaren",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Inget. Dra den andra avdelaren till vänster om ikonerna du aldrig vill se.",
             "Visible, right of the divider": "Synliga, till höger om avdelaren",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Inget. Dra avdelaren till vänster om symbolerna du vill få undan.",
@@ -969,6 +1093,17 @@ enum L {
             "Sidebar": "Yan çubuk",
             "Language": "Dil",
             "Hidden, left of the divider": "Gizli, ayırıcının solunda",
+            "Keep a second divider, for icons you never want to see":
+                "İkinci bir ayırıcı, hiç görmek istemediğiniz simgeler için",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "Menü çubuğunda bir yer daha kaplar. ⌘ ile birinci ayırıcının soluna sürükleyin: arkasında kalan her şey, geri kalanı görünürken bile gizli kalır.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "Açmak için düğmeye ⌥-tıklayın veya aşağıdan bir kısayol atayın.",
+            "Open or close the always hidden zone": "Her zaman gizli bölgeyi aç veya kapat",
+            "Always hidden, left of the second divider":
+                "Her zaman gizli, ikinci ayırıcının solunda",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "Yok. İkinci ayırıcıyı hiç görmek istemediğiniz simgelerin soluna sürükleyin.",
             "Visible, right of the divider": "Görünür, ayırıcının sağında",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "Boş. Ayırıcıyı, kaldırmak istediğiniz simgelerin soluna sürükleyin.",
@@ -1049,6 +1184,15 @@ enum L {
             "Sidebar": "サイドバー",
             "Language": "言語",
             "Hidden, left of the divider": "非表示: 区切りの左側",
+            "Keep a second divider, for icons you never want to see": "2つ目の区切り。ずっと隠しておきたいアイコン用",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "メニューバーの場所をもう1つ使います。⌘を押しながら1つ目の区切りの左へドラッグしてください。その左側にあるものは、ほかを表示しているときも隠れたままです。",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "ボタンを⌥クリックで開きます。下でショートカットを割り当てることもできます。",
+            "Open or close the always hidden zone": "ずっと隠す領域を開く/閉じる",
+            "Always hidden, left of the second divider": "ずっと非表示: 2つ目の区切りの左側",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "ありません。ずっと隠しておきたいアイコンの左へ2つ目の区切りをドラッグしてください。",
             "Visible, right of the divider": "表示中: 区切りの右側",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "なし。隠したいアイコンの左へ区切りをドラッグしてください。",
@@ -1126,6 +1270,15 @@ enum L {
             "Sidebar": "사이드바",
             "Language": "언어",
             "Hidden, left of the divider": "가려짐: 구분선 왼쪽",
+            "Keep a second divider, for icons you never want to see": "두 번째 구분선. 계속 숨겨둘 아이콘용",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "메뉴 막대 자리를 하나 더 씁니다. ⌘을 누른 채 첫 번째 구분선 왼쪽으로 끌어 놓으세요. 그 왼쪽에 있는 것은 나머지가 보일 때도 계속 가려집니다.",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "버튼을 ⌥-클릭하면 열립니다. 아래에서 단축키를 지정할 수도 있습니다.",
+            "Open or close the always hidden zone": "항상 가려두는 영역 열기 또는 닫기",
+            "Always hidden, left of the second divider": "항상 가려짐: 두 번째 구분선 왼쪽",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "없음. 계속 숨겨둘 아이콘 왼쪽으로 두 번째 구분선을 끌어 놓으세요.",
             "Visible, right of the divider": "표시됨: 구분선 오른쪽",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "없음. 치우고 싶은 아이콘의 왼쪽으로 구분선을 드래그하십시오.",
@@ -1203,6 +1356,15 @@ enum L {
             "Sidebar": "边栏",
             "Language": "语言",
             "Hidden, left of the divider": "已隐藏: 分隔线左侧",
+            "Keep a second divider, for icons you never want to see": "第二条分隔线，用于永远不想看到的图标",
+            "It costs one more slot in the menu bar. ⌘-drag it left of the first divider: whatever ends up behind it stays hidden even while the rest are revealed.":
+                "会多占菜单栏一个位置。按住 ⌘ 把它拖到第一条分隔线左边：落在它左边的东西，即使其余图标显示出来也仍然隐藏。",
+            "⌥-click the toggle button to open it, or bind a shortcut below.":
+                "⌥-点按按钮即可打开，也可以在下面设置快捷键。",
+            "Open or close the always hidden zone": "打开或关闭常隐区域",
+            "Always hidden, left of the second divider": "常隐: 第二条分隔线左侧",
+            "Nothing. Drag the second divider left of the icons you never want to see.":
+                "没有。把第二条分隔线拖到你永远不想看到的图标左边。",
             "Visible, right of the divider": "显示中: 分隔线右侧",
             "Nothing. Drag the divider left of the icons you want out of the way.":
                 "无。把分隔线拖到想收起的图标左侧。",
