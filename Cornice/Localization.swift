@@ -106,6 +106,9 @@ enum L {
             "Quit Cornice": "Завершить Cornice",
             "Version": "Версия",
             "Check for Updates": "Проверить обновления",
+            "Check at launch": "Проверять при запуске",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Один запрос к GitHub, без каких-либо сведений о вас. Cornice ничего не устанавливает поверх себя.",
             "You have the latest version.": "Установлена последняя версия.",
             "is available": "доступна",
             "Could not check:": "Не удалось проверить:",
@@ -198,6 +201,9 @@ enum L {
             "Quit Cornice": "Завершити Cornice",
             "Version": "Версія",
             "Check for Updates": "Перевірити оновлення",
+            "Check at launch": "Перевіряти під час запуску",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Один запит до GitHub, без жодних відомостей про вас. Cornice нічого не встановлює поверх себе.",
             "You have the latest version.": "Встановлено найновішу версію.",
             "is available": "доступна",
             "Could not check:": "Не вдалося перевірити:",
@@ -290,6 +296,9 @@ enum L {
             "Quit Cornice": "Cornice beenden",
             "Version": "Version",
             "Check for Updates": "Nach Updates suchen",
+            "Check at launch": "Beim Start nachsehen",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Eine Anfrage an GitHub, ohne Angaben zu Ihnen. Cornice installiert nichts über sich selbst.",
             "You have the latest version.": "Sie haben die neueste Version.",
             "is available": "ist verfügbar",
             "Could not check:": "Prüfung fehlgeschlagen:",
@@ -381,6 +390,9 @@ enum L {
             "Quit Cornice": "Quitter Cornice",
             "Version": "Version",
             "Check for Updates": "Rechercher les mises à jour",
+            "Check at launch": "Vérifier au démarrage",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Une requête vers GitHub, qui ne transporte rien. Cornice n'installe jamais rien par-dessus lui-même.",
             "You have the latest version.": "Vous avez la dernière version.",
             "is available": "est disponible",
             "Could not check:": "Vérification impossible :",
@@ -473,6 +485,9 @@ enum L {
             "Quit Cornice": "Salir de Cornice",
             "Version": "Versión",
             "Check for Updates": "Buscar actualizaciones",
+            "Check at launch": "Comprobar al iniciar",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Una petición a GitHub, sin datos suyos. Cornice nunca instala nada sobre sí mismo.",
             "You have the latest version.": "Tiene la última versión.",
             "is available": "está disponible",
             "Could not check:": "No se pudo comprobar:",
@@ -564,6 +579,9 @@ enum L {
             "Quit Cornice": "Encerrar o Cornice",
             "Version": "Versão",
             "Check for Updates": "Procurar atualizações",
+            "Check at launch": "Verificar ao iniciar",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Um pedido ao GitHub, sem dados seus. O Cornice nunca instala nada por cima de si próprio.",
             "You have the latest version.": "Você tem a versão mais recente.",
             "is available": "está disponível",
             "Could not check:": "Não foi possível verificar:",
@@ -655,6 +673,9 @@ enum L {
             "Quit Cornice": "Esci da Cornice",
             "Version": "Versione",
             "Check for Updates": "Cerca aggiornamenti",
+            "Check at launch": "Controlla all'avvio",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Una richiesta a GitHub, che non porta nulla con sé. Cornice non installa mai niente sopra se stesso.",
             "You have the latest version.": "Hai la versione più recente.",
             "is available": "è disponibile",
             "Could not check:": "Impossibile verificare:",
@@ -748,6 +769,9 @@ enum L {
             "Quit Cornice": "Cornice stoppen",
             "Version": "Versie",
             "Check for Updates": "Zoek naar updates",
+            "Check at launch": "Controleren bij starten",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Eén verzoek aan GitHub, zonder gegevens over jou. Cornice installeert nooit iets over zichzelf heen.",
             "You have the latest version.": "U hebt de nieuwste versie.",
             "is available": "is beschikbaar",
             "Could not check:": "Controleren mislukt:",
@@ -840,6 +864,9 @@ enum L {
             "Quit Cornice": "Zakończ Cornice",
             "Version": "Wersja",
             "Check for Updates": "Sprawdź aktualizacje",
+            "Check at launch": "Sprawdzaj przy starcie",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Jedno zapytanie do GitHuba, bez żadnych danych o tobie. Cornice nigdy nie instaluje niczego na sobie.",
             "You have the latest version.": "Masz najnowszą wersję.",
             "is available": "jest dostępna",
             "Could not check:": "Nie udało się sprawdzić:",
@@ -931,6 +958,9 @@ enum L {
             "Quit Cornice": "Ukončit Cornice",
             "Version": "Verze",
             "Check for Updates": "Zkontrolovat aktualizace",
+            "Check at launch": "Zkontrolovat při spuštění",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "Jeden dotaz na GitHub, bez jakýchkoli údajů o vás. Cornice na sebe nikdy nic neinstaluje.",
             "You have the latest version.": "Máte nejnovější verzi.",
             "is available": "je k dispozici",
             "Could not check:": "Kontrola se nezdařila:",
@@ -1022,6 +1052,9 @@ enum L {
             "Quit Cornice": "Avsluta Cornice",
             "Version": "Version",
             "Check for Updates": "Sök efter uppdateringar",
+            "Check at launch": "Kontrollera vid start",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "En förfrågan till GitHub, utan några uppgifter om dig. Cornice installerar aldrig något över sig själv.",
             "You have the latest version.": "Du har den senaste versionen.",
             "is available": "är tillgänglig",
             "Could not check:": "Kunde inte söka:",
@@ -1114,6 +1147,9 @@ enum L {
             "Quit Cornice": "Cornice'ten çık",
             "Version": "Sürüm",
             "Check for Updates": "Güncellemeleri denetle",
+            "Check at launch": "Açılışta denetle",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "GitHub'a tek bir istek, hakkınızda hiçbir bilgi taşımadan. Cornice kendi üzerine hiçbir şey kurmaz.",
             "You have the latest version.": "En son sürümü kullanıyorsunuz.",
             "is available": "kullanılabilir",
             "Could not check:": "Denetlenemedi:",
@@ -1203,6 +1239,9 @@ enum L {
             "Quit Cornice": "Corniceを終了",
             "Version": "バージョン",
             "Check for Updates": "アップデートを確認",
+            "Check at launch": "起動時に確認",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "GitHub へのリクエストが1回だけ、送る情報はありません。Cornice が自分自身を上書きインストールすることはありません。",
             "You have the latest version.": "最新バージョンです。",
             "is available": "が利用できます",
             "Could not check:": "確認できませんでした:",
@@ -1289,6 +1328,9 @@ enum L {
             "Quit Cornice": "Cornice 종료",
             "Version": "버전",
             "Check for Updates": "업데이트 확인",
+            "Check at launch": "실행할 때 확인",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "GitHub에 요청 한 번, 보내는 정보는 없습니다. Cornice가 자기 자신을 덮어써 설치하는 일은 없습니다.",
             "You have the latest version.": "최신 버전입니다.",
             "is available": "사용 가능",
             "Could not check:": "확인할 수 없음:",
@@ -1375,6 +1417,9 @@ enum L {
             "Quit Cornice": "退出 Cornice",
             "Version": "版本",
             "Check for Updates": "检查更新",
+            "Check at launch": "启动时检查",
+            "One request to GitHub, carrying nothing. Cornice never installs anything over itself.":
+                "向 GitHub 发一次请求，不带任何信息。Cornice 从不覆盖安装自己。",
             "You have the latest version.": "已是最新版本。",
             "is available": "可用",
             "Could not check:": "无法检查：",

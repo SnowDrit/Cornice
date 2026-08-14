@@ -97,10 +97,29 @@ jobs:
         run: |
           set -euo pipefail
           tag="${INPUT_TAG:-$GITHUB_REF_NAME}"
-          # Create if absent, otherwise just attach the build to the existing release,
-          # so notes written by hand are never overwritten by a re-run.
+          notes="docs/releases/${tag#v}.md"
+
+          # The description lives in the repository, beside the commits it describes, so
+          # it travels with the tag and there is no step anyone can forget. Every release
+          # up to v0.2.1 went out carrying nothing but the generated compare link, because
+          # the real text was something a person had to remember to paste afterwards, and
+          # nobody ever did.
+          if [ ! -f "$notes" ]; then
+            echo "::warning::$notes is missing, falling back to generated notes"
+          fi
+
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" Cornice.dmg --clobber
+            # Re-runs used to leave the description alone, to protect what had been typed
+            # into the web form. Now that the description is a file under review, the file
+            # is the thing to trust.
+            if [ -f "$notes" ]; then
+              gh release edit "$tag" --notes-file "$notes"
+            fi
+          elif [ -f "$notes" ]; then
+            gh release create "$tag" Cornice.dmg \
+              --title "Cornice $tag" \
+              --notes-file "$notes"
           else
             gh release create "$tag" Cornice.dmg \
               --title "Cornice $tag" \

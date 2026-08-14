@@ -41,6 +41,9 @@ final class Preferences {
             Key.dividerHeight: 14.0,
             Key.toggleSymbol: ToggleSymbol.chevron.rawValue,
             Key.gesturesEnabled: false,
+            // Off, so the sentence "Cornice makes no network request unless you ask"
+            // stays true for anyone who has not asked. See the property below.
+            Key.checkAtLaunch: false,
             // True, so that a first launch is not mistaken for a crashed one. Only a run
             // that actually started and then died leaves this false.
             Key.cleanExit: true,
@@ -59,6 +62,7 @@ final class Preferences {
         static let toggleSymbol = "toggleSymbol"
         static let language = "language"
         static let gesturesEnabled = "gesturesEnabled"
+        static let checkAtLaunch = "checkForUpdatesAtLaunch"
         static let cleanExit = "cleanExit"
     }
 
@@ -186,6 +190,19 @@ final class Preferences {
     var gesturesEnabled: Bool {
         get { access(keyPath: \.gesturesEnabled); return defaults.bool(forKey: Key.gesturesEnabled) }
         set { withMutation(keyPath: \.gesturesEnabled) { defaults.set(newValue, forKey: Key.gesturesEnabled) } }
+    }
+
+    /// Ask GitHub once at every launch whether a newer release exists.
+    ///
+    /// Off until switched on, which is the same answer this app gives to everything else,
+    /// and here it protects a specific claim: that Cornice makes no network request unless
+    /// asked. The request is one anonymous GET to a public list of releases, carrying no
+    /// identifier, and nothing is ever installed on the user's behalf. That is still a
+    /// request, and a claim that holds only for people who read the settings is not a
+    /// claim worth making.
+    var checkForUpdatesAtLaunch: Bool {
+        get { access(keyPath: \.checkForUpdatesAtLaunch); return defaults.bool(forKey: Key.checkAtLaunch) }
+        set { withMutation(keyPath: \.checkForUpdatesAtLaunch) { defaults.set(newValue, forKey: Key.checkAtLaunch) } }
     }
 
     /// The combination bound to an action, or `nil` when the user has not set one.

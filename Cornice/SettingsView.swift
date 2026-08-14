@@ -16,6 +16,10 @@ struct SettingsView: View {
 
     @Bindable var preferences = Preferences.shared
     let arrangement: () -> Arrangement
+    /// What the launch check found, if it ran and found anything. Read when the window
+    /// opens, so a user who has the switch on does not have to press the button to be
+    /// told what Cornice already knows.
+    let foundAtLaunch: () -> UpdateChecker.Release?
     let gestures: GestureController
     let hotKeys: HotKeyCenter
 
@@ -59,6 +63,7 @@ struct SettingsView: View {
         .task {
             snapshot = arrangement()
             accessibilityGranted = AccessibilityPermission.isGranted
+            if let found = foundAtLaunch() { updateResult = .available(found) }
         }
     }
 
@@ -137,6 +142,12 @@ struct SettingsView: View {
                     if isChecking { ProgressView().controlSize(.small) }
                     Spacer()
                 }
+                Toggle(
+                    L.t("Check at launch"),
+                    isOn: $preferences.checkForUpdatesAtLaunch)
+                Text(L.t("One request to GitHub, carrying nothing. Cornice never installs anything over itself."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 switch updateResult {
                 case .none:
                     EmptyView()

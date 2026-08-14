@@ -8,14 +8,18 @@ import OSLog
 
 /// Asks GitHub whether a newer release exists.
 ///
-/// Only when the user presses the button. Cornice makes no network request otherwise:
-/// there is no background poll, no telemetry, and nothing sent: the request carries no
-/// identifier and the reply is a public list of releases.
+/// When the user presses the button, and once at launch if they switched that on. Nothing
+/// else: no poll while running, no telemetry, and nothing sent. The request carries no
+/// identifier and the reply is a public list of releases. The launch check is off by
+/// default so that "no network request unless you ask" stays true for anyone who has not.
 ///
-/// Deliberately not Sparkle. Sparkle downloads and installs updates for you, which is
-/// worth its framework, its EdDSA signing keys and its appcast when there is an audience
-/// to serve. There is a GitHub release page and a handful of testers; a version
-/// comparison and a link are the honest size of the problem.
+/// Deliberately not Sparkle, and deliberately not an installer. Cornice finds the release
+/// and stops there. Replacing a running application with something just downloaded means
+/// first proving the download is genuine, and the builds are ad-hoc signed on the runner,
+/// so there is no stable identity to check against: it would come down to trusting
+/// whatever the URL returned. This process holds Accessibility and an event tap, and
+/// borrowing it borrows those. A real Developer ID in the repository's secrets is what
+/// unlocks that conversation, and it is worth more than the updater is.
 enum UpdateChecker {
 
     struct Release: Sendable {

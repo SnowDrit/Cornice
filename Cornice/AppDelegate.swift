@@ -144,6 +144,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         hotKeys.refresh()
 
+        checkForUpdatesIfAsked()
+    }
+
+    /// The newest release found, or `nil` when nothing has been found or looked for.
+    ///
+    /// Held here rather than inside the checker so there is exactly one copy of it, and so
+    /// that a checker with no state stays a checker with no state.
+    private(set) var availableUpdate: UpdateChecker.Release?
+
+    /// One look at GitHub, a few seconds after launch, and only if the user asked for it.
+    ///
+    /// Delayed because launch is the busiest moment Cornice has and nothing here is
+    /// urgent. A failure is silent on purpose: an application that cannot reach GitHub has
+    /// nothing useful to say about it, and saying it in a dialog at startup would be worse
+    /// than saying nothing.
+    private func checkForUpdatesIfAsked() {
+        guard Preferences.shared.checkForUpdatesAtLaunch else { return }
+        Task { @MainActor in
+            try? await Task.sleep(for: .seconds(5))
+            guard case .available(let release) = await UpdateChecker.check() else { return }
+            availableUpdate = release
+            installMenu()
+            log.info("update available: \(release.version, privacy: .public)")
+        }
     }
 
     /// What a bound key actually does.
@@ -232,6 +256,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// with no Dock icon still needs a way to reach its settings and to quit.
     private func installMenu() {
         let menu = NSMenu()
+
+        // An agent with no Dock icon and no window has nowhere else to put this. It opens
+        // the release page and nothing more: Cornice does not install over itself.
+        if let update = availableUpdate {
+            menu.addItem(
+                withTitle: L.t("Version") + " \(update.version) " + L.t("is available"),
+                action: #selector(openReleasePage),
+                keyEquivalent: "").target = self
+            menu.addItem(.separator())
+        }
+
         menu.addItem(withTitle: L.t("Settings…"), action: #selector(openSettings), keyEquivalent: ",")
             .target = self
         menu.addItem(.separator())
@@ -240,11 +275,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         separator?.contextMenu = menu
     }
 
+    @objc private func openReleasePage() {
+        guard let update = availableUpdate else { return }
+        NSWorkspace.shared.open(update.url)
+    }
+
     private let settingsWindow = SettingsWindowController()
 
     @objc private func openSettings() {
         settingsWindow.show(SettingsView(
-            arrangement: currentArrangement, gestures: gestures, hotKeys: hotKeys))
+            arrangement: currentArrangement,
+            foundAtLaunch: { [weak self] in self?.availableUpdate },
+            gestures: gestures,
+            hotKeys: hotKeys))
     }
 
     @objc private func quit() {

@@ -16,6 +16,7 @@ struct CorniceApp: App {
         Settings {
             SettingsView(
                 arrangement: appDelegate.currentArrangement,
+                foundAtLaunch: { appDelegate.availableUpdate },
                 gestures: appDelegate.gestures,
                 hotKeys: appDelegate.hotKeys)
         }
