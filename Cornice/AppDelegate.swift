@@ -46,8 +46,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
 
+        // The one check that does put items in the menu bar, because what it is asking
+        // about is menu bar items: whether two of them belonging to one process can both
+        // be wider than the bar at once. Its items are its own, under their own autosave
+        // names, and it narrows them and waits before letting go of them. Still worth
+        // running with the real Cornice revealed rather than hiding.
+        if ProcessInfo.processInfo.environment["CORNICE_RUN_TWOWIDECHECK"] != nil {
+            Task {
+                await SecondBoundaryCheck.run()
+                NSApp.terminate(nil)
+            }
+            return
+        }
+
         // Opens the settings window on its own, so its layout can be looked at without
-        // clicking a status item. Headless for the same reason as the check above: this
+        // clicking a status item. Headless for the same reason as the gesture check: this
         // instance must not touch the menu bar the real one is managing.
         if ProcessInfo.processInfo.environment["CORNICE_SHOW_SETTINGS"] != nil {
             openSettings()
