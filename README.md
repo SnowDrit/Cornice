@@ -26,8 +26,12 @@ chevron, and comes back when you click again.
 [ hidden ]  │  [ visible ]  ❯
 ```
 
+There is a second divider too, if you want a zone that stays hidden even when the rest is
+revealed. It is off until you ask for it.
+
 - Hide and reveal with one click
 - You choose where the line falls: ⌘-drag the divider, and Cornice never moves it
+- An optional [always hidden zone](#the-always-hidden-zone) behind a second divider
 - Optional auto-hide once the pointer leaves the menu bar
 - A keyboard shortcut of your choosing, for hiding and for auto-hide
 - Open at login
@@ -40,6 +44,25 @@ chevron, and comes back when you click again.
 own status item, which any application may resize freely, and the keyboard shortcuts use an
 API that asks for nothing. Cornice does not request Accessibility at startup, or at all,
 unless you turn on something that cannot work without it.
+
+## The always hidden zone
+
+Off by default. Switch it on and you get a second divider, drawn as a double line.
+
+```
+[ always hidden ]  ‖  [ hidden ]  │  [ visible ]  ❯
+```
+
+⌘-drag it to the left of the first divider. Whatever ends up behind it stays hidden even
+while the chevron reveals the rest, which is where things go that you want installed and
+never want to look at. ⌥-click the chevron to open the zone, or bind a shortcut to it.
+
+The leftmost divider is always the always hidden one. Drag one past the other and their
+jobs swap, so there is nothing to configure and nothing that can end up disagreeing with
+what you see.
+
+It costs one more slot in the menu bar, which is why it is off until you ask. The mechanism
+is the same as the first divider's, so it needs no permissions either.
 
 ## Window gestures
 
