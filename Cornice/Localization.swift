@@ -39,6 +39,14 @@ enum Language: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// For formatting numbers in the language the user picked here.
+    ///
+    /// Without it a decimal point follows the *system* locale while every word on the
+    /// screen follows this one, so a Russian machine showing the English interface put
+    /// "1,5" next to "Thickness". The window has its own language; its numbers should
+    /// speak it too.
+    var locale: Locale { Locale(identifier: rawValue) }
+
     /// The closest match to the system's preferred languages, falling back to English.
     static var systemDefault: Language {
         for identifier in Locale.preferredLanguages {

@@ -48,18 +48,72 @@ struct SettingsView: View {
         var alwaysHidden: [MenuBarItem] = []
     }
 
+    /// A number in the language the window is written in, not the one the machine is set
+    /// to. `"\(value, specifier: "%.1f")"` follows the system locale, which put "1,5"
+    /// beside the word "Thickness" on a Russian machine showing the English interface.
+    private func oneDecimal(_ value: Double) -> String {
+        value.formatted(
+            .number.precision(.fractionLength(1)).locale(preferences.language.locale))
+    }
+
+    /// Which tab opens first.
+    ///
+    /// Only ever anything but `.behaviour` when `CORNICE_SETTINGS_TAB` names another one,
+    /// which is how the README pictures are taken: three launches, no clicking, and the
+    /// same tab every time whoever runs it. Driving a `TabView` from outside needs a
+    /// selection, and a selection needs tags, which is all this adds.
+    enum Tab: String {
+        case behaviour, appearance, menuBar, gestures
+
+        static var requested: Tab {
+            let asked = ProcessInfo.processInfo.environment["CORNICE_SETTINGS_TAB"] ?? ""
+            return Tab(rawValue: asked) ?? .behaviour
+        }
+
+        /// How tall this tab needs to be, so the window follows the tab rather than one
+        /// size serving none of them.
+        ///
+        /// One fixed height cannot do it any more: Behaviour needs about twice what
+        /// Appearance does, and it grew again this release. Held at the tallest, half of
+        /// Appearance is empty; held anywhere shorter, the update switch at the bottom of
+        /// Behaviour falls below the fold, which is the worst of the two because it hides
+        /// a control rather than showing nothing.
+        ///
+        /// Measured, not guessed, and worth re-measuring when a section is added: open
+        /// each tab with `CORNICE_SETTINGS_TAB` and look at where the last box ends.
+        var height: CGFloat {
+            switch self {
+            case .behaviour:  750
+            case .appearance: 370
+            case .menuBar:    460
+            case .gestures:   600
+            }
+        }
+    }
+
+    @State private var tab = Tab.requested
+
     var body: some View {
-        TabView {
-            behaviour.tabItem { Label(L.t("Behaviour"), systemImage: "slider.horizontal.3") }
-            appearance.tabItem { Label(L.t("Appearance"), systemImage: "paintbrush") }
-            arrangementList.tabItem { Label(L.t("Menu Bar"), systemImage: "menubar.rectangle") }
-            gestureSettings.tabItem { Label(L.t("Gestures"), systemImage: "hand.draw") }
+        TabView(selection: $tab) {
+            behaviour
+                .tabItem { Label(L.t("Behaviour"), systemImage: "slider.horizontal.3") }
+                .tag(Tab.behaviour)
+            appearance
+                .tabItem { Label(L.t("Appearance"), systemImage: "paintbrush") }
+                .tag(Tab.appearance)
+            arrangementList
+                .tabItem { Label(L.t("Menu Bar"), systemImage: "menubar.rectangle") }
+                .tag(Tab.menuBar)
+            gestureSettings
+                .tabItem { Label(L.t("Gestures"), systemImage: "hand.draw") }
+                .tag(Tab.gestures)
         }
         // Wide enough for four tabs to sit side by side in every language Cornice speaks.
         // At 470 macOS gave up on fitting them and swept all four into a "more toolbar
         // items" chevron, which turned one click into two and hid the tabs behind a
-        // control that names none of them.
-        .frame(width: 620, height: 400)
+        // control that names none of them. Width is fixed for that reason; height is not,
+        // because the tabs are nothing like the same length.
+        .frame(width: 620, height: tab.height)
         .task {
             snapshot = arrangement()
             accessibilityGranted = AccessibilityPermission.isGranted
@@ -91,7 +145,7 @@ struct SettingsView: View {
                             // seconds, so anything below that is a number the mechanism
                             // cannot honour, and offering it is a small lie.
                             Slider(value: $preferences.autoCollapseDelay, in: 0.2...3, step: 0.1)
-                            Text("\(preferences.autoCollapseDelay, specifier: "%.1f") s")
+                            Text(oneDecimal(preferences.autoCollapseDelay) + " s")
                                 .monospacedDigit()
                                 .frame(width: 44, alignment: .trailing)
                         }
@@ -278,7 +332,7 @@ struct SettingsView: View {
                 LabeledContent(L.t("Thickness")) {
                     HStack {
                         Slider(value: $preferences.dividerThickness, in: 0.5...5, step: 0.5)
-                        Text("\(preferences.dividerThickness, specifier: "%.1f")")
+                        Text(oneDecimal(preferences.dividerThickness))
                             .monospacedDigit()
                             .frame(width: 32, alignment: .trailing)
                     }
