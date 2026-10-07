@@ -68,6 +68,16 @@ enum L {
 
     private static let table: [Language: [String: String]] = [
         .ru: [
+            "Cornice needs Accessibility access":
+                "Cornice нужен Универсальный доступ",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "На macOS 27 Cornice не может скрывать значки без Универсального доступа. Откройте «Системные настройки > Конфиденциальность и безопасность > Универсальный доступ» и включите Cornice.\n\nЕсли после обновления Cornice уже включён в этом списке, но значки не скрываются, удалите его из списка и снова добавьте из папки «Программы». Настройки Cornice и позиции значков сохранятся.",
+            "Not Now":
+                "Не сейчас",
+            "Menu bar hiding is unavailable":
+                "Скрытие значков недоступно",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS не предоставляет Cornice нужные средства управления строкой меню. Значки останутся видимыми. Попробуйте заново открыть Cornice. Если проблема повторится, сообщите о ней в Issues.",
             "macOS 27 also hides AirDrop and user switching while either group is closed. Open both groups to bring them back.":
                 "macOS 27 также скрывает AirDrop и переключение пользователя, пока закрыта хотя бы одна зона. Раскройте обе зоны, чтобы вернуть их.",
             "On macOS 27, allow Accessibility in Cornice settings to hide icons.":
@@ -166,6 +176,16 @@ enum L {
                 "Cornice уже использует это для другого действия.",
         ],
         .uk: [
+            "Cornice needs Accessibility access":
+                "Cornice потрібен дозвіл на доступність",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "На macOS 27 Cornice не може приховувати значки рядка меню без дозволу на доступність. Відкрийте «Системні параметри > Приватність і безпека > Доступність» і ввімкніть Cornice.\n\nЯкщо після оновлення Cornice вже ввімкнено, але значки не приховуються, видаліть його з цього списку та знову додайте з папки «Програми». Налаштування Cornice і розташування значків збережуться.",
+            "Not Now":
+                "Не зараз",
+            "Menu bar hiding is unavailable":
+                "Приховування значків недоступне",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS не надає Cornice потрібні засоби керування рядком меню. Значки залишаться видимими. Спробуйте знову відкрити Cornice. Якщо проблема не зникне, повідомте про неї в Issues.",
             "Behaviour": "Поведінка",
             "Appearance": "Оформлення",
             "Menu Bar": "Рядок меню",
@@ -261,6 +281,16 @@ enum L {
                 "Cornice уже використовує це для іншої дії.",
         ],
         .de: [
+            "Cornice needs Accessibility access":
+                "Cornice benötigt Zugriff auf Bedienungshilfen",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "Unter macOS 27 kann Cornice Menüleistensymbole ohne Zugriff auf Bedienungshilfen nicht ausblenden. Öffne Systemeinstellungen > Datenschutz & Sicherheit > Bedienungshilfen und aktiviere Cornice.\n\nWenn Cornice nach einem Update bereits aktiviert ist, das Ausblenden aber weiterhin nicht funktioniert, entferne den Eintrag aus dieser Liste und füge Cornice aus dem Ordner Programme erneut hinzu. Deine Cornice-Einstellungen und die Positionen der Symbole bleiben erhalten.",
+            "Not Now":
+                "Nicht jetzt",
+            "Menu bar hiding is unavailable":
+                "Ausblenden von Menüleistensymbolen nicht verfügbar",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS stellt die von Cornice benötigte Steuerung der Menüleiste nicht bereit. Die Symbole bleiben sichtbar. Öffne Cornice erneut. Wenn das Problem weiterhin besteht, melde es unter Issues.",
             "Behaviour": "Verhalten",
             "Appearance": "Erscheinungsbild",
             "Menu Bar": "Menüleiste",
@@ -356,6 +386,16 @@ enum L {
                 "Cornice benutzt das schon für etwas anderes.",
         ],
         .fr: [
+            "Cornice needs Accessibility access":
+                "Cornice a besoin de l’autorisation d’accessibilité",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "Sur macOS 27, Cornice ne peut pas masquer les icônes de la barre des menus sans l’autorisation d’accessibilité. Ouvrez Réglages Système > Confidentialité et sécurité > Accessibilité et activez Cornice.\n\nAprès une mise à jour, si Cornice est déjà activé mais que le masquage ne fonctionne toujours pas, retirez-le de cette liste et ajoutez-le à nouveau depuis le dossier Applications. Vos réglages Cornice et la position des icônes sont conservés.",
+            "Not Now":
+                "Pas maintenant",
+            "Menu bar hiding is unavailable":
+                "Le masquage des icônes est indisponible",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS ne fournit pas les commandes de la barre des menus dont Cornice a besoin. Les icônes resteront visibles. Essayez de rouvrir Cornice. Si le problème persiste, signalez-le dans Issues.",
             "Behaviour": "Comportement",
             "Appearance": "Apparence",
             "Menu Bar": "Barre des menus",
@@ -451,6 +491,16 @@ enum L {
                 "Cornice s'en sert déjà pour autre chose.",
         ],
         .es: [
+            "Cornice needs Accessibility access":
+                "Cornice necesita acceso de accesibilidad",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "En macOS 27, Cornice no puede ocultar los iconos de la barra de menús sin acceso de accesibilidad. Abre Ajustes del Sistema > Privacidad y seguridad > Accesibilidad y activa Cornice.\n\nSi después de una actualización Cornice ya está activado, pero los iconos siguen sin ocultarse, elimínalo de esa lista y vuelve a añadirlo desde la carpeta Aplicaciones. Se conservarán tus ajustes de Cornice y las posiciones de los iconos.",
+            "Not Now":
+                "Ahora no",
+            "Menu bar hiding is unavailable":
+                "No se pueden ocultar los iconos de la barra de menús",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS no proporciona los controles de la barra de menús que Cornice necesita. Los iconos permanecerán visibles. Prueba a abrir Cornice de nuevo. Si el problema persiste, comunícalo en Issues.",
             "Behaviour": "Comportamiento",
             "Appearance": "Apariencia",
             "Menu Bar": "Barra de menús",
@@ -545,6 +595,16 @@ enum L {
                 "Cornice ya lo usa para otra cosa.",
         ],
         .pt: [
+            "Cornice needs Accessibility access":
+                "O Cornice precisa de acesso à acessibilidade",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "No macOS 27, o Cornice não pode ocultar os ícones da barra de menus sem acesso à acessibilidade. Abra Definições do Sistema > Privacidade e Segurança > Acessibilidade e ative o Cornice.\n\nSe, após uma atualização, o Cornice já estiver ativado mas os ícones continuarem visíveis, remova-o dessa lista e volte a adicioná-lo a partir da pasta Aplicações. As suas definições do Cornice e as posições dos ícones serão mantidas.",
+            "Not Now":
+                "Agora não",
+            "Menu bar hiding is unavailable":
+                "Não é possível ocultar os ícones da barra de menus",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "O macOS não disponibiliza os controlos da barra de menus de que o Cornice precisa. Os ícones permanecerão visíveis. Experimente abrir novamente o Cornice. Se o problema persistir, comunique-o em Issues.",
             "Behaviour": "Comportamento",
             "Appearance": "Aparência",
             "Menu Bar": "Barra de menus",
@@ -639,6 +699,16 @@ enum L {
                 "O Cornice já usa isso para outra coisa.",
         ],
         .it: [
+            "Cornice needs Accessibility access":
+                "Cornice richiede l’accesso alle funzioni di accessibilità",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "Su macOS 27, Cornice non può nascondere le icone della barra dei menu senza l’accesso alle funzioni di accessibilità. Apri Impostazioni di Sistema > Privacy e sicurezza > Accessibilità e abilita Cornice.\n\nSe dopo un aggiornamento Cornice è già abilitato ma le icone non vengono nascoste, rimuovilo dall’elenco e aggiungilo di nuovo dalla cartella Applicazioni. Le impostazioni di Cornice e le posizioni delle icone vengono conservate.",
+            "Not Now":
+                "Non ora",
+            "Menu bar hiding is unavailable":
+                "Impossibile nascondere le icone della barra dei menu",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS non fornisce i controlli della barra dei menu necessari a Cornice. Le icone resteranno visibili. Prova a riaprire Cornice. Se il problema persiste, segnalalo in Issues.",
             "Behaviour": "Comportamento",
             "Appearance": "Aspetto",
             "Menu Bar": "Barra dei menu",
@@ -734,6 +804,16 @@ enum L {
                 "Cornice lo usa già per qualcos'altro.",
         ],
         .nl: [
+            "Cornice needs Accessibility access":
+                "Cornice heeft toegang tot toegankelijkheid nodig",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "Op macOS 27 kan Cornice geen menubalksymbolen verbergen zonder toegang tot toegankelijkheid. Open Systeeminstellingen > Privacy en beveiliging > Toegankelijkheid en schakel Cornice in.\n\nAls Cornice na een update al is ingeschakeld maar het verbergen nog steeds niet werkt, verwijder het dan uit die lijst en voeg Cornice opnieuw toe vanuit de map Apps. Je Cornice-instellingen en de posities van de symbolen blijven behouden.",
+            "Not Now":
+                "Niet nu",
+            "Menu bar hiding is unavailable":
+                "Menubalksymbolen verbergen is niet beschikbaar",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS biedt niet de menubalkbediening die Cornice nodig heeft. De symbolen blijven zichtbaar. Probeer Cornice opnieuw te openen. Als het probleem aanhoudt, meld het dan via Issues.",
             "Behaviour": "Gedrag",
             "Appearance": "Weergave",
             "Menu Bar": "Menubalk",
@@ -830,6 +910,16 @@ enum L {
                 "Cornice gebruikt dat al voor iets anders.",
         ],
         .pl: [
+            "Cornice needs Accessibility access":
+                "Cornice potrzebuje uprawnień dostępności",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "W macOS 27 Cornice nie może ukrywać ikon paska menu bez uprawnień dostępności. Otwórz Ustawienia systemowe > Prywatność i ochrona > Dostępność i włącz Cornice.\n\nJeśli po aktualizacji Cornice jest już włączony, ale ukrywanie nadal nie działa, usuń go z tej listy i dodaj ponownie z folderu Aplikacje. Ustawienia Cornice i pozycje ikon zostaną zachowane.",
+            "Not Now":
+                "Nie teraz",
+            "Menu bar hiding is unavailable":
+                "Ukrywanie ikon paska menu jest niedostępne",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS nie udostępnia funkcji sterowania paskiem menu potrzebnych Cornice. Ikony pozostaną widoczne. Spróbuj ponownie otworzyć Cornice. Jeśli problem nie ustąpi, zgłoś go w Issues.",
             "Behaviour": "Zachowanie",
             "Appearance": "Wygląd",
             "Menu Bar": "Pasek menu",
@@ -924,6 +1014,16 @@ enum L {
                 "Cornice już tego używa do czegoś innego.",
         ],
         .cs: [
+            "Cornice needs Accessibility access":
+                "Cornice potřebuje oprávnění ke zpřístupnění",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "V macOS 27 nemůže Cornice skrývat ikony v řádku nabídek bez oprávnění ke zpřístupnění. Otevřete Nastavení systému > Soukromí a zabezpečení > Zpřístupnění a povolte Cornice.\n\nPokud je po aktualizaci Cornice už povoleno, ale skrývání stále nefunguje, odeberte ho z tohoto seznamu a znovu ho přidejte ze složky Aplikace. Nastavení Cornice a pozice ikon zůstanou zachovány.",
+            "Not Now":
+                "Teď ne",
+            "Menu bar hiding is unavailable":
+                "Skrývání ikon v řádku nabídek není dostupné",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS neposkytuje ovládací prvky řádku nabídek, které Cornice potřebuje. Ikony zůstanou viditelné. Zkuste Cornice znovu otevřít. Pokud problém přetrvává, nahlaste ho v Issues.",
             "Behaviour": "Chování",
             "Appearance": "Vzhled",
             "Menu Bar": "Řádek nabídek",
@@ -1018,6 +1118,16 @@ enum L {
                 "Cornice to už používá pro něco jiného.",
         ],
         .sv: [
+            "Cornice needs Accessibility access":
+                "Cornice behöver åtkomst till Hjälpmedel",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "På macOS 27 kan Cornice inte dölja symboler i menyraden utan åtkomst till Hjälpmedel. Öppna Systeminställningar > Integritet och säkerhet > Hjälpmedel och aktivera Cornice.\n\nOm Cornice redan är aktiverat efter en uppdatering men symbolerna fortfarande inte döljs, ta bort det från listan och lägg till Cornice igen från mappen Program. Dina Cornice-inställningar och symbolernas placeringar behålls.",
+            "Not Now":
+                "Inte nu",
+            "Menu bar hiding is unavailable":
+                "Det går inte att dölja symboler i menyraden",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS tillhandahåller inte de menyradskontroller som Cornice behöver. Symbolerna förblir synliga. Prova att öppna Cornice igen. Om problemet kvarstår, rapportera det under Issues.",
             "Behaviour": "Beteende",
             "Appearance": "Utseende",
             "Menu Bar": "Menyrad",
@@ -1113,6 +1223,16 @@ enum L {
                 "Cornice använder redan det till något annat.",
         ],
         .tr: [
+            "Cornice needs Accessibility access":
+                "Cornice için Erişilebilirlik izni gerekiyor",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "macOS 27’de Cornice, Erişilebilirlik izni olmadan menü çubuğu simgelerini gizleyemez. Sistem Ayarları > Gizlilik ve Güvenlik > Erişilebilirlik bölümünü açıp Cornice’i etkinleştirin.\n\nGüncellemeden sonra Cornice zaten etkin olduğu hâlde gizleme çalışmıyorsa Cornice’i bu listeden kaldırıp Uygulamalar klasöründen yeniden ekleyin. Cornice ayarlarınız ve simgelerin konumları korunur.",
+            "Not Now":
+                "Şimdi Değil",
+            "Menu bar hiding is unavailable":
+                "Menü çubuğu simgeleri gizlenemiyor",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS, Cornice’in ihtiyaç duyduğu menü çubuğu denetimlerini sağlamıyor. Simgeler görünür kalacak. Cornice’i yeniden açmayı deneyin. Sorun devam ederse Issues bölümünde bildirin.",
             "Behaviour": "Davranış",
             "Appearance": "Görünüm",
             "Menu Bar": "Menü çubuğu",
@@ -1208,6 +1328,16 @@ enum L {
                 "Cornice bunu zaten başka bir şey için kullanıyor.",
         ],
         .ja: [
+            "Cornice needs Accessibility access":
+                "Corniceにはアクセシビリティの許可が必要です",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "macOS 27では、アクセシビリティの許可がないとCorniceでメニューバーのアイコンを非表示にできません。「システム設定 > プライバシーとセキュリティ > アクセシビリティ」を開き、Corniceをオンにしてください。\n\nアップデート後、Corniceがすでにオンになっていても非表示にできない場合は、一覧からCorniceを削除し、「アプリケーション」フォルダから追加し直してください。Corniceの設定とアイコンの位置は保持されます。",
+            "Not Now":
+                "今はしない",
+            "Menu bar hiding is unavailable":
+                "メニューバーのアイコンを非表示にできません",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOSからCorniceに必要なメニューバーの制御機能が提供されていません。アイコンは表示されたままになります。Corniceを開き直してみてください。問題が続く場合は、Issuesで報告してください。",
             "Behaviour": "動作",
             "Appearance": "外観",
             "Menu Bar": "メニューバー",
@@ -1297,6 +1427,16 @@ enum L {
                 "Cornice がすでに別の動作で使っています。",
         ],
         .ko: [
+            "Cornice needs Accessibility access":
+                "Cornice에 손쉬운 사용 권한이 필요합니다",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "macOS 27에서는 손쉬운 사용 권한이 없으면 Cornice가 메뉴 막대 아이콘을 숨길 수 없습니다. 시스템 설정 > 개인정보 보호 및 보안 > 손쉬운 사용을 열고 Cornice를 활성화하세요.\n\n업데이트 후 Cornice가 이미 활성화되어 있는데도 아이콘이 숨겨지지 않으면 목록에서 Cornice를 제거한 다음 응용 프로그램 폴더에서 다시 추가하세요. Cornice 설정과 아이콘 위치는 유지됩니다.",
+            "Not Now":
+                "나중에",
+            "Menu bar hiding is unavailable":
+                "메뉴 막대 아이콘을 숨길 수 없습니다",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS가 Cornice에 필요한 메뉴 막대 제어 기능을 제공하지 않고 있습니다. 아이콘은 계속 표시됩니다. Cornice를 다시 열어 보세요. 문제가 계속되면 Issues에 알려 주세요.",
             "Behaviour": "동작",
             "Appearance": "모양",
             "Menu Bar": "메뉴 막대",
@@ -1386,6 +1526,16 @@ enum L {
                 "Cornice가 이미 다른 동작에 쓰고 있습니다.",
         ],
         .zh: [
+            "Cornice needs Accessibility access":
+                "Cornice 需要辅助功能权限",
+            "On macOS 27, Cornice cannot hide menu bar icons without Accessibility access. Open System Settings > Privacy & Security > Accessibility and enable Cornice.\n\nAfter an update, if Cornice is already enabled but hiding still does not work, remove its entry from that list and add Cornice from Applications again. Your Cornice settings and icon positions are kept.":
+                "在 macOS 27 上，没有辅助功能权限，Cornice 就无法隐藏菜单栏图标。请打开“系统设置 > 隐私与安全性 > 辅助功能”并启用 Cornice。\n\n更新后，如果 Cornice 已启用但仍无法隐藏图标，请将它从该列表中移除，然后从“应用程序”文件夹重新添加。Cornice 的设置和图标位置会保留。",
+            "Not Now":
+                "暂不",
+            "Menu bar hiding is unavailable":
+                "无法隐藏菜单栏图标",
+            "macOS is not providing the menu bar controls Cornice needs. Icons will stay visible. Try reopening Cornice. If the problem continues, report it in Issues.":
+                "macOS 未提供 Cornice 所需的菜单栏控制功能。图标将保持可见。请尝试重新打开 Cornice。如果问题仍然存在，请在 Issues 中报告。",
             "Behaviour": "行为",
             "Appearance": "外观",
             "Menu Bar": "菜单栏",

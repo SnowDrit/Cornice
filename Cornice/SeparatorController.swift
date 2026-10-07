@@ -135,6 +135,16 @@ final class SeparatorController: NSObject {
     /// settings or to quit.
     var contextMenu: NSMenu?
 
+    /// Only explicit clicks and shortcuts report access problems. Automatic
+    /// hiding and recovery keep using the non-interactive state setters.
+    var onAccessIssue: ((MenuBarAccessIssue) -> Void)?
+
+    private var accessIssue: MenuBarAccessIssue? {
+        guard #available(macOS 27, *) else { return nil }
+        return .detect(accessibilityGranted: AccessibilityPermission.isGranted,
+                       visibilityAvailable: visibilityAssertion.isAvailable)
+    }
+
     init(onToggle: @escaping (Bool) -> Void = { _ in }) {
         self.onToggle = onToggle
 
@@ -444,6 +454,14 @@ final class SeparatorController: NSObject {
     // MARK: - State
 
     func toggleHiding() {
+        guard !isShuttingDown else { return }
+        if let issue = accessIssue {
+            // Revealing must stay possible if permission is revoked. A blocked
+            // hide never claims success or rewrites the saved intent.
+            if isHiding { setHiding(false) }
+            onAccessIssue?(issue)
+            return
+        }
         setHiding(!isHiding)
     }
 
@@ -465,6 +483,12 @@ final class SeparatorController: NSObject {
     }
 
     func toggleZone() {
+        guard !isShuttingDown, extraDivider != nil else { return }
+        if let issue = accessIssue {
+            if !isZoneOpen { setZoneOpen(true) }
+            onAccessIssue?(issue)
+            return
+        }
         setZoneOpen(!isZoneOpen)
     }
 
@@ -540,15 +564,16 @@ final class SeparatorController: NSObject {
             toggle.button?.toolTip = "Cornice"
         }
 
-        guard AccessibilityPermission.isGranted, visibilityAssertion.isAvailable else {
+        if let issue = accessIssue {
             nativeScanTask?.cancel()
             nativeScanTask = nil
             releaseNativeVisibility()
             narrowDividers()
             visibilityMode = "unavailable"
-            toggle.button?.toolTip = L.t("On macOS 27, allow Accessibility in Cornice settings to hide icons.")
+            toggle.button?.toolTip = L.t(issue.title)
             return
         }
+        toggle.button?.toolTip = "Cornice"
 
         // Ordinary toggles do not change group membership. Reuse the snapshot so
         // a reveal followed by a hide never waits for another AX scan.

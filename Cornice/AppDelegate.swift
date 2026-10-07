@@ -18,6 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var leftMenuBarAt: Date?
     private var startupHideTask: Task<Void, Never>?
     private var menuLanguage: Language?
+    private let menuBarAccessNotice = MenuBarAccessNotice()
 
     /// Whether the pointer has been in the menu bar since the icons were revealed.
     ///
@@ -63,6 +64,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         self.separator = separator
+        separator.onAccessIssue = { [weak self] issue in
+            self?.menuBarAccessNotice.show(issue)
+        }
 
         installMenu()
 
@@ -137,9 +141,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// What a bound key actually does.
     ///
-    /// Both of these are things Cornice can do to itself. Neither reaches for anybody
-    /// else's status item, which is why neither needs a permission and why the list is
-    /// this short.
+    /// Registering shortcuts needs no permission. The visibility actions explain
+    /// missing menu-bar access on macOS 27 just like a click on the toggle does.
     private func perform(_ action: HotKeyAction) {
         switch action {
         case .toggleHiding:

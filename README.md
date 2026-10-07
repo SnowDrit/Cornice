@@ -43,8 +43,12 @@ revealed. It is off until you ask for it.
 
 **On macOS 26, hiding and revealing need no permissions.** On macOS 27, enable
 Accessibility for Cornice in System Settings so it can read which icons belong to each
-group. Cornice does not open a permission prompt at startup. Keyboard shortcuts need no
-additional permission.
+group. Cornice automatically detects missing access. Clicking the chevron, ⌥-clicking it,
+or using a shortcut for either group then shows an explanation with an **Open Accessibility
+settings** button. Cornice explains why it cannot hide icons; revealing remains available.
+Your other settings and divider positions are preserved. After granting access, repeat the
+click or shortcut to hide icons. Startup and background checks never open this explanation
+or a permission prompt. Keyboard shortcuts need no additional permission.
 
 ## macOS 27
 
@@ -130,10 +134,13 @@ follow [Apple's instructions for opening an app you trust](https://support.apple
 after trying to open Cornice, go to System Settings > Privacy & Security and choose
 Open Anyway for Cornice.
 
-With an ad-hoc signed build, macOS ties the Accessibility grant to that exact build,
-so an update can require granting it again. This affects window gestures on either
-system and menu bar hiding on macOS 27. Builds signed with a stable development identity
-can retain the grant across updates.
+After an ad-hoc signed update, the previous Accessibility grant may no longer apply.
+This affects window gestures on either system and menu bar hiding on macOS 27.
+Open System Settings > Privacy & Security > Accessibility and enable Cornice.
+If Cornice is already enabled but access still does not work, select its entry and remove
+it with the minus button. Use the plus button to add the current `Cornice.app` from
+Applications, then enable it. Remove only the entry in the Accessibility list, not the
+app from Applications. Your Cornice settings and divider positions stay intact.
 
 Requires macOS 26 (Tahoe) or later on Apple Silicon.
 
