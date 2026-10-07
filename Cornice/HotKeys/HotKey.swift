@@ -21,6 +21,12 @@ struct HotKey: Codable, Equatable, Sendable {
     /// What to print in the settings window, for example "⌥⌘H".
     let label: String
 
+    /// Labels reflect the layout used when recording. The physical combination
+    /// remains the same after switching layouts or changing its display label.
+    func hasSameCombination(as other: HotKey) -> Bool {
+        keyCode == other.keyCode && modifiers == other.modifiers
+    }
+
     /// Builds one from a recorded key press, or refuses it.
     ///
     /// Two modifiers at least, and at least one of them ⌘, ⌥ or ⌃.

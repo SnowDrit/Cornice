@@ -9,10 +9,9 @@ import OSLog
 
 /// Accessibility is the only permission Cornice asks for.
 ///
-/// It is needed to *read* the menu bar and to *reposition* items, that is, to change the
-/// configuration. It is deliberately **not** needed to collapse and reveal, which is the
-/// path used every day. If the user refuses, or if a future macOS revokes it, Cornice
-/// keeps working with whatever arrangement already exists.
+/// Used to read menu-bar item identities and positions, and by optional window
+/// gestures. The macOS 27 visibility backend needs this read access; the macOS 26
+/// spacer backend does not. Permission is only requested through an explicit action.
 enum AccessibilityPermission {
 
     /// Non-prompting check. Safe to call as often as you like.

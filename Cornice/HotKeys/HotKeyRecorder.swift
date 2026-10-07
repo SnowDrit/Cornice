@@ -98,12 +98,12 @@ struct HotKeyRecorder: View {
         // so pressing the very keys that are already set for this action would be reported
         // as taken by something else.
         for other in HotKeyAction.allCases where other != action {
-            if Preferences.shared.hotKey(for: other) == candidate {
+            if Preferences.shared.hotKey(for: other)?.hasSameCombination(as: candidate) == true {
                 rejected = L.t("Cornice already uses that for something else.")
                 return
             }
         }
-        if Preferences.shared.hotKey(for: action) != candidate,
+        if Preferences.shared.hotKey(for: action)?.hasSameCombination(as: candidate) != true,
            !HotKeyCenter.isAvailable(candidate) {
             rejected = L.t("Something else already uses that.")
             return

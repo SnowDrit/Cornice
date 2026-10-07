@@ -1,43 +1,60 @@
 name: Release
 
-# Pushing a tag is the whole trigger. Tag the commit you want released, push the
-# tag, and the build that comes out is the one that was tagged.
-on:
+"on":
   push:
     tags:
       - "v*"
-  # Also runnable by hand. Naming a tag publishes to it, which is the way back in
-  # when a tag was pushed before this workflow existed and so never triggered it.
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing tag to build and publish (blank = build only)"
+        description: "Existing version tag to publish (blank always builds only)"
         required: false
         default: ""
 
 permissions:
-  contents: write   # needed to create the release and upload to it
+  contents: write
 
 jobs:
   build:
-    # Cornice targets macOS 26, so the runner has to carry an SDK that new. If this
-    # image ever lags behind, that is what fails first and the log says so plainly.
-    runs-on: macos-15
+    runs-on: macos-26
+    env:
+      # This installed toolchain includes SDK 26.5. Never silently select a newer SDK.
+      # https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
 
     steps:
       - uses: actions/checkout@v4
         with:
-          # Build the tag that was asked for, not whatever main happens to be.
-          ref: ${{ inputs.tag || github.ref }}
+          ref: ${{ inputs.tag != '' && format('refs/tags/{0}', inputs.tag) || github.ref }}
 
-      - name: Pick the newest Xcode on the runner
+      - name: Validate the release reference
+        id: release
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
-          newest=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          echo "Using $newest"
-          sudo xcode-select -s "$newest"
+          tag=""
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            tag="$GITHUB_REF_NAME"
+          elif [ -n "$INPUT_TAG" ]; then
+            tag="$INPUT_TAG"
+          fi
+          if [ -n "$tag" ]; then
+            [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+            test "$(git rev-parse --verify "refs/tags/$tag^{commit}")" = "$(git rev-parse HEAD)"
+            test -f "docs/releases/${tag#v}.md"
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Verify the toolchain
+        run: |
+          set -euo pipefail
+          test -d "$DEVELOPER_DIR"
+          test "$(uname -m)" = "arm64"
+          test "$(xcodebuild -version)" = "$(printf 'Xcode 26.5\nBuild version 17F42')"
+          test "$(xcrun --sdk macosx --show-sdk-version)" = "26.5"
           xcodebuild -version
-          xcodebuild -showsdks | grep -i macos || true
+          xcrun --sdk macosx --show-sdk-path
 
       - name: Build
         run: |
@@ -46,7 +63,11 @@ jobs:
             -project Cornice.xcodeproj \
             -scheme Cornice \
             -configuration Release \
+            -destination 'generic/platform=macOS' \
             -derivedDataPath build \
+            ARCHS=arm64 ONLY_ACTIVE_ARCH=NO \
+            GCC_GENERATE_DEBUGGING_SYMBOLS=NO \
+            SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGN_STYLE=Manual \
             DEVELOPMENT_TEAM="" \
@@ -54,74 +75,38 @@ jobs:
             CODE_SIGNING_ALLOWED=YES \
             build
 
-      - name: Check what came out
+      - name: Verify the release bundle
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
         run: |
           set -euo pipefail
-          app="build/Build/Products/Release/Cornice.app"
-          test -d "$app"
-          /usr/libexec/PlistBuddy -c "Print :LSUIElement" "$app/Contents/Info.plist"
-          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app/Contents/Info.plist"
-          # The sandbox must be off, or the app silently sees only its own status item.
-          if codesign -d --entitlements - "$app" 2>/dev/null | grep -q "app-sandbox"; then
-            echo "::error::built app is sandboxed; it will see only its own menu bar item"
-            exit 1
-          fi
-          # A shipped build must not carry get-task-allow. It lets any process running as
-          # the same user attach to Cornice and read or rewrite its memory, and Cornice is
-          # a process that holds Accessibility and owns an event tap, so borrowing it means
-          # borrowing those. Xcode injects the entitlement for development-style signing,
-          # which is why the Release configuration turns the injection off, and why this
-          # checks the finished bundle rather than trusting the setting.
-          if codesign -d --entitlements - "$app" 2>/dev/null | grep -q "get-task-allow"; then
-            echo "::error::built app allows debugger attach; its Accessibility grant could be borrowed"
-            exit 1
-          fi
-          codesign -dv --verbose=2 "$app" 2>&1 | grep -E "Identifier|Signature" || true
+          python3 scripts/verify-release.py \
+            "build/Build/Products/Release/Cornice.app" --tag "$RELEASE_TAG"
 
       - name: Package
         run: |
           set -euo pipefail
-          chmod +x scripts/make-dmg.sh
-          scripts/make-dmg.sh "build/Build/Products/Release/Cornice.app" "Cornice.dmg"
+          bash scripts/make-dmg.sh "build/Build/Products/Release/Cornice.app" "Cornice.dmg"
+          hdiutil verify Cornice.dmg
 
       - uses: actions/upload-artifact@v4
         with:
           name: Cornice
           path: Cornice.dmg
+          if-no-files-found: error
 
       - name: Publish the release
-        if: startsWith(github.ref, 'refs/tags/v') || inputs.tag != ''
+        if: steps.release.outputs.tag != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INPUT_TAG: ${{ inputs.tag }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
         run: |
           set -euo pipefail
-          tag="${INPUT_TAG:-$GITHUB_REF_NAME}"
-          notes="docs/releases/${tag#v}.md"
-
-          # The description lives in the repository, beside the commits it describes, so
-          # it travels with the tag and there is no step anyone can forget. Every release
-          # up to v0.2.1 went out carrying nothing but the generated compare link, because
-          # the real text was something a person had to remember to paste afterwards, and
-          # nobody ever did.
-          if [ ! -f "$notes" ]; then
-            echo "::warning::$notes is missing, falling back to generated notes"
-          fi
-
-          if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" Cornice.dmg --clobber
-            # Re-runs used to leave the description alone, to protect what had been typed
-            # into the web form. Now that the description is a file under review, the file
-            # is the thing to trust.
-            if [ -f "$notes" ]; then
-              gh release edit "$tag" --notes-file "$notes"
-            fi
-          elif [ -f "$notes" ]; then
-            gh release create "$tag" Cornice.dmg \
-              --title "Cornice $tag" \
-              --notes-file "$notes"
+          notes="docs/releases/${RELEASE_TAG#v}.md"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" Cornice.dmg --clobber
+            gh release edit "$RELEASE_TAG" --notes-file "$notes"
           else
-            gh release create "$tag" Cornice.dmg \
-              --title "Cornice $tag" \
-              --generate-notes
+            gh release create "$RELEASE_TAG" Cornice.dmg \
+              --verify-tag --title "Cornice $RELEASE_TAG" --notes-file "$notes"
           fi

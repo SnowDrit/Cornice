@@ -4,7 +4,6 @@
 //
 
 import AppKit
-import OSLog
 import SwiftUI
 
 /// Owns the settings window.
@@ -40,16 +39,5 @@ final class SettingsWindowController {
         // an accessory app is never the active one.
         NSApp.activate(ignoringOtherApps: true)
         window?.makeKeyAndOrderFront(nil)
-
-        // An `NSWindow`'s number is its `CGWindowID`, which is what `screencapture -l`
-        // wants. Nothing outside this process can look it up: on macOS 26
-        // `CGWindowListCopyWindowInfo` returns only the caller's own windows unless the
-        // caller holds Screen Recording, and the shell taking the README pictures does
-        // not. The window knows it for free, so it says so, and the capture stops needing
-        // a rectangle guessed from Accessibility, which would square off the corners and
-        // let the desktop show through them.
-        if let number = window?.windowNumber {
-            log.info("settings window id \(number, privacy: .public)")
-        }
     }
 }

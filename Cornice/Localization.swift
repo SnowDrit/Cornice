@@ -68,6 +68,10 @@ enum L {
 
     private static let table: [Language: [String: String]] = [
         .ru: [
+            "macOS 27 also hides AirDrop and user switching while either group is closed. Open both groups to bring them back.":
+                "macOS 27 также скрывает AirDrop и переключение пользователя, пока закрыта хотя бы одна зона. Раскройте обе зоны, чтобы вернуть их.",
+            "On macOS 27, allow Accessibility in Cornice settings to hide icons.":
+                "Для скрытия значков на macOS 27 разрешите Cornice доступ в разделе «Универсальный доступ» системных настроек.",
             "Behaviour": "Поведение",
             "Appearance": "Оформление",
             "Menu Bar": "Строка меню",

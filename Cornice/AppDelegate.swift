@@ -16,6 +16,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let enumerator: ItemEnumerator = AXItemEnumerator()
     private var pointerWatcher: Timer?
     private var leftMenuBarAt: Date?
+    private var startupHideTask: Task<Void, Never>?
+    private var menuLanguage: Language?
 
     /// Whether the pointer has been in the menu bar since the icons were revealed.
     ///
@@ -32,51 +34,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         log.info("Cornice launched, build \(Bundle.main.shortVersion, privacy: .public)")
-
-        // The geometry check runs headless: no status item, no menu, no preferences
-        // written. That is what makes it safe to run while the installed copy is going
-        // about its business, and removing a status item is the one thing that must not
-        // happen behind the user's back, because macOS rebuilds the bar around it and
-        // leaves anything already pushed off the edge pushed off the edge.
-        if ProcessInfo.processInfo.environment["CORNICE_RUN_GESTURECHECK"] != nil {
-            Task {
-                await runGestureCheck()
-                NSApp.terminate(nil)
-            }
-            return
-        }
-
-        // The one check that does put items in the menu bar, because what it is asking
-        // about is menu bar items: whether two of them belonging to one process can both
-        // be wider than the bar at once. Its items are its own, under their own autosave
-        // names, and it narrows them and waits before letting go of them. Still worth
-        // running with the real Cornice revealed rather than hiding.
-        if ProcessInfo.processInfo.environment["CORNICE_RUN_TWOWIDECHECK"] != nil {
-            Task {
-                await SecondBoundaryCheck.run()
-                NSApp.terminate(nil)
-            }
-            return
-        }
-
-        // The same subject one level up: the real separator, driven through every state
-        // the zone has. It writes preferences, which no other check does, so it saves them
-        // first and puts them back at the end.
-        if ProcessInfo.processInfo.environment["CORNICE_RUN_ZONECHECK"] != nil {
-            Task {
-                await SecondBoundaryCheck.runController()
-                NSApp.terminate(nil)
-            }
-            return
-        }
-
-        // Opens the settings window on its own, so its layout can be looked at without
-        // clicking a status item. Headless for the same reason as the gesture check: this
-        // instance must not touch the menu bar the real one is managing.
-        if ProcessInfo.processInfo.environment["CORNICE_SHOW_SETTINGS"] != nil {
-            openSettings()
-            return
-        }
 
         let preferences = Preferences.shared
 
@@ -98,26 +55,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             log.error("previous run did not exit cleanly, coming up revealed")
         }
 
-        let separator = SeparatorController { hiding in
+        let separator = SeparatorController { [weak self] hiding in
             Preferences.shared.wasHiding = hiding
+            if !hiding {
+                self?.leftMenuBarAt = nil
+                self?.visitedMenuBar = false
+            }
         }
         self.separator = separator
 
         installMenu()
 
-        // The menu's titles are built once, so they would keep the language they were
-        // built in. Rebuilt whenever a preference changes, which is the only way the
-        // language can change.
+        // Only language changes affect menu titles. Visibility and saved positions
+        // also write defaults, but do not need a new menu.
         NotificationCenter.default.addObserver(
             forName: UserDefaults.didChangeNotification,
             object: nil,
             queue: .main) { [weak self] _ in
                 Task { @MainActor [weak self] in
-                    self?.installMenu()
+                    guard let self else { return }
+                    if self.menuLanguage != Preferences.shared.language {
+                        self.installMenu()
+                    }
                     // The gesture switch lives in the same preferences, so the same
                     // notification is what tells the module it was turned on or off.
-                    self?.gestures.refresh()
-                    self?.hotKeys.refresh()
+                    self.gestures.refresh()
+                    self.hotKeys.refresh()
                 }
             }
 
@@ -126,8 +89,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if shouldHide {
             // Only after the bar has settled: the separator needs a position before it
             // can work out how wide to become.
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(600))
+            startupHideTask = Task { @MainActor in
+                do { try await Task.sleep(for: .milliseconds(600)) }
+                catch { return }
                 separator.setHiding(true)
             }
         }
@@ -145,6 +109,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         hotKeys.refresh()
 
         checkForUpdatesIfAsked()
+
     }
 
     /// The newest release found, or `nil` when nothing has been found or looked for.
@@ -192,6 +157,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // An event tap left registered at exit can outlive the process and cost the whole
         // machine, not just Cornice.
         gestures.shutdown()
+        startupHideTask?.cancel()
+        pointerWatcher?.invalidate()
+        separator?.shutdown()
 
         Preferences.shared.cleanExit = true
         log.info("quitting cleanly")
@@ -205,15 +173,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Five samples a second costs nothing and depends on nothing.
     private func startWatchingPointer() {
         pointerWatcher = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
-            Task { @MainActor in self?.checkPointer() }
+            Task { @MainActor [weak self] in self?.checkPointer() }
         }
     }
 
     private func checkPointer() {
+        separator?.checkClockHover()
         let preferences = Preferences.shared
         guard preferences.autoCollapse,
-              let separator, !separator.isHiding,
-              let screen = NSScreen.main
+              let separator, !separator.isHiding, !separator.isRearranging
         else {
             leftMenuBarAt = nil
             visitedMenuBar = false
@@ -221,9 +189,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         let pointer = NSEvent.mouseLocation
-        // `visibleFrame` starts below the menu bar, so its top edge is the menu bar's
-        // bottom edge. The Dock is excluded too, which does not matter here.
-        let inMenuBar = pointer.y >= screen.visibleFrame.maxY
+        // The key window's screen need not contain the pointer. Limit each display
+        // to its own top strip, including the taller bar around a camera cutout.
+        let inMenuBar = NSScreen.screens.contains { screen in
+            MenuBarPointerRegion.contains(
+                point: pointer, screenFrame: screen.frame,
+                menuBarHeight: max(NSStatusBar.system.thickness, screen.safeAreaInsets.top))
+        }
 
         if inMenuBar {
             visitedMenuBar = true
@@ -273,6 +245,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(withTitle: L.t("Quit Cornice"), action: #selector(quit), keyEquivalent: "q")
             .target = self
         separator?.contextMenu = menu
+        menuLanguage = Preferences.shared.language
     }
 
     @objc private func openReleasePage() {
@@ -301,6 +274,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// means nothing: with the icons revealed that put almost everything in the hidden
     /// list. The dividers are what decides, so the dividers are what it reads.
     func currentArrangement() -> SettingsView.Arrangement {
+        if #available(macOS 27, *) {
+            // A collapsed bar no longer contains the original item geometry.
+            // Use the same revealed snapshot that drives native visibility.
+            return separator?.nativeArrangement ?? .init(visible: [], hidden: [])
+        }
         let main = separator?.mainDividerAnchor ?? 0
         let zone = separator?.zoneDividerAnchor
         let items = enumerator.enumerateItems().filter {
@@ -314,219 +292,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             alwaysHidden: zone.map { anchor in items.filter { x($0) < anchor } } ?? [])
     }
 
-    /// Cornice has no windows to reopen, so clicking the app in Finder while it is
-    /// already running should do nothing rather than resurrect an empty window.
+    /// Reopening reveals the controls without creating an empty application window.
     func applicationShouldHandleReopen(
         _ sender: NSApplication,
         hasVisibleWindows flag: Bool
     ) -> Bool {
-        false
-    }
-
-    /// Snaps somebody's window to the left half without anyone touching the trackpad.
-    ///
-    /// The recogniser needs real fingers to test, but everything downstream of it does
-    /// not, and everything downstream of it is where the mistakes live: the flip between
-    /// Accessibility's top-left origin and AppKit's bottom-left one, and the order the
-    /// size and position have to be written in. This drives that half directly and checks
-    /// the window landed where the arithmetic said it would.
-    ///
-    /// Development only, in the same way as the checks above, and goes the same way.
-    private func runGestureCheck() async {
-        var report = "gesture geometry check\n\n"
-
-        guard AccessibilityPermission.isGranted else {
-            report += "no Accessibility, nothing to check\n"
-            Self.writeReport(report, named: "gesture-check.txt")
-            log.info("\(report, privacy: .public)")
-            return
-        }
-
-        // Naming a bundle id keeps the check off the user's real windows: point it at a
-        // throwaway document and only that document moves. Without one it takes whatever
-        // regular application answers first, which is fine on a test machine and rude on
-        // a working one.
-        let wanted = ProcessInfo.processInfo.environment["CORNICE_GESTURECHECK_BUNDLE"]
-        report += "target bundle: \(wanted ?? "(first regular app)")\n"
-
-        var found: (name: String, element: AXUIElement, frame: CGRect)?
-        for app in NSWorkspace.shared.runningApplications
-        where app.activationPolicy == .regular
-            && app.processIdentifier != ProcessInfo.processInfo.processIdentifier
-            && (wanted == nil || app.bundleIdentifier == wanted) {
-
-            let element = AXUIElementCreateApplication(app.processIdentifier)
-            AXUIElementSetMessagingTimeout(element, 0.25)
-
-            var value: CFTypeRef?
-            guard AXUIElementCopyAttributeValue(
-                    element, kAXFocusedWindowAttribute as CFString, &value) == .success,
-                  let value, CFGetTypeID(value) == AXUIElementGetTypeID()
-            else { continue }
-
-            let window = value as! AXUIElement
-            guard let frame = Self.frameOf(window) else { continue }
-            found = (app.localizedName ?? "?", window, frame)
-            break
-        }
-
-        guard let found else {
-            Self.writeReport(report + "no window found to test with\n", named: "gesture-check.txt")
-            return
-        }
-
-        report += "window: \(found.name)\n"
-        report += "before (AX): \(found.frame)\n"
-
-        guard let area = ScreenGeometry.workArea(forWindowAt: found.frame) else {
-            Self.writeReport(report + "no display matched that window\n", named: "gesture-check.txt")
-            return
-        }
-        report += "work area (AX): \(area)\n\n"
-
-        let target = TargetWindow(element: found.element, frame: found.frame)
-
-        // The same run of swipes a hand would make, driven straight through the transition
-        // table. This checks two different things at once: that chaining lands on the slot
-        // it claims to, and that the slot's arithmetic survives the trip through
-        // Accessibility into a real window.
-        let script: [(String, SwipeRecognizer.Direction)] = [
-            ("left",        .left),
-            ("left again",  .left),
-            ("left again",  .left),
-            ("up",          .up),
-            ("down",        .down),
-        ]
-
-        var slot: WindowSlot?
-        var failures: [String] = []
-
-        for (name, direction) in script {
-            guard let next = WindowSlot.next(after: slot, swipe: direction) else {
-                failures.append("\(name): chain unexpectedly ended")
-                break
-            }
-            slot = next
-
-            let wantedFrame = next.frame(in: area)
-            target.setFrame(wantedFrame)
-            try? await Task.sleep(for: .milliseconds(350))
-
-            guard let actual = Self.frameOf(found.element) else {
-                failures.append("\(name): could not read the frame back")
-                continue
-            }
-
-            report += "\(name)\n"
-            report += "  slot:   \(next)\n"
-            report += "  wanted: \(Self.brief(wantedFrame))\n"
-            report += "  actual: \(Self.brief(actual))\n"
-
-            // The origin is the part Cornice controls outright. Size gets clamped by
-            // applications with their own minimums, so it is reported but not judged.
-            if abs(actual.minX - wantedFrame.minX) > 2 || abs(actual.minY - wantedFrame.minY) > 2 {
-                failures.append("\(name): origin landed wrong")
-            }
-        }
-
-        // Independent of the arithmetic above: the fractions have to *be* fractions. This
-        // is what would catch a third that is really a quarter, which comparing the code
-        // against itself never would.
-        report += "\nfractions of the work area\n"
-        let checks: [(String, WindowSlot, CGFloat, Bool)] = [
-            ("left half",       .leftHalf,                                                    1.0 / 2, true),
-            ("left third",      WindowSlot(column: .left, width: .third, row: .whole),         1.0 / 3, true),
-            ("left two thirds", WindowSlot(column: .left, width: .twoThirds, row: .whole),     2.0 / 3, true),
-            ("top left half",   WindowSlot(column: .left, width: .half, row: .top),            1.0 / 2, false),
-        ]
-        for (name, candidate, fraction, horizontal) in checks {
-            let box = candidate.frame(in: area)
-            let got = horizontal ? box.width / area.width : box.height / area.height
-            let ok = abs(got - fraction) < 0.01
-            report += "  \(name): \(horizontal ? "width" : "height") \(String(format: "%.3f", got))"
-            report += " expected \(String(format: "%.3f", fraction))\(ok ? "" : "  WRONG")\n"
-            if !ok { failures.append("\(name): fraction is \(got)") }
-        }
-
-        // Quarters sit in the half of the screen they are named after.
-        let topLeft = WindowSlot(column: .left, width: .half, row: .top).frame(in: area)
-        let bottomLeft = WindowSlot(column: .left, width: .half, row: .bottom).frame(in: area)
-        report += "  top quarter y: \(Int(topLeft.minY)) (area starts \(Int(area.minY)))\n"
-        report += "  bottom quarter y: \(Int(bottomLeft.minY)) (area middle \(Int(area.midY)))\n"
-        if abs(topLeft.minY - area.minY) > 1 { failures.append("top quarter is not at the top") }
-        if abs(bottomLeft.minY - area.midY) > 1 { failures.append("bottom quarter is not at the middle") }
-
-        // No gesture calls this any more, but the call itself is proven working and cheap
-        // to keep proven. There and back again, so the check leaves nothing in the Dock.
-        report += "\nminimise round trip\n"
-        if target.minimize() {
-            try? await Task.sleep(for: .milliseconds(500))
-            let went = Self.boolOf(found.element, attribute: kAXMinimizedAttribute)
-            report += "  minimised: \(String(describing: went))\n"
-            if went != true { failures.append("minimise did not take") }
-
-            AXUIElementSetAttributeValue(
-                found.element, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
-            try? await Task.sleep(for: .milliseconds(500))
-            let back = Self.boolOf(found.element, attribute: kAXMinimizedAttribute)
-            report += "  restored: \(String(describing: back == false))\n"
-            if back != false { failures.append("window did not come back out of the Dock") }
-        } else {
-            failures.append("minimise was refused outright")
-        }
-
-        report += failures.isEmpty
-            ? "\nALL CHECKS PASSED\n"
-            : "\nFAILED:\n" + failures.map { "  \($0)\n" }.joined()
-
-        log.info("\(report, privacy: .public)")
-        Self.writeReport(report, named: "gesture-check.txt")
-    }
-
-    private static func boolOf(_ element: AXUIElement, attribute: String) -> Bool? {
-        var value: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(
-                element, attribute as CFString, &value) == .success
-        else { return nil }
-        return value as? Bool
-    }
-
-    private static func brief(_ rect: CGRect) -> String {
-        "x=\(Int(rect.minX)) y=\(Int(rect.minY)) w=\(Int(rect.width)) h=\(Int(rect.height))"
-    }
-
-    private static func frameOf(_ element: AXUIElement) -> CGRect? {
-        var positionValue: CFTypeRef?
-        var sizeValue: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(
-                element, kAXPositionAttribute as CFString, &positionValue) == .success,
-              AXUIElementCopyAttributeValue(
-                element, kAXSizeAttribute as CFString, &sizeValue) == .success,
-              let positionValue, let sizeValue,
-              CFGetTypeID(positionValue) == AXValueGetTypeID(),
-              CFGetTypeID(sizeValue) == AXValueGetTypeID()
-        else { return nil }
-
-        var origin = CGPoint.zero
-        var size = CGSize.zero
-        guard AXValueGetValue(positionValue as! AXValue, .cgPoint, &origin),
-              AXValueGetValue(sizeValue as! AXValue, .cgSize, &size)
-        else { return nil }
-        return CGRect(origin: origin, size: size)
-    }
-
-    private static func writeReport(_ text: String, named filename: String) {
-        guard let base = FileManager.default.urls(
-            for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
-        let directory = base.appendingPathComponent("Cornice", isDirectory: true)
-        do {
-            try FileManager.default.createDirectory(
-                at: directory, withIntermediateDirectories: true)
-            try text.write(to: directory.appendingPathComponent(filename),
-                           atomically: true, encoding: .utf8)
-        } catch {
-            log.error("could not write report: \(error.localizedDescription, privacy: .public)")
-        }
+        // Opening Cornice from Finder is also a recovery path if macOS overflow has
+        // swallowed its toggle. Reveal both zones without changing their arrangement.
+        startupHideTask?.cancel()
+        startupHideTask = nil
+        leftMenuBarAt = nil
+        visitedMenuBar = false
+        separator?.revealAll()
+        return false
     }
 }
 

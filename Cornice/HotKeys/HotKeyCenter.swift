@@ -49,6 +49,7 @@ final class HotKeyCenter {
     private struct Registration {
         let ref: EventHotKeyRef
         let action: HotKeyAction
+        let hotKey: HotKey
     }
 
     private var registrations: [UInt32: Registration] = [:]
@@ -62,16 +63,30 @@ final class HotKeyCenter {
 
     /// Reads every binding out of preferences and makes the system agree with it.
     ///
-    /// Written as a full teardown and rebuild rather than a diff. There are two hot keys;
-    /// working out which one changed costs more code than simply doing both, and a stale
-    /// registration is the kind of bug that only shows up as somebody else's keyboard
-    /// shortcut mysteriously not working.
+    /// Visibility and status-item positions also write defaults. Keep successful,
+    /// unchanged bindings registered when those unrelated notifications arrive.
     func refresh() {
-        unregisterAll()
         installHandlerIfNeeded()
 
+        var desired: [HotKeyAction: HotKey] = [:]
         for action in HotKeyAction.allCases {
-            guard let hotKey = Preferences.shared.hotKey(for: action) else { continue }
+            desired[action] = Preferences.shared.hotKey(for: action)
+        }
+        let obsolete = registrations.filter { _, registration in
+            guard let hotKey = desired[registration.action] else { return true }
+            return hotKey.keyCode != registration.hotKey.keyCode
+                || hotKey.modifiers != registration.hotKey.modifiers
+        }
+        // Release all changed bindings before registering replacements, so two
+        // actions can exchange combinations without colliding with each other.
+        for (id, registration) in obsolete {
+            UnregisterEventHotKey(registration.ref)
+            registrations.removeValue(forKey: id)
+        }
+        for action in HotKeyAction.allCases {
+            guard let hotKey = desired[action],
+                  !registrations.values.contains(where: { $0.action == action }) else { continue }
+            // Failed attempts have no registration, so a later refresh retries.
             register(hotKey, for: action)
         }
     }
@@ -142,16 +157,9 @@ final class HotKeyCenter {
             return
         }
 
-        registrations[nextID] = Registration(ref: ref, action: action)
+        registrations[nextID] = Registration(ref: ref, action: action, hotKey: hotKey)
         nextID += 1
         log.info("\(hotKey.label, privacy: .public) registered for \(action.rawValue, privacy: .public)")
-    }
-
-    private func unregisterAll() {
-        for registration in registrations.values {
-            UnregisterEventHotKey(registration.ref)
-        }
-        registrations.removeAll()
     }
 
     private func fire(_ id: UInt32) {

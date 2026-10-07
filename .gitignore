@@ -22,11 +22,33 @@ Package.resolved
 *.local.xcconfig
 
 # Packaged builds
-Cornice-*.zip
-Cornice.zip
-Cornice-*.dmg
-Cornice.dmg
+*.app/
+*.zip
+*.dmg
 
-# Not for the people who download the app
+# Local agent instructions and investigation notes
+AGENTS.md
 CLAUDE.md
 ARCHITECTURE.md
+CORNICE_HANDOFF*.md
+SESSION_NOTES*.md
+.agents/
+.claude/
+.codex/
+graphify-out/
+
+# Local experiments, verification scripts and deployment notes
+/experiments/
+/scripts/check-*.sh
+/scripts/INSTALL_NOTES.txt
+*.log
+
+# Local environment and signing material
+.env
+.env.*
+*.p12
+*.p8
+*.pem
+*.key
+*.mobileprovision
+*.provisionprofile

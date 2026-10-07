@@ -9,7 +9,7 @@
 [![Download](https://img.shields.io/badge/download-latest-brightgreen?style=flat-square)](https://github.com/SnowDrit/Cornice/releases/latest)
 ![Platform](https://img.shields.io/badge/platform-macOS-blue?style=flat-square)
 ![Requirements](https://img.shields.io/badge/requirements-macOS%2026%2B-fa4e49?style=flat-square)
-![Permissions](https://img.shields.io/badge/permissions-none%20required-brightgreen?style=flat-square)
+![Permissions](https://img.shields.io/badge/macOS%2027-Accessibility%20required-orange?style=flat-square)
 [![License](https://img.shields.io/github/license/SnowDrit/Cornice?style=flat-square)](LICENSE)
 
 </div>
@@ -19,8 +19,8 @@ The menu bar is the cornice of your screen.
 
 ## What it does
 
-You place a divider in the menu bar. Everything to its left hides when you click the
-chevron, and comes back when you click again.
+You place a divider in the menu bar. Click the chevron to hide the group to its left,
+and click again to reveal it. macOS 27 has some [compatibility limits](#macos-27).
 
 ```
 [ hidden ]  │  [ visible ]  ❯
@@ -41,10 +41,29 @@ revealed. It is off until you ask for it.
 
 ![Cornice settings, Behaviour tab](docs/settings-behaviour.png)
 
-**No permissions are needed for any of that.** Hiding and revealing are done with Cornice's
-own status item, which any application may resize freely, and the keyboard shortcuts use an
-API that asks for nothing. Cornice does not request Accessibility at startup, or at all,
-unless you turn on something that cannot work without it.
+**On macOS 26, hiding and revealing need no permissions.** On macOS 27, enable
+Accessibility for Cornice in System Settings so it can read which icons belong to each
+group. Cornice does not open a permission prompt at startup. Keyboard shortcuts need no
+additional permission.
+
+## macOS 27
+
+Reveal the groups before rearranging their icons, then ⌘-drag the dividers into place.
+Command alone does not open a group. After you release the mouse button, Cornice reads
+the new positions and restores the requested visibility. Hidden dividers collapse to
+avoid leaving empty spaces. Your divider positions and toggle position are preserved.
+
+If one application has icons in several groups, its icons stay visible whenever any
+of them belongs to a visible group. The system service also hides certain Apple icons,
+including AirDrop and fast user switching, even when they are to the right of the
+main divider. To show those icons, reveal both zones, or open Cornice again from Finder.
+
+Icons temporarily reappear while the pointer is over the clock so Notification Center
+can open. If hiding stops working or the toggle disappears, opening Cornice again from
+Finder reveals both zones without changing your divider positions.
+
+Some bugs may remain. Please [report unexpected behavior in Issues](https://github.com/SnowDrit/Cornice/issues),
+including your macOS version and the steps to reproduce it.
 
 ## The always hidden zone
 
@@ -62,12 +81,14 @@ The leftmost divider is always the always hidden one. Drag one past the other an
 jobs swap, so there is nothing to configure and nothing that can end up disagreeing with
 what you see.
 
-It costs one more slot in the menu bar, which is why it is off until you ask. The mechanism
-is the same as the first divider's, so it needs no permissions either.
+It costs one more slot in the menu bar, which is why it is off until you ask. It uses the
+same hiding mechanism and permissions as the main group, including the macOS 27 limits
+above.
 
 ## Window gestures
 
-Off by default. Turn them on in Settings, and only then does Cornice ask for Accessibility.
+Off by default. Turn them on in Settings to enable them. Gestures need Accessibility;
+Cornice asks for it when you enable gestures if the permission is not already granted.
 
 Put the pointer over a window's title bar and swipe two fingers on the trackpad. Title bars
 are the whole trigger surface, which is what keeps this from colliding with anything else:
@@ -104,14 +125,15 @@ the same two sliders.
 Open `Cornice.dmg` from the [latest release](https://github.com/SnowDrit/Cornice/releases)
 and drag the app onto the Applications shortcut.
 
-macOS will refuse to open it the first time. The builds are signed for development and not
-notarised, which needs a paid Apple Developer account. Right-click the app in Applications,
-choose Open, then Open again in the warning. Once is enough.
+Release builds are ad-hoc signed and not notarised. If macOS blocks the first launch,
+follow [Apple's instructions for opening an app you trust](https://support.apple.com/en-us/102445):
+after trying to open Cornice, go to System Settings > Privacy & Security and choose
+Open Anyway for Cornice.
 
-The same limitation has a second effect, and only if you use the gestures: because the
-builds are ad-hoc signed, macOS ties the Accessibility grant to that exact build, so
-updating means granting it again. The menu bar half is unaffected, since it never needed the
-permission in the first place.
+With an ad-hoc signed build, macOS ties the Accessibility grant to that exact build,
+so an update can require granting it again. This affects window gestures on either
+system and menu bar hiding on macOS 27. Builds signed with a stable development identity
+can retain the grant across updates.
 
 Requires macOS 26 (Tahoe) or later on Apple Silicon.
 
@@ -142,32 +164,16 @@ to be trusted with something that can take unsaved work with it.
 
 Cornice does not install updates over itself. Replacing a running application with something
 just downloaded means first proving the download is genuine, and these builds are ad-hoc
-signed on the runner, so there is no stable identity to check it against. This is a process
-that holds Accessibility and an event tap once you turn gestures on, and borrowing it would
-mean borrowing those. It finds the release and hands you the link.
+signed on the runner, so there is no stable identity to check it against. Cornice may hold
+Accessibility for menu bar hiding or gestures, and an event tap for gestures, so replacing
+it must preserve trust in the application. It finds the release and hands you the link.
 
 ## Why
 
-Apple provides no public API for managing other applications' menu bar items. Every tool in
-this category is built on accessibility APIs and undocumented behaviour, and every macOS
-release moves the ground.
-
-- **Ice** (29k stars): last stable release October 2024, repository untouched since
-  September 2025, with two unfinished dev builds after it.
-- **[Thaw](https://github.com/thaw-app/Thaw)** (9.7k stars): an active fork of Ice, on
-  Homebrew, in twenty languages, shipping release candidates this month. If you want the
-  full feature set, use it. It reads the menu bar continuously and rearranges items for you,
-  which is what makes it powerful and what makes Accessibility non-optional for it.
-- **SaneBar**: [relicensed to MIT on 1 July 2026](https://github.com/sane-apps/SaneBar/releases/tag/sunset),
-  when its author announced he was winding it down over macOS 27. Development has continued
-  since, so read that as a change of footing rather than an ending.
-- **Bartender**: commercial, and its macOS 27 build is an early technical preview with most
-  features not yet restored.
-
-Cornice's answer is to need almost none of it. The thing you do every day, hide and reveal,
-touches nothing Apple has signalled it will change, and asks for no permission at all. The
-cost is that Cornice will not arrange your icons for you: you place the divider yourself,
-once, and that is the whole of it.
+Cornice keeps the configuration positional: you arrange icons and dividers yourself.
+macOS 26 uses the system's overflow layout without permissions. macOS 27 needs
+Accessibility and a private system service, with the limitations described above.
+Neither path moves your dividers or rearranges other applications' icons.
 
 ## Languages
 

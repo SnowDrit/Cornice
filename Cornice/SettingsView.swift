@@ -30,6 +30,11 @@ struct SettingsView: View {
     @State private var gesturesOn = Preferences.shared.gesturesEnabled
     @State private var accessibilityGranted = AccessibilityPermission.isGranted
 
+    private func refreshArrangement() {
+        snapshot = arrangement()
+        accessibilityGranted = AccessibilityPermission.isGranted
+    }
+
     private func checkForUpdates() {
         isChecking = true
         updateResult = nil
@@ -56,19 +61,8 @@ struct SettingsView: View {
             .number.precision(.fractionLength(1)).locale(preferences.language.locale))
     }
 
-    /// Which tab opens first.
-    ///
-    /// Only ever anything but `.behaviour` when `CORNICE_SETTINGS_TAB` names another one,
-    /// which is how the README pictures are taken: three launches, no clicking, and the
-    /// same tab every time whoever runs it. Driving a `TabView` from outside needs a
-    /// selection, and a selection needs tags, which is all this adds.
     enum Tab: String {
         case behaviour, appearance, menuBar, gestures
-
-        static var requested: Tab {
-            let asked = ProcessInfo.processInfo.environment["CORNICE_SETTINGS_TAB"] ?? ""
-            return Tab(rawValue: asked) ?? .behaviour
-        }
 
         /// How tall this tab needs to be, so the window follows the tab rather than one
         /// size serving none of them.
@@ -79,8 +73,7 @@ struct SettingsView: View {
         /// Behaviour falls below the fold, which is the worst of the two because it hides
         /// a control rather than showing nothing.
         ///
-        /// Measured, not guessed, and worth re-measuring when a section is added: open
-        /// each tab with `CORNICE_SETTINGS_TAB` and look at where the last box ends.
+        /// Recheck each tab when its content changes.
         var height: CGFloat {
             switch self {
             case .behaviour:  750
@@ -91,7 +84,7 @@ struct SettingsView: View {
         }
     }
 
-    @State private var tab = Tab.requested
+    @State private var tab = Tab.behaviour
 
     var body: some View {
         TabView(selection: $tab) {
@@ -115,9 +108,14 @@ struct SettingsView: View {
         // because the tabs are nothing like the same length.
         .frame(width: 620, height: tab.height)
         .task {
-            snapshot = arrangement()
-            accessibilityGranted = AccessibilityPermission.isGranted
+            refreshArrangement()
             if let found = foundAtLaunch() { updateResult = .available(found) }
+        }
+        .onChange(of: tab) {
+            refreshArrangement()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NativeMenuBarArrangement.didRefresh)) { _ in
+            refreshArrangement()
         }
     }
 
@@ -390,13 +388,10 @@ struct SettingsView: View {
 
     private var arrangementList: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Cornice no longer asks for Accessibility on launch, because hiding and
-            // revealing never needed it. Reading the bar by name does, so this is the one
-            // place the absence shows, and an empty list with no explanation would read as
-            // a broken window rather than a missing permission.
+            // The native macOS 27 backend needs item identities and positions too.
             if !accessibilityGranted {
                 HStack {
-                    Text(L.t("Listing the icons by name needs Accessibility. Hiding them does not."))
+                    Text(L.t(accessibilityExplanation))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -434,10 +429,24 @@ struct SettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Button(L.t("Refresh")) { snapshot = arrangement() }
+                Button(L.t("Refresh")) { refreshArrangement() }
             }
             .padding(10)
+            if #available(macOS 27, *) {
+                Text(L.t("macOS 27 also hides AirDrop and user switching while either group is closed. Open both groups to bring them back."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 10)
+            }
         }
+    }
+
+    private var accessibilityExplanation: String {
+        if #available(macOS 27, *) {
+            return "On macOS 27, allow Accessibility in Cornice settings to hide icons."
+        }
+        return "Listing the icons by name needs Accessibility. Hiding them does not."
     }
 
     private func row(_ item: MenuBarItem) -> some View {
